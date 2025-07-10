@@ -113,6 +113,10 @@ function App() {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || '';
       console.log('Testando URL:', `${apiUrl}/api/analyze`);
+      console.log('Variável de ambiente:', import.meta.env.VITE_API_URL);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
       
       const response = await fetch(`${apiUrl}/api/analyze`, {
         method: 'POST',
@@ -120,19 +124,34 @@ function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ text: "teste de conexão" }),
+        signal: controller.signal
       });
       
+      clearTimeout(timeoutId);
+      
       if (response.ok) {
+        const data = await response.json();
         setStatus('✅ Conexão com backend funcionando!');
-        setResult('🎉 Backend respondeu corretamente!\n\nTeste realizado com sucesso.');
+        setResult('🎉 Backend respondeu corretamente!\n\nTeste realizado com sucesso.\n\nResposta: ' + JSON.stringify(data, null, 2));
       } else {
+        const errorText = await response.text();
         setStatus(`❌ Backend retornou erro: ${response.status}`);
-        setResult(`Erro HTTP: ${response.status}\nURL: ${apiUrl}/api/analyze`);
+        setResult(`Erro HTTP: ${response.status}\nURL: ${apiUrl}/api/analyze\nResposta: ${errorText}`);
       }
     } catch (error) {
-      console.error('Erro no teste:', error);
+      console.error('Erro no teste completo:', error);
+      let errorMessage = 'Erro desconhecido';
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Timeout - Backend não respondeu em 10 segundos';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       setStatus('❌ Falha total na conexão');
-      setResult(`Erro de conexão: ${error instanceof Error ? error.message : String(error)}\n\nURL testada: ${apiUrl}/api/analyze`);
+      setResult(`🚨 Erro de conexão com Saphira Backend\n\nDetalhes: ${errorMessage}\n\nURL testada: ${import.meta.env.VITE_API_URL}/api/analyze\n\nVerifique se:\n1. O backend está rodando\n2. A URL está correta\n3. Não há problemas de CORS`);
     } finally {
       setIsLoading(false);
     }
@@ -332,6 +351,92 @@ function App() {
             </pre>
           </div>
         )}
+
+        {/* Seção de Créditos */}
+        <div style={{
+          marginTop: '3rem',
+          padding: '2rem',
+          background: 'rgba(0, 0, 0, 0.2)',
+          borderRadius: '15px',
+          textAlign: 'center',
+          borderTop: '2px solid rgba(255, 255, 255, 0.3)'
+        }}>
+          <h3 style={{ 
+            marginBottom: '1rem', 
+            color: '#FFD700',
+            fontSize: '1.5rem'
+          }}>
+            ✨ Créditos e Reconhecimentos
+          </h3>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2rem',
+            marginTop: '1.5rem'
+          }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              padding: '1.5rem',
+              borderRadius: '10px',
+              backdropFilter: 'blur(5px)'
+            }}>
+              <h4 style={{ color: '#87CEEB', marginBottom: '0.5rem' }}>🧠 Saphira Engine</h4>
+              <p style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>
+                Sistema de análise avançada com Lógica Paraconsistente, 
+                módulos de contexto e processamento inteligente de texto.
+              </p>
+            </div>
+
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              padding: '1.5rem',
+              borderRadius: '10px',
+              backdropFilter: 'blur(5px)'
+            }}>
+              <h4 style={{ color: '#98FB98', marginBottom: '0.5rem' }}>⚡ Tecnologias</h4>
+              <p style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>
+                Frontend: React + TypeScript + Vite<br/>
+                Backend: Python + Flask + Gunicorn<br/>
+                Deploy: Replit Infrastructure
+              </p>
+            </div>
+
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              padding: '1.5rem',
+              borderRadius: '10px',
+              backdropFilter: 'blur(5px)'
+            }}>
+              <h4 style={{ color: '#DDA0DD', marginBottom: '0.5rem' }}>🎨 Interface</h4>
+              <p style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>
+                Design moderno com gradientes, animações suaves e 
+                experiência do usuário otimizada para análise de documentos.
+              </p>
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: '2rem',
+            padding: '1rem',
+            background: 'rgba(255, 215, 0, 0.1)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 215, 0, 0.3)'
+          }}>
+            <p style={{ 
+              fontSize: '0.9rem', 
+              fontStyle: 'italic',
+              margin: 0,
+              color: '#FFD700'
+            }}>
+              💙 "Desenvolvido com carinho para revolucionar a análise de documentos" 
+              <br/>
+              <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                Versão 2.0 - Janeiro 2025
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
