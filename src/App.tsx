@@ -39,9 +39,19 @@ function App() {
       setResult(JSON.stringify(data, null, 2));
       setStatus('✨ Análise concluída! Vamos revisar juntos?');
     } catch (error) {
-      setResult(`Algo deu errado, vamos tentar de novo ⚠️\nDetalhes: ${error instanceof Error ? error.message : String(error)}`);
-      setStatus('⚠️ Erro na conexão com Saphira');
       console.error('Erro detalhado:', error);
+      console.error('URL da API:', `${apiUrl}/api/analyze`);
+      console.error('Variável de ambiente VITE_API_URL:', import.meta.env.VITE_API_URL);
+      
+      let errorMessage = 'Erro desconhecido';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      setResult(`🚨 Erro na conexão com Saphira\n\nDetalhes: ${errorMessage}\n\nURL testada: ${apiUrl}/api/analyze\n\nVerifique se o backend está rodando e acessível.`);
+      setStatus('⚠️ Falha na conexão - Verifique o backend');
     } finally {
       setIsLoading(false);
     }
@@ -94,6 +104,38 @@ function App() {
     setResult('');
     setAnalysisData(null);
     setStatus('Aguardando texto do Guardião...');
+  };
+
+  const testConnection = async () => {
+    setIsLoading(true);
+    setStatus('🔍 Testando conexão com backend...');
+    
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      console.log('Testando URL:', `${apiUrl}/api/analyze`);
+      
+      const response = await fetch(`${apiUrl}/api/analyze`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: "teste de conexão" }),
+      });
+      
+      if (response.ok) {
+        setStatus('✅ Conexão com backend funcionando!');
+        setResult('🎉 Backend respondeu corretamente!\n\nTeste realizado com sucesso.');
+      } else {
+        setStatus(`❌ Backend retornou erro: ${response.status}`);
+        setResult(`Erro HTTP: ${response.status}\nURL: ${apiUrl}/api/analyze`);
+      }
+    } catch (error) {
+      console.error('Erro no teste:', error);
+      setStatus('❌ Falha total na conexão');
+      setResult(`Erro de conexão: ${error instanceof Error ? error.message : String(error)}\n\nURL testada: ${apiUrl}/api/analyze`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -190,6 +232,24 @@ function App() {
             }}
           >
             🗑️ Limpar
+          </button>
+
+          <button 
+            onClick={testConnection}
+            disabled={isLoading}
+            style={{
+              padding: '12px 24px',
+              fontSize: '1rem',
+              borderRadius: '25px',
+              border: 'none',
+              background: 'rgba(255, 193, 7, 0.8)',
+              color: 'white',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold',
+              transition: 'all 0.3s'
+            }}
+          >
+            🔍 Testar Conexão
           </button>
 
           {analysisData && (
