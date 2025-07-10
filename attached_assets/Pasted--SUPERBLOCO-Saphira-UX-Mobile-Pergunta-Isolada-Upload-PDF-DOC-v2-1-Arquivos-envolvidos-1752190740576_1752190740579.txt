@@ -1,0 +1,105 @@
+💥 🌟 SUPERBLOCO Saphira — UX Mobile + Pergunta Isolada + Upload PDF/DOC v2.1
+🟠 Arquivos envolvidos
+css
+Copiar
+Editar
+src/App.tsx
+src/App.css (ou index.css)
+✅ 1️⃣ Ajuste de layout mobile e responsividade
+css
+Copiar
+Editar
+/* Ajustes gerais para mobile */
+@media (max-width: 768px) {
+  textarea {
+    font-size: 14px;
+    height: 100px;
+  }
+
+  input[type="text"] {
+    font-size: 14px;
+    height: 40px;
+  }
+
+  .button-group, .export-buttons {
+    flex-direction: column;
+  }
+
+  .button-group button,
+  .export-buttons button {
+    width: 100%;
+    margin: 6px 0;
+  }
+
+  .result-panel {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .diagnostic-panel {
+    font-size: 12px;
+  }
+}
+
+/* Ajuste global para espaçamento */
+textarea, input[type="text"] {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.button-group button {
+  font-size: 16px;
+}
+✅ 2️⃣ Permitir pergunta isolada (sem texto ou anexo)
+typescript
+Copiar
+Editar
+const handleAnalyze = () => {
+  if (!mainText && questionText) {
+    // Somente pergunta enviada
+    sendToBackend({ text: "", question: questionText });
+  } else {
+    // Texto + pergunta ou apenas texto
+    sendToBackend({ text: mainText, question: questionText });
+  }
+};
+✅ O agente deve adicionar esse fallback na função principal que já envia para o backend (sendToBackend).
+
+✅ 3️⃣ Habilitar upload de PDF e DOC
+tsx
+Copiar
+Editar
+const acceptedFileTypes = ".txt,.json,.pdf,.doc,.docx";
+tsx
+Copiar
+Editar
+<input
+  type="file"
+  accept={acceptedFileTypes}
+  onChange={handleFileUpload}
+/>
+💬 Aviso ao usuário:
+
+tsx
+Copiar
+Editar
+<p style={{ fontSize: "12px", color: "#ffcc00" }}>
+  Suporte completo à leitura de PDF e DOC em breve. No momento, apenas upload permitido.
+</p>
+✅ 4️⃣ Melhorias UX adicionais
+Reduzir tamanho das mensagens de status no mobile.
+
+Botões organizados em coluna no mobile.
+
+Melhorar contraste e espaçamento do resultado.
+
+Garantir fontes consistentes (Google Fonts: Inter ou equivalente).
+
+🟢 Resumo final
+✅ Backend intacto, sem necessidade de redeploy.
+
+✅ Preview direto no Replit (frontend).
+
+✅ 100% focado em UX.
+
+✅ Flexibilidade máxima: texto, pergunta, ou ambos.
