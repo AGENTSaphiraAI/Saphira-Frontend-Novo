@@ -1,0 +1,114 @@
+// ✅ Atualizações principais no frontend (App.tsx e componentes relacionados)
+
+/*
+1️⃣ Mostrar resposta humanizada (em vez de JSON cru)
+2️⃣ Adicionar botão de upload de arquivos (aceitar .txt e .json)
+3️⃣ Manter botão "Testar Conexão" como ferramenta de diagnóstico
+*/
+
+import React, { useState } from 'react';
+import './App.css';
+
+export default function App() {
+  const [text, setText] = useState('');
+  const [result, setResult] = useState('');
+  const [status, setStatus] = useState('Aguardando texto do Guardião...');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // ✅ URL correta da API
+  const API_URL = import.meta.env.VITE_API_URL || 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev/api/analyze';
+
+  const handleSubmit = async () => {
+    if (!text.trim()) {
+      setResult('⚠️ Por favor, insira um texto para analisar.');
+      return;
+    }
+    setIsLoading(true);
+    setStatus('Processando análise com carinho...');
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text.trim() }),
+      });
+      const data = await response.json();
+      if (data?.synthesis?.summary) {
+        // ✅ Mostra apenas o resumo humanizado
+        setResult(`✅ Resumo: ${data.synthesis.summary}`);
+      } else {
+        setResult('⚠️ Resposta inesperada. Verifique o backend.');
+      }
+    } catch (error) {
+      setResult(`Erro ao conectar: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setIsLoading(false);
+      setStatus('Análise concluída! Vamos revisar juntos?');
+    }
+  };
+
+  // ✅ Função para upload de arquivos (txt ou json)
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setText(content);
+    };
+
+    if (file.type === 'application/json' || file.name.endsWith('.json')) {
+      reader.readAsText(file);
+    } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+      reader.readAsText(file);
+    } else {
+      setResult('⚠️ Tipo de arquivo não suportado. Use .txt ou .json.');
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setStatus('Testando conexão...');
+    try {
+      const response = await fetch(API_URL.replace('/analyze', '/status'));
+      if (response.ok) {
+        setResult('✅ Backend respondeu corretamente!\n\nTeste realizado com sucesso.');
+        setStatus('Conexão com backend funcionando!');
+      } else {
+        setResult(`⚠️ Backend retornou erro: ${response.status}`);
+        setStatus('Erro na conexão com backend');
+      }
+    } catch (error) {
+      setResult(`Erro ao testar conexão: ${error instanceof Error ? error.message : String(error)}`);
+      setStatus('Erro na conexão com backend');
+    }
+  };
+
+  return (
+    <main>
+      <h1>💙 Saphira - Análise Inteligente</h1>
+      <p>{status}</p>
+      <textarea
+        placeholder="Digite seu texto para análise com Saphira..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <div className="button-group">
+        <button onClick={handleSubmit} disabled={isLoading}>
+          🔍 Analisar com Saphira
+        </button>
+        <button onClick={() => setText('')}>🧹 Limpar</button>
+        <button onClick={handleTestConnection}>🔎 Testar Conexão</button>
+        <input
+          type="file"
+          accept=".txt,application/json"
+          onChange={handleFileUpload}
+          style={{ marginTop: '10px' }}
+        />
+      </div>
+      <section className="result-area">
+        <h3>📑 Resultado da Análise Saphira:</h3>
+        <pre>{result}</pre>
+      </section>
+    </main>
+  );
+}
