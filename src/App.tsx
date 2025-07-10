@@ -28,7 +28,7 @@ function App() {
       const data = await response.json();
       setResult(JSON.stringify(data, null, 2));
     } catch (error) {
-      setResult(`Erro ao conectar com o backend: ${error.message}`);
+      setResult(`Erro ao conectar com o backend: ${error instanceof Error ? error.message : String(error)}`);
       console.error('Erro detalhado:', error);
     }
   };
