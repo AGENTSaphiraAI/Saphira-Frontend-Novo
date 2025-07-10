@@ -79,23 +79,54 @@ body {
   margin-top: 20px;
 }
 
+/* Ajustes gerais para mobile */
 @media (max-width: 768px) {
   body {
     font-size: 90%;
   }
+  
   .title {
     font-size: 1.5rem;
   }
-  .button-group,
-  .export-buttons {
-    display: flex;
+  
+  textarea {
+    font-size: 14px;
+    height: 100px;
+  }
+
+  input[type="text"] {
+    font-size: 14px;
+    height: 40px;
+  }
+
+  .button-group, .export-buttons {
     flex-direction: column;
   }
+
   .button-group button,
   .export-buttons button {
     width: 100%;
-    margin: 5px 0;
+    margin: 6px 0;
   }
+
+  .result-panel {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .diagnostic-panel {
+    font-size: 12px;
+  }
+}
+
+/* Ajuste global para espaçamento */
+textarea, input[type="text"] {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.button-group button {
+  font-size: 16px;
 }
 
 /* Animação pulse para botão durante loading */

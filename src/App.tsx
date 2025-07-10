@@ -20,10 +20,19 @@ export default function App() {
     // Priorizar anexo se existir, senão usar texto manual
     const finalText = uploadedFile ? await readFileContent(uploadedFile) : text.trim();
     
-    if (!finalText || !question.trim()) {
-      setResult('⚠️ Para uma análise completa da Saphira, é necessário:\n\n1️⃣ Texto ou arquivo para análise\n2️⃣ Pergunta específica sobre o conteúdo\n\n💡 A Saphira precisa saber O QUE analisar e QUAL pergunta responder!');
-      setStatus('⚠️ Campos obrigatórios: texto/arquivo + pergunta');
+    // ✅ Permitir pergunta isolada (sem texto ou anexo)
+    if (!finalText && !question.trim()) {
+      setResult('⚠️ Para uma análise da Saphira, é necessário:\n\n1️⃣ Texto/arquivo para análise OU\n2️⃣ Pergunta específica (pode ser enviada sozinha)\n\n💡 A Saphira pode responder perguntas gerais ou analisar conteúdo específico!');
+      setStatus('⚠️ Informe pelo menos texto/arquivo OU pergunta');
       return;
+    }
+    
+    if (!finalText && question.trim()) {
+      // Somente pergunta enviada - modo consulta direta
+      setStatus('🤖 Processando pergunta direta à Saphira...');
+    } else {
+      // Texto + pergunta ou apenas texto
+      setStatus('💙 Processando análise com carinho, Guardião...');
     }
 
     setIsLoading(true);
@@ -118,10 +127,16 @@ export default function App() {
 
     const fileExtension = file.name.toLowerCase().split('.').pop();
 
-    if (!['txt', 'json'].includes(fileExtension || '')) {
-      setResult('⚠️ Tipo de arquivo não suportado. Use apenas arquivos .txt ou .json');
+    if (!['txt', 'json', 'pdf', 'doc', 'docx'].includes(fileExtension || '')) {
+      setResult('⚠️ Tipo de arquivo não suportado. Use arquivos .txt, .json, .pdf, .doc ou .docx');
       setStatus('Erro no upload - Formato não suportado');
       return;
+    }
+
+    // Verificar se é PDF ou DOC
+    if (['pdf', 'doc', 'docx'].includes(fileExtension || '')) {
+      setResult('📄 Arquivo PDF/DOC detectado! Suporte completo em breve. Por enquanto, apenas upload permitido.');
+      setStatus('⚠️ PDF/DOC: Upload realizado, processamento em desenvolvimento');
     }
 
     setUploadedFile(file);
@@ -272,8 +287,8 @@ export default function App() {
 
   return (
     <div style={{ 
-      padding: '2rem', 
-      fontFamily: 'Arial, sans-serif',
+      padding: window.innerWidth <= 768 ? '1rem' : '2rem', 
+      fontFamily: 'Inter, Arial, sans-serif',
       maxWidth: '1200px',
       margin: '0 auto',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -282,7 +297,7 @@ export default function App() {
     }}>
       <div style={{
         background: 'rgba(255, 255, 255, 0.1)',
-        padding: '2rem',
+        padding: window.innerWidth <= 768 ? '1rem' : '2rem',
         borderRadius: '15px',
         backdropFilter: 'blur(10px)'
       }}>
@@ -304,20 +319,28 @@ export default function App() {
           border: '1px solid rgba(255, 255, 255, 0.2)'
         }}>
           <p style={{ 
-            fontSize: '1.1rem',
+            fontSize: window.innerWidth <= 768 ? '1rem' : '1.1rem',
             opacity: 0.9,
             marginBottom: '0.5rem'
           }}>
             {status}
           </p>
           <p style={{ 
-            fontSize: '0.95rem',
+            fontSize: window.innerWidth <= 768 ? '0.85rem' : '0.95rem',
             opacity: 0.8,
             fontStyle: 'italic',
             margin: 0,
             color: '#FFD700'
           }}>
-            🤖 A Saphira analisa seu conteúdo e responde à sua pergunta de forma humanizada e inteligente
+            🤖 A Saphira analisa conteúdo e responde perguntas de forma humanizada
+          </p>
+          <p style={{ 
+            fontSize: '12px', 
+            color: '#ffcc00',
+            marginTop: '0.5rem',
+            fontWeight: 'bold'
+          }}>
+            📄 Suporte completo à leitura de PDF e DOC em breve. No momento, apenas upload permitido.
           </p>
         </div>
 
@@ -353,7 +376,7 @@ export default function App() {
             }}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Faça uma pergunta específica sobre o conteúdo que será analisado..."
+            placeholder="Faça uma pergunta específica sobre o conteúdo OU uma pergunta geral à Saphira..."
             disabled={isLoading}
           />
 
@@ -465,7 +488,7 @@ export default function App() {
             📁 Upload Arquivo
             <input
               type="file"
-              accept=".txt,.json,application/json,text/plain"
+              accept=".txt,.json,.pdf,.doc,.docx,application/json,text/plain,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               onChange={handleFileUpload}
               style={{ display: 'none' }}
             />
