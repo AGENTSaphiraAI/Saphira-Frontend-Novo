@@ -1,0 +1,90 @@
+# ✅ Instruções diretas para o agente do Replit (frontend)
+
+Olá agente, segue a operação completa para deixar o frontend atualizado, vivo e integrado.
+
+---
+
+## 📄 Etapa 1: Atualizar README.md
+
+1️⃣ Criar ou atualizar arquivo README.md na raiz do projeto frontend.  
+2️⃣ Conteúdo inicial do README.md (baseado no consolidado enviado pelo Guardião):
+
+# Saphira Frontend
+
+Frontend oficial do projeto Saphira, responsável por interagir com o usuário, enviar textos ao backend, receber análises e exibir resultados humanizados.
+
+## 📡 Backend conectado
+
+- URL: https://saphira-engine-guilhermegnarci.replit.app/api/analyze
+
+## ⚡ Funcionalidades atuais
+
+- Entrada de texto livre
+- Envio automático ao backend
+- Exibição formatada do JSON de resposta
+- Mensagens de status dinâmicas
+- Conexão viva com os módulos ALMA, ScanCross, Nexum e lógica paraconsistente
+
+## 💬 Próximos passos (interface)
+
+- Botões de exportação (TXT, JSON)
+- Botão de limpar conteúdo
+- Animações de carregamento
+- Respostas personalizadas como "Saphira viva"
+- Separação visual das análises por módulo
+- Gráficos e radar paraconsistente
+
+## 🔄 Histórico de alterações
+
+- O agente deve atualizar automaticamente esta seção sempre que houver:
+  - Nova função frontend
+  - Alteração visual ou estrutural
+  - Mudança em fluxos de integração
+
+Formato do histórico:
+- [Data/Hora UTC] Breve descrição da alteração
+
+---
+
+## 💠 Etapa 2: Preparar UI "viva"
+
+1️⃣ Modificar `App.tsx` para permitir mensagens humanizadas e dinâmicas da Saphira.  
+2️⃣ Inserir frases como:
+- "💙 Processando com carinho, Guardião..."
+- "✨ Análise concluída! Vamos revisar juntos?"
+- "⚡ Detectei algumas inconsistências, quer explorar comigo?"
+
+3️⃣ Garantir que a mensagem de status mude de acordo com o estado:
+- Inicial: "Aguardando texto do Guardião..."
+- Carregando: "Saphira está analisando 💙"
+- Sucesso: "Análise concluída com sucesso ✅"
+- Erro: "Algo deu errado, vamos tentar de novo ⚠️"
+
+4️⃣ Preservar chamada ao backend existente, sem modificar endpoint ou chave `text`.
+
+---
+
+## 🌀 Etapa 3: Preparar botões extras
+
+1️⃣ Botão "Exportar TXT" — exporta resumo ou texto original como `.txt`.
+2️⃣ Botão "Exportar JSON" — exporta resposta completa da API.
+3️⃣ Botão "Limpar conteúdo" — reseta textarea e resultado.
+4️⃣ Opcional: botão "Copiar JSON" para área de transferência.
+
+---
+
+## ⚙️ Etapa 4: Manter compatibilidade futura
+
+- Garantir que a UI permaneça desacoplada logicamente do backend (não alterar endpoint).
+- Permitir futura integração de radar paraconsistente e gráficos sem quebrar fluxo atual.
+
+---
+
+## ✅ Finalização
+
+Após concluir todas as etapas, exibir mensagem para o Guardião:
+"✨ Saphira Frontend atualizado com alma viva, pronto para voar! 💙"
+
+---
+
+# Fim do superbloco
