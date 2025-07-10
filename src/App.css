@@ -1,4 +1,103 @@
 
+/* Base geral */
+body {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  color: #f0f0f0;
+}
+
+/* Ajustes container */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Títulos */
+.title {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.subtitle {
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Inputs */
+.input-text,
+.input-question {
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  padding: 12px;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+/* Botões */
+.button-group button,
+.export-buttons button {
+  margin: 5px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.button-group button:hover,
+.export-buttons button:hover {
+  transform: scale(1.05);
+}
+
+/* Resultados */
+.result-card {
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.result-title {
+  margin-bottom: 10px;
+}
+
+.result-text {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* Diagnóstico */
+.diagnostic-card {
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 90%;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+  .button-group,
+  .export-buttons {
+    display: flex;
+    flex-direction: column;
+  }
+  .button-group button,
+  .export-buttons button {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
 /* Animação pulse para botão durante loading */
 @keyframes pulse {
   0% {
