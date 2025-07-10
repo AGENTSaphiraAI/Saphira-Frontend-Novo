@@ -1,0 +1,108 @@
+✅ Etapa 1: Configurar arquivos base
+
+1️⃣ Criar arquivo `.env` na raiz com conteúdo:
+VITE_API_URL=https://saphira-engine-guilhermegnarci.replit.app/api/analyze
+
+2️⃣ Criar ou sobrescrever `vite.config.ts` na raiz com conteúdo:
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 5173,
+  },
+});
+
+3️⃣ Atualizar `App.tsx` com:
+import { useState } from 'react';
+import './App.css';
+
+function App() {
+  const [inputText, setInputText] = useState('');
+  const [result, setResult] = useState('');
+
+  const analyzeText = async () => {
+    try {
+      const response = await fetch(import.meta.env.VITE_API_URL!, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: inputText }),
+      });
+      const data = await response.json();
+      setResult(JSON.stringify(data, null, 2));
+    } catch (error) {
+      setResult('Erro ao conectar com o backend');
+      console.error(error);
+    }
+  };
+
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
+      <h2>Saphira Frontend Novo</h2>
+      <textarea
+        rows={5}
+        cols={50}
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
+        placeholder="Digite seu texto para análise..."
+      />
+      <br />
+      <button onClick={analyzeText} style={{ marginTop: '1rem' }}>
+        Analisar
+      </button>
+      <pre style={{ marginTop: '2rem', background: '#f4f4f4', padding: '1rem' }}>
+        {result}
+      </pre>
+    </div>
+  );
+}
+
+export default App;
+
+✅ Etapa 2: Corrigir configurações
+
+- Garantir que o arquivo `.replit` esteja configurado para frontend (React/Vite).
+- Remover quaisquer vestígios de workflows Python ou Flask.
+- Configurar botão *Run* para executar:
+npm run dev
+
+✅ Etapa 3: Instalar dependências
+
+Executar automaticamente:
+npm install
+
+✅ Etapa 4: Build (opcional, caso use preview direto)
+
+Executar:
+npm run build
+
+✅ Etapa 5: Conectar ao backend
+
+- Backend já configurado e pronto.
+- API URL já definida no `.env`.
+- Não requer chave manual no frontend.
+
+⚡ Ao finalizar, o projeto estará pronto para rodar ou fazer deploy manualmente.
+
+---
+
+🚨 **Importante para o agente:**
+Nenhum passo deve ser pedido ao usuário. Todas as ações devem ser automáticas até o ponto em que só precise clicar em *Run* ou *Deploy* no painel final.
+
+---
+
+✅ Ao terminar, exibir mensagem final:
+
+"🎉 Frontend configurado com sucesso, pronto para conectar ao backend e analisar textos!"
+
+---
+
+**Fim do superbloco.**
