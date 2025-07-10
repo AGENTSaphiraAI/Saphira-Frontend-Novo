@@ -21,8 +21,8 @@ export default function App() {
     const finalText = uploadedFile ? await readFileContent(uploadedFile) : text.trim();
     
     if (!finalText || !question.trim()) {
-      setResult('⚠️ Preencha tanto o texto (ou anexe um arquivo) quanto a pergunta.');
-      setStatus('⚠️ Campos obrigatórios não preenchidos');
+      setResult('⚠️ Para uma análise completa da Saphira, é necessário:\n\n1️⃣ Texto ou arquivo para análise\n2️⃣ Pergunta específica sobre o conteúdo\n\n💡 A Saphira precisa saber O QUE analisar e QUAL pergunta responder!');
+      setStatus('⚠️ Campos obrigatórios: texto/arquivo + pergunta');
       return;
     }
 
@@ -49,21 +49,21 @@ export default function App() {
       setAnalysisData(data);
 
       if (data?.interpreted_response) {
-        // ✅ Priorizar resposta interpretada
-        const humanized = `💬 Resposta da Saphira:\n\n${data.interpreted_response}`;
-        setResult(humanized);
+        // ✅ PRIORIDADE MÁXIMA: Resposta interpretada humanizada
+        setResult(data.interpreted_response);
         setHumanizedResponse(data.interpreted_response);
-        setStatus('✨ Análise concluída! Vamos revisar juntos?');
+        setStatus('✨ Saphira analisou seu conteúdo! Confira a resposta interpretada abaixo.');
       } else if (data?.synthesis?.summary) {
-        // Backup: se não vier interpretada, exibir resumo
-        const humanized = `💬 Resumo:\n\n${data.synthesis.summary}`;
-        setResult(humanized);
+        // FALLBACK 1: Resumo técnico disponível
+        setResult(data.synthesis.summary);
         setHumanizedResponse(data.synthesis.summary);
-        setStatus('✨ Análise concluída! Vamos revisar juntos?');
+        setStatus('✨ Análise concluída! Resumo disponível (resposta interpretada não gerada).');
       } else {
-        setResult('Análise concluída sem interpretação detalhada.');
-        setHumanizedResponse('Análise concluída sem interpretação detalhada.');
-        setStatus('✨ Análise concluída!');
+        // FALLBACK 2: Mensagem padrão
+        const fallbackMessage = 'Análise concluída, mas sem resposta detalhada.';
+        setResult(fallbackMessage);
+        setHumanizedResponse(fallbackMessage);
+        setStatus('✨ Análise processada, mas sem interpretação detalhada disponível.');
       }
     } catch (error) {
       console.error('Erro detalhado:', error);
@@ -295,14 +295,31 @@ export default function App() {
           💙 Saphira - Análise Inteligente
         </h1>
 
-        <p style={{ 
-          textAlign: 'center', 
+        <div style={{
+          textAlign: 'center',
           marginBottom: '2rem',
-          fontSize: '1.1rem',
-          opacity: 0.9
+          padding: '1rem',
+          background: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '10px',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
         }}>
-          {status}
-        </p>
+          <p style={{ 
+            fontSize: '1.1rem',
+            opacity: 0.9,
+            marginBottom: '0.5rem'
+          }}>
+            {status}
+          </p>
+          <p style={{ 
+            fontSize: '0.95rem',
+            opacity: 0.8,
+            fontStyle: 'italic',
+            margin: 0,
+            color: '#FFD700'
+          }}>
+            🤖 A Saphira analisa seu conteúdo e responde à sua pergunta de forma humanizada e inteligente
+          </p>
+        </div>
 
         <div style={{ marginBottom: '1rem' }}>
           <textarea
@@ -319,7 +336,7 @@ export default function App() {
             }}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Cole ou digite seu texto aqui... (ou use o botão de upload)"
+            placeholder="Cole ou digite seu texto aqui para análise... (ou anexe um arquivo .txt/.json usando o botão de upload)"
             disabled={isLoading}
           />
 
@@ -336,7 +353,7 @@ export default function App() {
             }}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Digite sua pergunta aqui..."
+            placeholder="Faça uma pergunta específica sobre o conteúdo que será analisado..."
             disabled={isLoading}
           />
 
@@ -491,7 +508,7 @@ export default function App() {
             border: '2px solid rgba(255, 255, 255, 0.3)'
           }}>
             <h3 style={{ marginBottom: '1rem', color: '#FFD700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
-              📑 Resultado da Análise:
+              🤖 Resposta Interpretada da Saphira:
             </h3>
             <div className="result-content" style={{ 
               background: 'rgba(255, 255, 255, 0.15)', 
@@ -534,8 +551,9 @@ export default function App() {
                         fontWeight: 'bold',
                         transition: 'all 0.3s'
                       }}
+                      title="Salvar resposta humanizada da Saphira em arquivo .txt"
                     >
-                      📄 Exportar TXT
+                      📄 Exportar Resposta (TXT)
                     </button>
 
                     <button 
@@ -551,8 +569,9 @@ export default function App() {
                         fontWeight: 'bold',
                         transition: 'all 0.3s'
                       }}
+                      title="Copiar resposta humanizada para área de transferência"
                     >
-                      📋 Copiar TXT
+                      📋 Copiar Resposta
                     </button>
                   </>
                 )}
@@ -571,8 +590,9 @@ export default function App() {
                       fontWeight: 'bold',
                       transition: 'all 0.3s'
                     }}
+                    title="Exportar dados técnicos completos (para usuários avançados)"
                   >
-                    📋 Exportar JSON
+                    🔧 Exportar JSON Técnico
                   </button>
                 )}
               </div>

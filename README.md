@@ -35,8 +35,11 @@ O backend e o frontend coexistem na mesma origem, simplificando a comunicação 
 
 ### 🧠 Processamento e Análise
 - **Integração Total:** Comunicação direta com a API unificada `/api/analyze` do backend Saphira Engine v2.0
-- **Resposta Interpretada:** Interface prioriza o campo `interpreted_response` para exibição humanizada
-- **Fallback Inteligente:** Caso não exista `interpreted_response`, exibe `synthesis.summary` ou mensagem padrão: "Análise concluída sem interpretação detalhada"
+- **Resposta Interpretada PRIORITÁRIA:** Interface exibe diretamente o campo `interpreted_response` - a resposta humanizada da Saphira
+- **Sistema de Fallback Inteligente:** 
+  1. **PRIORIDADE:** `interpreted_response` (resposta humanizada)
+  2. **FALLBACK 1:** `synthesis.summary` (resumo técnico)
+  3. **FALLBACK 2:** "Análise concluída, mas sem resposta detalhada."
 
 ### 📊 Exibição de Resultados
 - **Resposta Humanizada:** Destaque para a interpretação da Saphira em linguagem natural
@@ -44,10 +47,10 @@ O backend e o frontend coexistem na mesma origem, simplificando a comunicação 
 - **Status Dinâmico:** Mensagens personalizadas e animações durante processamento
 
 ### 📤 Exportação e Compartilhamento
-- **Exportar TXT:** Salva a resposta humanizada (`interpreted_response`) em arquivo .txt
-- **Copiar TXT:** Copia a resposta humanizada para área de transferência
-- **Exportar JSON:** Salva análise técnica completa em formato JSON
-- **Feedback Visual:** Confirmações e alertas para todas as operações
+- **Exportar Resposta (TXT):** Salva a resposta humanizada interpretada da Saphira em arquivo .txt limpo
+- **Copiar Resposta:** Copia a resposta humanizada diretamente para área de transferência
+- **Exportar JSON Técnico:** Salva análise técnica completa em formato JSON (para usuários avançados)
+- **Feedback Visual:** Confirmações e alertas para todas as operações com tooltips explicativos
 
 ### 🔧 Ferramentas de Desenvolvimento
 - **Teste de Conexão Avançado:** Diagnóstico completo do backend com dados formatados
@@ -87,14 +90,14 @@ O backend e o frontend coexistem na mesma origem, simplificando a comunicação 
    - Status dinâmico informa progresso da análise
 
 3. **Resultado:**
-   - Resposta humanizada da Saphira é exibida em destaque
-   - Dados técnicos ficam disponíveis para exportação JSON
-   - Fallback automático para resumo se interpretação não disponível
+   - **PRIORITÁRIO:** Resposta interpretada da Saphira exibida diretamente (sem prefixos técnicos)
+   - Sistema de fallback: summary técnico → mensagem padrão
+   - Dados técnicos JSON sempre disponíveis para usuários avançados
 
 4. **Exportação:**
-   - "Exportar TXT": Salva resposta humanizada
-   - "Copiar TXT": Copia para área de transferência
-   - "Exportar JSON": Salva análise técnica completa
+   - "Exportar Resposta (TXT)": Salva apenas a resposta humanizada interpretada
+   - "Copiar Resposta": Copia resposta limpa para área de transferência
+   - "Exportar JSON Técnico": Salva análise completa com metadados (para desenvolvedores)
 
 5. **Ferramentas:**
    - "Testar Conexão": Diagnóstico detalhado do backend
