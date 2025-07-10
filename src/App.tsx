@@ -7,19 +7,29 @@ function App() {
   const [result, setResult] = useState('');
 
   const analyzeText = async () => {
+    if (!inputText.trim()) {
+      setResult('Por favor, digite um texto para análise');
+      return;
+    }
+
     try {
       const response = await fetch(import.meta.env.VITE_API_URL!, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: inputText }),
+        body: JSON.stringify({ text: inputText.trim() }),
       });
+      
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+      
       const data = await response.json();
       setResult(JSON.stringify(data, null, 2));
     } catch (error) {
-      setResult('Erro ao conectar com o backend');
-      console.error(error);
+      setResult(`Erro ao conectar com o backend: ${error.message}`);
+      console.error('Erro detalhado:', error);
     }
   };
 
