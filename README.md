@@ -27,8 +27,11 @@ O backend e o frontend coexistem na mesma origem, simplificando a comunicação 
 
 -   **Interface Limpa:** Entrada de texto livre e intuitiva para o usuário.
 -   **Análise em Tempo Real:** Comunicação direta com a API unificada `/api/analyze` para processamento pelo backend Saphira.
--   **Renderização Estruturada:** Exibição dos resultados da análise de forma organizada e legível, separada por módulos.
--   **Feedback ao Usuário:** Mensagens de status dinâmicas durante o processo de análise.
+-   **Exibição Resumida:** Interface mostra apenas informações essenciais (resumo, consistência, contradição) para melhor legibilidade.
+-   **Exportação Detalhada:** JSON completo disponível através dos botões "Exportar JSON" e "Copiar JSON".
+-   **Exportação Humanizada:** Botão "Exportar Resumo" salva apenas o conteúdo exibido na tela em formato TXT.
+-   **Feedback Dinâmico:** Mensagens de status personalizadas e animações suaves durante o processamento.
+-   **Upload de Arquivos:** Suporte para upload de arquivos .txt e .json.
 -   **Arquitetura Unificada e Estável:** Sistema totalmente funcional e implantado na URL de produção.
 
 ---

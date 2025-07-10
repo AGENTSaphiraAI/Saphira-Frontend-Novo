@@ -9,63 +9,38 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
 
-  // Função para formatar resultado de forma humanizada
+  // Função para formatar resultado de forma humanizada e resumida
   const formatHumanizedResult = (data: any) => {
     let humanResult = '';
     
-    // Synthesis Summary
+    // Resumo principal (prioridade máxima)
     if (data?.synthesis?.summary) {
-      humanResult += `📊 RESUMO EXECUTIVO\n${data.synthesis.summary}\n\n`;
+      humanResult += `📝 Resumo: ${data.synthesis.summary}\n\n`;
     }
     
-    // Context Module
-    if (data?.context) {
-      humanResult += `🎯 ANÁLISE DE CONTEXTO\n`;
-      if (data.context.main_topic) {
-        humanResult += `• Tópico Principal: ${data.context.main_topic}\n`;
-      }
-      if (data.context.key_entities && data.context.key_entities.length > 0) {
-        humanResult += `• Entidades Identificadas: ${data.context.key_entities.join(', ')}\n`;
-      }
-      if (data.context.urgency_level) {
-        humanResult += `• Nível de Urgência: ${data.context.urgency_level}\n`;
-      }
-      humanResult += '\n';
-    }
-    
-    // Paraconsistent Logic
+    // Métricas de consistência paraconsistente (se disponíveis)
     if (data?.paraconsistent) {
-      humanResult += `🧠 LÓGICA PARACONSISTENTE\n`;
-      if (data.paraconsistent.truth_score !== undefined) {
-        humanResult += `• Score de Verdade: ${(data.paraconsistent.truth_score * 100).toFixed(1)}%\n`;
-      }
-      if (data.paraconsistent.contradiction_score !== undefined) {
-        humanResult += `• Score de Contradição: ${(data.paraconsistent.contradiction_score * 100).toFixed(1)}%\n`;
-      }
-      if (data.paraconsistent.certainty_level) {
-        humanResult += `• Nível de Certeza: ${data.paraconsistent.certainty_level}\n`;
-      }
-      if (data.paraconsistent.recommendation) {
-        humanResult += `• Recomendação: ${data.paraconsistent.recommendation}\n`;
-      }
-      humanResult += '\n';
+      const consistency = data.paraconsistent.certainty_level || 'Não disponível';
+      const contradiction = data.paraconsistent.contradiction_score !== undefined ? 
+        `${(data.paraconsistent.contradiction_score * 100).toFixed(1)}%` : 'Não disponível';
+      
+      humanResult += `🧠 Consistência: ${consistency}\n`;
+      humanResult += `⚠️ Contradição: ${contradiction}\n\n`;
     }
     
-    // Sentiment Analysis
-    if (data?.sentiment) {
-      humanResult += `💭 ANÁLISE DE SENTIMENTO\n`;
-      if (data.sentiment.polarity !== undefined) {
-        const polarityText = data.sentiment.polarity > 0 ? 'Positivo' : 
-                           data.sentiment.polarity < 0 ? 'Negativo' : 'Neutro';
-        humanResult += `• Polaridade: ${polarityText} (${data.sentiment.polarity.toFixed(2)})\n`;
-      }
-      if (data.sentiment.subjectivity !== undefined) {
-        humanResult += `• Subjetividade: ${(data.sentiment.subjectivity * 100).toFixed(1)}%\n`;
-      }
-      humanResult += '\n';
+    // Informações contextuais básicas
+    if (data?.context?.main_topic) {
+      humanResult += `🎯 Tópico Principal: ${data.context.main_topic}\n`;
     }
     
-    return humanResult || 'Análise processada, mas sem dados formatados disponíveis.';
+    // Sentimento (resumido)
+    if (data?.sentiment?.polarity !== undefined) {
+      const polarityText = data.sentiment.polarity > 0 ? 'Positivo' : 
+                         data.sentiment.polarity < 0 ? 'Negativo' : 'Neutro';
+      humanResult += `💭 Sentimento: ${polarityText}\n`;
+    }
+    
+    return humanResult || 'Análise processada com sucesso! Use os botões de exportação para ver detalhes completos.';
   };
 
   const analyzeText = async () => {
@@ -125,12 +100,14 @@ function App() {
       return;
     }
     
-    const content = `Análise Saphira\n================\n\nTexto original:\n${inputText}\n\nResultado:\n${JSON.stringify(analysisData, null, 2)}`;
+    // Exportar apenas o resumo humanizado exibido na tela
+    const humanizedContent = formatHumanizedResult(analysisData);
+    const content = `Análise Saphira - Resumo\n========================\n\nTexto original:\n${inputText}\n\n${humanizedContent}`;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'saphira-analise.txt';
+    a.download = 'saphira-resumo.txt';
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -337,17 +314,19 @@ function App() {
           <button 
             onClick={analyzeText} 
             disabled={isLoading}
+            className={isLoading ? 'pulse-loading' : ''}
             style={{
               padding: '12px 24px',
               fontSize: '1.1rem',
               borderRadius: '25px',
               border: 'none',
-              background: isLoading ? '#ccc' : 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+              background: isLoading ? 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)' : 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
               color: 'white',
               cursor: isLoading ? 'not-allowed' : 'pointer',
               fontWeight: 'bold',
               boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-              transition: 'all 0.3s'
+              transition: 'all 0.3s',
+              opacity: isLoading ? 0.8 : 1
             }}
           >
             {isLoading ? '⏳ Analisando...' : '🔍 Analisar com Saphira'}
@@ -427,7 +406,7 @@ function App() {
                   transition: 'all 0.3s'
                 }}
               >
-                📄 Exportar TXT
+                📄 Exportar Resumo
               </button>
 
               <button 
@@ -468,28 +447,43 @@ function App() {
         </div>
 
         {result && (
-          <div style={{
-            background: 'rgba(0, 0, 0, 0.3)',
+          <div className="result-panel smooth-transition" style={{
+            background: 'rgba(0, 0, 0, 0.4)',
             padding: '1.5rem',
             borderRadius: '10px',
-            marginTop: '2rem'
+            marginTop: '2rem',
+            border: '2px solid rgba(255, 255, 255, 0.3)'
           }}>
-            <h3 style={{ marginBottom: '1rem', color: '#FFD700' }}>
-              📊 Resultado da Análise Saphira:
+            <h3 style={{ marginBottom: '1rem', color: '#FFD700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+              📊 Resumo da Análise Saphira:
             </h3>
-            <div style={{ 
-              background: 'rgba(255, 255, 255, 0.1)', 
+            <div className="result-content" style={{ 
+              background: 'rgba(255, 255, 255, 0.15)', 
               padding: '1.5rem',
               borderRadius: '8px',
-              fontSize: '1rem',
-              lineHeight: '1.6',
+              fontSize: '1.1rem',
+              lineHeight: '1.8',
               overflow: 'auto',
-              maxHeight: '500px',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              maxHeight: '400px',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
               whiteSpace: 'pre-wrap',
-              fontFamily: 'Arial, sans-serif'
+              fontFamily: 'Arial, sans-serif',
+              color: '#ffffff',
+              textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
             }}>
               {result}
+            </div>
+            <div style={{
+              marginTop: '1rem',
+              padding: '0.8rem',
+              background: 'rgba(255, 215, 0, 0.1)',
+              borderRadius: '6px',
+              border: '1px solid rgba(255, 215, 0, 0.3)',
+              fontSize: '0.9rem',
+              textAlign: 'center',
+              color: '#FFD700'
+            }}>
+              💡 Para análise completa, use os botões "Exportar JSON" ou "Copiar JSON"
             </div>
           </div>
         )}
