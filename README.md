@@ -28,25 +28,30 @@ O backend e o frontend coexistem na mesma origem, simplificando a comunicação 
 -   **Interface Dupla:** Entrada de texto + campo de pergunta para análise direcionada.
 -   **Fluxo Texto + Pergunta:** O usuário envia texto + pergunta. O backend retorna uma resposta humanizada, interpretada, exibida no campo Resultado. JSON técnico oculto para melhor UX.
 -   **Análise em Tempo Real:** Comunicação direta com a API unificada `/api/analyze` para processamento pelo backend Saphira.
--   **Resposta Interpretada:** Interface mostra resposta humanizada e contextualizada baseada na pergunta feita.
--   **Exportação Detalhada:** JSON completo disponível através dos botões "Exportar JSON" e "Copiar JSON".
+-   **Resposta Interpretada:** Interface prioriza o campo `interpreted_response` para exibição humanizada. Fallback automático para `synthesis.summary` se necessário.
+-   **Exportação Múltipla:** 
+   - **Exportar TXT:** Salva a resposta humanizada em arquivo de texto
+   - **Copiar TXT:** Copia a resposta humanizada para área de transferência
+   - **Exportar JSON:** Exporta análise técnica completa em formato JSON
 -   **Feedback Dinâmico:** Mensagens de status personalizadas e animações suaves durante o processamento.
 -   **Upload de Arquivos:** Suporte para upload de arquivos .txt e .json.
+-   **Interface Otimizada:** Layout centralizado, responsivo e preparado para futuras visualizações gráficas.
 -   **Arquitetura Unificada e Estável:** Sistema totalmente funcional e implantado na URL de produção.
 
 ---
 
 ## 🗺️ Roadmap de Próximos Passos
 
--   **[UI/UX] Embelezamento e Animações:** Refinar a interface com melhores componentes visuais, animações e feedbacks para o usuário.
--   **[Funcionalidade] Exportar Relatórios:** Implementar botões de exportação da análise nos formatos JSON e TXT/PDF.
--   **[Funcionalidade] Limpar Análise:** Adicionar um botão para limpar os resultados e iniciar uma nova análise facilmente.
 -   **[Visualização] Gráfico de Radar:** Transformar os scores da análise de Lógica Paraconsistente em um gráfico de radar interativo.
 -   **[Visualização] Mapa Conceitual:** Ativar o módulo Nexum com uma visualização de grafo de conhecimento interativo.
+-   **[Funcionalidade] Exportar PDF:** Adicionar opção de exportação em formato PDF para relatórios formais.
+-   **[UI/UX] Temas Personalizáveis:** Implementar opções de tema claro/escuro e personalização de cores.
+-   **[Análise] Histórico de Consultas:** Manter registro das análises anteriores para consulta rápida.
 
 ---
 
 ## 📜 Histórico de alterações
+- [2025-01-10 16:15:00 UTC] Interface reorganizada: resposta humanizada priorizada, novos botões TXT, área para gráficos futuros
 - [2025-01-10 15:45:00 UTC] Interface humanizada com mensagens da Saphira, botões de exportação e design moderno
 - [2025-01-10 15:35:00 UTC] Atualização completa do README.md com modelo da arquitetura unificada Saphira
 - [2025-01-10 15:30:00 UTC] Correção de erro TypeScript no tratamento de erro unknown em catch block

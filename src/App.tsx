@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import './App.css';
 
@@ -8,6 +9,7 @@ export default function App() {
   const [status, setStatus] = useState('Aguardando entrada...');
   const [isLoading, setIsLoading] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
+  const [humanizedResponse, setHumanizedResponse] = useState('');
 
   // ✅ URL correta do backend
   const API_URL = import.meta.env.VITE_API_URL || 'https://saphira-engine-guilhermegnarci.replit.app';
@@ -22,6 +24,7 @@ export default function App() {
     setIsLoading(true);
     setStatus('💙 Processando análise com carinho, Guardião...');
     setResult('');
+    setHumanizedResponse('');
 
     try {
       const response = await fetch(`${API_URL}/api/analyze`, {
@@ -41,16 +44,21 @@ export default function App() {
       setAnalysisData(data);
 
       if (data?.interpreted_response) {
-        // ✅ Exibe apenas resposta interpretada
-        setResult(`💬 Resposta da Saphira:\n\n${data.interpreted_response}`);
+        // ✅ Priorizar resposta interpretada
+        const humanized = `💬 Resposta da Saphira:\n\n${data.interpreted_response}`;
+        setResult(humanized);
+        setHumanizedResponse(data.interpreted_response);
         setStatus('✨ Análise concluída! Vamos revisar juntos?');
       } else if (data?.synthesis?.summary) {
-        // Backup: se não vier interpretada, exibe resumo
-        setResult(`💬 Resumo:\n\n${data.synthesis.summary}`);
+        // Backup: se não vier interpretada, exibir resumo
+        const humanized = `💬 Resumo:\n\n${data.synthesis.summary}`;
+        setResult(humanized);
+        setHumanizedResponse(data.synthesis.summary);
         setStatus('✨ Análise concluída! Vamos revisar juntos?');
       } else {
-        setResult('⚠️ Resposta inesperada. Verifique o backend.');
-        setStatus('⚠️ Formato de resposta inesperado');
+        setResult('Análise concluída sem interpretação detalhada.');
+        setHumanizedResponse('Análise concluída sem interpretação detalhada.');
+        setStatus('✨ Análise concluída!');
       }
     } catch (error) {
       console.error('Erro detalhado:', error);
@@ -130,6 +138,7 @@ export default function App() {
     setQuestion('');
     setResult('');
     setAnalysisData(null);
+    setHumanizedResponse('');
     setStatus('Campos limpos. Pronto para nova entrada.');
   };
 
@@ -186,6 +195,32 @@ export default function App() {
     }
   };
 
+  const exportTXT = () => {
+    if (!humanizedResponse) {
+      alert('Nenhuma resposta humanizada disponível para exportar');
+      return;
+    }
+
+    const blob = new Blob([humanizedResponse], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'saphira-resposta.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const copyTXT = () => {
+    if (!humanizedResponse) {
+      alert('Nenhuma resposta humanizada disponível para copiar');
+      return;
+    }
+
+    navigator.clipboard.writeText(humanizedResponse)
+      .then(() => alert('Resposta copiada para área de transferência! 💙'))
+      .catch(() => alert('Erro ao copiar resposta'));
+  };
+
   const exportJSON = () => {
     if (!analysisData) {
       alert('Nenhuma análise disponível para exportar');
@@ -199,17 +234,6 @@ export default function App() {
     a.download = 'saphira-analise.json';
     a.click();
     URL.revokeObjectURL(url);
-  };
-
-  const copyJSON = () => {
-    if (!analysisData) {
-      alert('Nenhuma análise disponível para copiar');
-      return;
-    }
-
-    navigator.clipboard.writeText(JSON.stringify(analysisData, null, 2))
-      .then(() => alert('JSON copiado para área de transferência! 💙'))
-      .catch(() => alert('Erro ao copiar JSON'));
   };
 
   return (
@@ -367,44 +391,6 @@ export default function App() {
               style={{ display: 'none' }}
             />
           </label>
-
-          {analysisData && (
-            <>
-              <button 
-                onClick={exportJSON}
-                style={{
-                  padding: '12px 24px',
-                  fontSize: '1rem',
-                  borderRadius: '25px',
-                  border: 'none',
-                  background: 'rgba(33, 150, 243, 0.8)',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  transition: 'all 0.3s'
-                }}
-              >
-                📋 Exportar JSON
-              </button>
-
-              <button 
-                onClick={copyJSON}
-                style={{
-                  padding: '12px 24px',
-                  fontSize: '1rem',
-                  borderRadius: '25px',
-                  border: 'none',
-                  background: 'rgba(156, 39, 176, 0.8)',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  transition: 'all 0.3s'
-                }}
-              >
-                📋 Copiar JSON
-              </button>
-            </>
-          )}
         </div>
 
         {result && (
@@ -434,40 +420,86 @@ export default function App() {
             }}>
               {result}
             </div>
-            {analysisData && (
+
+            {/* Botões de exportação */}
+            {(humanizedResponse || analysisData) && (
               <div style={{
-                marginTop: '1rem',
-                padding: '0.8rem',
-                background: 'rgba(255, 215, 0, 0.1)',
-                borderRadius: '6px',
-                border: '1px solid rgba(255, 215, 0, 0.3)',
-                fontSize: '0.9rem',
-                textAlign: 'center',
-                color: '#FFD700'
+                marginTop: '1.5rem',
+                display: 'flex',
+                gap: '1rem',
+                flexWrap: 'wrap',
+                justifyContent: 'center'
               }}>
-                💡 Para análise técnica completa, use os botões "Exportar JSON" ou "Copiar JSON"
+                {humanizedResponse && (
+                  <>
+                    <button 
+                      onClick={exportTXT}
+                      style={{
+                        padding: '10px 20px',
+                        fontSize: '0.9rem',
+                        borderRadius: '20px',
+                        border: 'none',
+                        background: 'rgba(76, 175, 80, 0.8)',
+                        color: 'white',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        transition: 'all 0.3s'
+                      }}
+                    >
+                      📄 Exportar TXT
+                    </button>
+
+                    <button 
+                      onClick={copyTXT}
+                      style={{
+                        padding: '10px 20px',
+                        fontSize: '0.9rem',
+                        borderRadius: '20px',
+                        border: 'none',
+                        background: 'rgba(255, 152, 0, 0.8)',
+                        color: 'white',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        transition: 'all 0.3s'
+                      }}
+                    >
+                      📋 Copiar TXT
+                    </button>
+                  </>
+                )}
+
+                {analysisData && (
+                  <button 
+                    onClick={exportJSON}
+                    style={{
+                      padding: '10px 20px',
+                      fontSize: '0.9rem',
+                      borderRadius: '20px',
+                      border: 'none',
+                      background: 'rgba(33, 150, 243, 0.8)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      transition: 'all 0.3s'
+                    }}
+                  >
+                    📋 Exportar JSON
+                  </button>
+                )}
               </div>
             )}
           </div>
         )}
 
-        {/* Seção de Créditos */}
+        {/* Área reservada para gráficos futuros */}
         <div style={{
-          marginTop: '3rem',
+          marginTop: '2rem',
           padding: '2rem',
           background: 'rgba(0, 0, 0, 0.2)',
           borderRadius: '15px',
           textAlign: 'center',
-          borderTop: '2px solid rgba(255, 255, 255, 0.3)'
+          border: '2px dashed rgba(255, 255, 255, 0.3)'
         }}>
-          <h3 style={{ 
-            marginBottom: '1rem', 
-            color: '#FFD700',
-            fontSize: '1.5rem'
-          }}>
-            ✨ Novo Fluxo: Texto + Pergunta
-          </h3>
-
           <div style={{
             background: 'rgba(255, 255, 255, 0.1)',
             padding: '1.5rem',
@@ -476,10 +508,22 @@ export default function App() {
             margin: '0 auto',
             maxWidth: '600px'
           }}>
-            <p style={{ fontSize: '1rem', lineHeight: '1.6', margin: 0 }}>
-              💙 <strong>Como usar:</strong> Digite seu texto e faça uma pergunta específica. 
-              O backend Saphira processará ambos e retornará uma resposta humanizada e interpretada, 
-              ocultando os detalhes técnicos do JSON para uma experiência mais limpa.
+            <h3 style={{ 
+              marginBottom: '1rem', 
+              color: '#FFD700',
+              fontSize: '1.3rem',
+              opacity: 0.8
+            }}>
+              📊 Área reservada para gráficos futuros
+            </h3>
+            <p style={{ 
+              fontSize: '1rem', 
+              lineHeight: '1.6', 
+              margin: 0,
+              opacity: 0.7,
+              fontStyle: 'italic'
+            }}>
+              Em breve: Visualizações interativas e métricas avançadas serão exibidas aqui.
             </p>
           </div>
         </div>
