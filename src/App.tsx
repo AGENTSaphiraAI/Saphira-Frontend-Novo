@@ -10,13 +10,18 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [humanizedResponse, setHumanizedResponse] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [connectionTestResult, setConnectionTestResult] = useState<any>(null);
 
   // ✅ URL correta do backend
   const API_URL = import.meta.env.VITE_API_URL || 'https://saphira-engine-guilhermegnarci.replit.app';
 
   const handleSubmit = async () => {
-    if (!text.trim() || !question.trim()) {
-      setResult('⚠️ Preencha tanto o texto quanto a pergunta.');
+    // Priorizar anexo se existir, senão usar texto manual
+    const finalText = uploadedFile ? await readFileContent(uploadedFile) : text.trim();
+    
+    if (!finalText || !question.trim()) {
+      setResult('⚠️ Preencha tanto o texto (ou anexe um arquivo) quanto a pergunta.');
       setStatus('⚠️ Campos obrigatórios não preenchidos');
       return;
     }
@@ -31,7 +36,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: text.trim(),
+          text: finalText,
           question: question.trim(),
         }),
       });
@@ -78,6 +83,35 @@ export default function App() {
     }
   };
 
+  const readFileContent = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
+          if (file.name.toLowerCase().endsWith('.json')) {
+            const jsonData = JSON.parse(content);
+            // Extrair texto relevante do JSON
+            let extractedText = '';
+            if (jsonData.text) extractedText = jsonData.text;
+            else if (jsonData.content) extractedText = jsonData.content;
+            else if (jsonData.message) extractedText = jsonData.message;
+            else if (jsonData.description) extractedText = jsonData.description;
+            else if (typeof jsonData === 'string') extractedText = jsonData;
+            else extractedText = JSON.stringify(jsonData, null, 2);
+            resolve(extractedText);
+          } else {
+            resolve(content);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+      reader.readAsText(file);
+    });
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -90,44 +124,9 @@ export default function App() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-
-        if (fileExtension === 'json') {
-          // Tentar parsear JSON e extrair texto relevante
-          const jsonData = JSON.parse(content);
-          let extractedText = '';
-
-          // Buscar propriedades comuns que podem conter texto
-          if (jsonData.text) extractedText = jsonData.text;
-          else if (jsonData.content) extractedText = jsonData.content;
-          else if (jsonData.message) extractedText = jsonData.message;
-          else if (jsonData.description) extractedText = jsonData.description;
-          else if (typeof jsonData === 'string') extractedText = jsonData;
-          else extractedText = JSON.stringify(jsonData, null, 2);
-
-          setText(extractedText);
-        } else {
-          // Arquivo .txt
-          setText(content);
-        }
-
-        setStatus(`📁 Arquivo ${file.name} carregado com sucesso!`);
-        setResult('');
-      } catch (error) {
-        setResult(`⚠️ Erro ao processar arquivo: ${error instanceof Error ? error.message : 'Formato inválido'}`);
-        setStatus('Erro no processamento do arquivo');
-      }
-    };
-
-    reader.onerror = () => {
-      setResult('⚠️ Erro ao ler o arquivo');
-      setStatus('Erro na leitura do arquivo');
-    };
-
-    reader.readAsText(file);
+    setUploadedFile(file);
+    setStatus(`📁 Arquivo ${file.name} carregado! Será usado na análise.`);
+    setResult('');
 
     // Limpar o input para permitir upload do mesmo arquivo novamente
     event.target.value = '';
@@ -139,12 +138,15 @@ export default function App() {
     setResult('');
     setAnalysisData(null);
     setHumanizedResponse('');
+    setUploadedFile(null);
+    setConnectionTestResult(null);
     setStatus('Campos limpos. Pronto para nova entrada.');
   };
 
   const testConnection = async () => {
     setIsLoading(true);
     setStatus('🔍 Testando conexão com backend...');
+    setConnectionTestResult(null);
 
     try {
       console.log('Testando URL:', `${API_URL}/api/analyze`);
@@ -170,10 +172,32 @@ export default function App() {
       if (response.ok) {
         const data = await response.json();
         setStatus('✅ Conexão com backend funcionando!');
-        setResult('🎉 Backend respondeu corretamente!\n\nTeste realizado com sucesso.\n\nResposta: ' + JSON.stringify(data, null, 2));
+        
+        // Formatar dados técnicos de forma legível
+        const formattedData = {
+          status: '✅ Conectado',
+          response_time: 'Rápida',
+          backend_url: `${API_URL}/api/analyze`,
+          modules_active: data?.modules || 'Detectado automaticamente',
+          synthesis_available: data?.synthesis ? '✅ Sim' : '❌ Não',
+          interpreted_response_available: data?.interpreted_response ? '✅ Sim' : '❌ Não',
+          timestamp: new Date().toLocaleString()
+        };
+        
+        setConnectionTestResult(formattedData);
+        setResult('🎉 Backend respondeu corretamente!\n\nTeste realizado com sucesso.');
       } else {
         const errorText = await response.text();
         setStatus(`❌ Backend retornou erro: ${response.status}`);
+        
+        const errorData = {
+          status: `❌ Erro ${response.status}`,
+          backend_url: `${API_URL}/api/analyze`,
+          error_details: errorText,
+          timestamp: new Date().toLocaleString()
+        };
+        
+        setConnectionTestResult(errorData);
         setResult(`Erro HTTP: ${response.status}\nURL: ${API_URL}/api/analyze\nResposta: ${errorText}`);
       }
     } catch (error) {
@@ -189,6 +213,16 @@ export default function App() {
       }
 
       setStatus('❌ Falha total na conexão');
+      
+      const errorData = {
+        status: '❌ Desconectado',
+        backend_url: `${API_URL}/api/analyze`,
+        error_type: error instanceof Error ? error.name : 'UnknownError',
+        error_message: errorMessage,
+        timestamp: new Date().toLocaleString()
+      };
+      
+      setConnectionTestResult(errorData);
       setResult(`🚨 Erro de conexão com Saphira Backend\n\nDetalhes: ${errorMessage}\n\nURL testada: ${API_URL}/api/analyze\n\nVerifique se:\n1. O backend está rodando\n2. A URL está correta\n3. Não há problemas de CORS`);
     } finally {
       setIsLoading(false);
@@ -285,7 +319,7 @@ export default function App() {
             }}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Cole ou digite seu texto aqui..."
+            placeholder="Cole ou digite seu texto aqui... (ou use o botão de upload)"
             disabled={isLoading}
           />
 
@@ -297,13 +331,41 @@ export default function App() {
               borderRadius: '10px',
               border: 'none',
               fontSize: '1rem',
-              fontFamily: 'Arial, sans-serif'
+              fontFamily: 'Arial, sans-serif',
+              marginBottom: '1rem'
             }}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Digite sua pergunta aqui..."
             disabled={isLoading}
           />
+
+          {uploadedFile && (
+            <div style={{
+              background: 'rgba(76, 175, 80, 0.2)',
+              padding: '0.8rem',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              border: '1px solid rgba(76, 175, 80, 0.5)'
+            }}>
+              📎 Arquivo anexado: <strong>{uploadedFile.name}</strong>
+              <button
+                onClick={() => setUploadedFile(null)}
+                style={{
+                  marginLeft: '1rem',
+                  padding: '0.3rem 0.8rem',
+                  borderRadius: '15px',
+                  border: 'none',
+                  background: 'rgba(244, 67, 54, 0.8)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem'
+                }}
+              >
+                ✕ Remover
+              </button>
+            </div>
+          )}
         </div>
 
         <div style={{ 
@@ -392,6 +454,33 @@ export default function App() {
             />
           </label>
         </div>
+
+        {connectionTestResult && (
+          <div style={{
+            background: 'rgba(0, 123, 255, 0.2)',
+            padding: '1.5rem',
+            borderRadius: '10px',
+            marginBottom: '2rem',
+            border: '2px solid rgba(0, 123, 255, 0.4)'
+          }}>
+            <h3 style={{ marginBottom: '1rem', color: '#87CEEB' }}>
+              🔧 Diagnóstico de Conexão:
+            </h3>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              padding: '1rem',
+              borderRadius: '8px',
+              fontFamily: 'monospace',
+              fontSize: '0.9rem'
+            }}>
+              {Object.entries(connectionTestResult).map(([key, value]) => (
+                <div key={key} style={{ marginBottom: '0.5rem' }}>
+                  <strong>{key.replace(/_/g, ' ').toUpperCase()}:</strong> {String(value)}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {result && (
           <div className="result-panel smooth-transition" style={{
@@ -523,7 +612,7 @@ export default function App() {
               opacity: 0.7,
               fontStyle: 'italic'
             }}>
-              Em breve: Visualizações interativas e métricas avançadas serão exibidas aqui.
+              Em breve: Visualizações interativas, gráficos de radar para Lógica Paraconsistente e mapas conceituais do módulo Nexum serão exibidos aqui.
             </p>
           </div>
         </div>
