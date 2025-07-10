@@ -9,6 +9,65 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
 
+  // Função para formatar resultado de forma humanizada
+  const formatHumanizedResult = (data: any) => {
+    let humanResult = '';
+    
+    // Synthesis Summary
+    if (data?.synthesis?.summary) {
+      humanResult += `📊 RESUMO EXECUTIVO\n${data.synthesis.summary}\n\n`;
+    }
+    
+    // Context Module
+    if (data?.context) {
+      humanResult += `🎯 ANÁLISE DE CONTEXTO\n`;
+      if (data.context.main_topic) {
+        humanResult += `• Tópico Principal: ${data.context.main_topic}\n`;
+      }
+      if (data.context.key_entities && data.context.key_entities.length > 0) {
+        humanResult += `• Entidades Identificadas: ${data.context.key_entities.join(', ')}\n`;
+      }
+      if (data.context.urgency_level) {
+        humanResult += `• Nível de Urgência: ${data.context.urgency_level}\n`;
+      }
+      humanResult += '\n';
+    }
+    
+    // Paraconsistent Logic
+    if (data?.paraconsistent) {
+      humanResult += `🧠 LÓGICA PARACONSISTENTE\n`;
+      if (data.paraconsistent.truth_score !== undefined) {
+        humanResult += `• Score de Verdade: ${(data.paraconsistent.truth_score * 100).toFixed(1)}%\n`;
+      }
+      if (data.paraconsistent.contradiction_score !== undefined) {
+        humanResult += `• Score de Contradição: ${(data.paraconsistent.contradiction_score * 100).toFixed(1)}%\n`;
+      }
+      if (data.paraconsistent.certainty_level) {
+        humanResult += `• Nível de Certeza: ${data.paraconsistent.certainty_level}\n`;
+      }
+      if (data.paraconsistent.recommendation) {
+        humanResult += `• Recomendação: ${data.paraconsistent.recommendation}\n`;
+      }
+      humanResult += '\n';
+    }
+    
+    // Sentiment Analysis
+    if (data?.sentiment) {
+      humanResult += `💭 ANÁLISE DE SENTIMENTO\n`;
+      if (data.sentiment.polarity !== undefined) {
+        const polarityText = data.sentiment.polarity > 0 ? 'Positivo' : 
+                           data.sentiment.polarity < 0 ? 'Negativo' : 'Neutro';
+        humanResult += `• Polaridade: ${polarityText} (${data.sentiment.polarity.toFixed(2)})\n`;
+      }
+      if (data.sentiment.subjectivity !== undefined) {
+        humanResult += `• Subjetividade: ${(data.sentiment.subjectivity * 100).toFixed(1)}%\n`;
+      }
+      humanResult += '\n';
+    }
+    
+    return humanResult || 'Análise processada, mas sem dados formatados disponíveis.';
+  };
+
   const analyzeText = async () => {
     if (!inputText.trim()) {
       setStatus('Por favor, digite um texto para análise 💙');
@@ -36,7 +95,10 @@ function App() {
       
       const data = await response.json();
       setAnalysisData(data);
-      setResult(JSON.stringify(data, null, 2));
+      
+      // Mostrar resultado humanizado em vez de JSON bruto
+      const humanizedResult = formatHumanizedResult(data);
+      setResult(humanizedResult);
       setStatus('✨ Análise concluída! Vamos revisar juntos?');
     } catch (error) {
       console.error('Erro detalhado:', error);
@@ -104,6 +166,61 @@ function App() {
     setResult('');
     setAnalysisData(null);
     setStatus('Aguardando texto do Guardião...');
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const fileExtension = file.name.toLowerCase().split('.').pop();
+    
+    if (!['txt', 'json'].includes(fileExtension || '')) {
+      setResult('⚠️ Tipo de arquivo não suportado. Use apenas arquivos .txt ou .json');
+      setStatus('Erro no upload - Formato não suportado');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        
+        if (fileExtension === 'json') {
+          // Tentar parsear JSON e extrair texto relevante
+          const jsonData = JSON.parse(content);
+          let extractedText = '';
+          
+          // Buscar propriedades comuns que podem conter texto
+          if (jsonData.text) extractedText = jsonData.text;
+          else if (jsonData.content) extractedText = jsonData.content;
+          else if (jsonData.message) extractedText = jsonData.message;
+          else if (jsonData.description) extractedText = jsonData.description;
+          else if (typeof jsonData === 'string') extractedText = jsonData;
+          else extractedText = JSON.stringify(jsonData, null, 2);
+          
+          setInputText(extractedText);
+        } else {
+          // Arquivo .txt
+          setInputText(content);
+        }
+        
+        setStatus(`📁 Arquivo ${file.name} carregado com sucesso!`);
+        setResult('');
+      } catch (error) {
+        setResult(`⚠️ Erro ao processar arquivo: ${error instanceof Error ? error.message : 'Formato inválido'}`);
+        setStatus('Erro no processamento do arquivo');
+      }
+    };
+
+    reader.onerror = () => {
+      setResult('⚠️ Erro ao ler o arquivo');
+      setStatus('Erro na leitura do arquivo');
+    };
+
+    reader.readAsText(file);
+    
+    // Limpar o input para permitir upload do mesmo arquivo novamente
+    event.target.value = '';
   };
 
   const testConnection = async () => {
@@ -271,6 +388,29 @@ function App() {
             🔍 Testar Conexão
           </button>
 
+          <label 
+            style={{
+              padding: '12px 24px',
+              fontSize: '1rem',
+              borderRadius: '25px',
+              border: 'none',
+              background: 'rgba(103, 58, 183, 0.8)',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              transition: 'all 0.3s',
+              display: 'inline-block'
+            }}
+          >
+            📁 Upload Arquivo
+            <input
+              type="file"
+              accept=".txt,.json,application/json,text/plain"
+              onChange={handleFileUpload}
+              style={{ display: 'none' }}
+            />
+          </label>
+
           {analysisData && (
             <>
               <button 
@@ -337,18 +477,20 @@ function App() {
             <h3 style={{ marginBottom: '1rem', color: '#FFD700' }}>
               📊 Resultado da Análise Saphira:
             </h3>
-            <pre style={{ 
+            <div style={{ 
               background: 'rgba(255, 255, 255, 0.1)', 
               padding: '1.5rem',
               borderRadius: '8px',
-              fontSize: '0.9rem',
-              lineHeight: '1.4',
+              fontSize: '1rem',
+              lineHeight: '1.6',
               overflow: 'auto',
               maxHeight: '500px',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              whiteSpace: 'pre-wrap',
+              fontFamily: 'Arial, sans-serif'
             }}>
               {result}
-            </pre>
+            </div>
           </div>
         )}
 
