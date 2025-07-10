@@ -1,0 +1,44 @@
+// 🔧 Objetivo geral
+// Melhorar legibilidade da análise exibida ao usuário, focar em UX e polimento visual. 
+
+// ✅ Passos
+
+// 1️⃣ Atualizar componente de exibição de resultado no App.tsx
+// ➜ Exibir apenas campo 'summary' e possíveis campos adicionais de síntese (por exemplo, consistência, ambiguidade etc.) no painel principal.
+// ➜ Deixar JSON completo visível apenas ao clicar nos botões "Exportar JSON" ou "Copiar JSON".
+
+// 2️⃣ Melhorar tratamento visual
+// ➜ Adicionar animação suave no botão "Analisar com Saphira" enquanto processa.
+// ➜ Ajustar mensagens dinâmicas de status (ex.: "Processando com carinho, Guardião..." → "Análise concluída! Vamos revisar juntos?").
+
+// 3️⃣ Manter compatibilidade com botões existentes
+// ➜ Botões "Limpar", "Testar Conexão", "Carregar Arquivo", "Exportar TXT", "Exportar JSON", "Copiar JSON" permanecem ativos.
+// ➜ O botão de upload aceita apenas TXT e JSON por ora (já implementado).
+
+// 4️⃣ CSS e animações
+// ➜ Revisar App.css para adicionar efeito "pulse" no botão durante loading (pode usar classe `.pulse-loading`).
+// ➜ Garantir contraste adequado para leitura fácil no painel de resultado resumido.
+
+
+// ✅ Mensagens e textos humanizados
+// ➜ Mensagem no topo: "💙 Processando com carinho, Guardião..."
+// ➜ Após conclusão: "✨ Análise concluída! Vamos revisar juntos?"
+// ➜ Texto no resultado: "Resumo: ${summary}\nConsistência: ${consistency}\nAmbiguidade: ${ambiguity}\nContradição: ${contradiction}\nIAT: ${iat}"
+
+// ⚠️ Se campos consistency, ambiguity, contradiction ou iat não existirem, ocultar ou exibir "Não disponível".
+
+
+// ✅ Export JSON / TXT
+// ➜ Quando clicar em "Exportar JSON", exportar JSON completo (já implementado).
+// ➜ Quando clicar em "Exportar TXT", exportar apenas o resumo exibido na tela.
+
+// 🔥 Observação final
+// Esta etapa finaliza a base UX antes de avançarmos para PDF/DOC.
+// Seguir boas práticas TypeScript, sem manipulação manual do DOM.
+
+
+// 🚀 Instrução final ao agente:
+// Aplicar todas as atualizações acima automaticamente, revisar arquivos App.tsx e App.css, testando no Preview.
+// Após conclusão, atualizar README.md explicando a exibição resumida e exportação detalhada.
+// Não incluir PDF ou DOC ainda.
+
