@@ -1,13 +1,43 @@
-## Running React on Replit
 
-[React](https://reactjs.org/) is a popular JavaScript library for building user interfaces.
+# Saphira Frontend
 
-[Vite](https://vitejs.dev/) is a blazing fast frontend build tool that includes features like Hot Module Reloading (HMR), optimized builds, and TypeScript support out of the box.
+Frontend oficial do projeto Saphira, responsável por enviar textos ao backend, receber análises e exibir resultados.
 
-Using the two in conjunction is one of the fastest ways to build a web app.
+## 📡 Backend conectado
 
-### Getting Started
-- Hit run
-- Edit [App.tsx](#src/App.tsx) and watch it live update!
+- URL: https://saphira-engine-guilhermegnarci.replit.app/api/analyze
 
-By default, Replit runs the `dev` script, but you can configure it by changing the `run` field in the [configuration file](#.replit). Here are the vite docs for [serving production websites](https://vitejs.dev/guide/build.html)
+## ⚡ Funcionalidades atuais
+
+- Entrada de texto livre
+- Envio automático ao backend
+- Exibição formatada do JSON de resposta
+- Mensagens de status dinâmicas
+
+## 💬 Próximos passos
+
+- Embelezamento de interface (UI/UX)
+- Botões de exportação (TXT, JSON)
+- Botão de limpar conteúdo
+- Animações e feedbacks visuais
+
+## 🔄 Atualização automática
+
+✅ Instruir o agente para atualizar este README.md sempre que:
+
+- Nova funcionalidade for adicionada no frontend
+- Alteração visual ou estrutural for realizada
+- Configuração do backend ou endpoint mudar
+- Qualquer modificação relevante na experiência do usuário
+
+Ao final de cada alteração, o agente deve incluir no final deste arquivo:
+
+### 📜 Histórico de alterações
+
+- [Data/Hora UTC] Descrição breve da mudança
+
+---
+
+⚡ Após aplicar, exibir mensagem: "README.md atualizado e pronto para próxima iteração."
+
+# Fim do superbloco
