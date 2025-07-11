@@ -16,7 +16,7 @@ export default function App() {
     console.log("📤 Dados enviados:", { user_text: userText, question: specificQuestion });
 
     try {
-      const backendUrl = "https://saphira-engine-guilhermegmarci.replit.app/api/analyze";
+      const backendUrl = "https://saphiraengine-backend-guilhermegmarci.replit.app/api/analyze";
       console.log("🌐 URL do backend:", backendUrl);
 
       // Timeout manual para evitar requests infinitos
@@ -90,7 +90,7 @@ export default function App() {
     console.log("🔗 Testando conexão com backend...");
     setConnectionStatus('testing');
 
-    const backendUrl = "https://saphira-engine-guilhermegmarci.replit.app";
+    const backendUrl = "https://saphiraengine-backend-guilhermegmarci.replit.app";
     const apiEndpoint = `${backendUrl}/api/analyze`;
 
     try {
