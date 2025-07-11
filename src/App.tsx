@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import "./App.css";
 
@@ -60,9 +59,9 @@ export default function App() {
       console.error("💥 Erro completo na análise:", error);
       console.error("💥 Tipo do erro:", typeof error);
       console.error("💥 Nome do erro:", error instanceof Error ? error.constructor.name : 'unknown');
-      
+
       let errorMessage = "Tive dificuldades para refletir sobre seu texto.";
-      
+
       if (error instanceof Error && error.name === 'AbortError') {
         errorMessage = "⏱️ Timeout: Servidor demorou muito para responder. Tente novamente.";
       } else if (error instanceof TypeError && error.message.includes("fetch")) {
@@ -72,7 +71,7 @@ export default function App() {
       } else {
         errorMessage = "❓ Erro desconhecido. Verifique o console para mais detalhes.";
       }
-      
+
       setResult({
         humanized_text: errorMessage,
       });
@@ -90,10 +89,10 @@ export default function App() {
   const handleTestConnection = async () => {
     console.log("🔗 Testando conexão com backend...");
     setConnectionStatus('testing');
-    
+
     const backendUrl = "https://saphira-engine-guilhermegmarci.replit.app";
     const apiEndpoint = `${backendUrl}/api/analyze`;
-    
+
     try {
       // Timeout de 10 segundos para cada teste
       const timeoutPromise = (ms: number) => 
@@ -103,7 +102,7 @@ export default function App() {
 
       // Primeiro teste: verificar se o servidor está respondendo
       console.log("🌐 Testando servidor base:", backendUrl);
-      
+
       const baseResponse = await Promise.race([
         fetch(backendUrl, {
           method: "GET",
@@ -112,13 +111,13 @@ export default function App() {
         }),
         timeoutPromise(10000)
       ]) as Response;
-      
+
       console.log("✅ Servidor base - Status:", baseResponse.status);
       console.log("✅ Servidor base - Headers:", Object.fromEntries(baseResponse.headers.entries()));
-      
+
       // Segundo teste: verificar endpoint da API com timeout
       console.log("🎯 Testando endpoint API:", apiEndpoint);
-      
+
       const testResponse = await Promise.race([
         fetch(apiEndpoint, {
           method: "POST",
@@ -135,10 +134,10 @@ export default function App() {
         }),
         timeoutPromise(15000)
       ]) as Response;
-      
+
       console.log("✅ API POST - Status:", testResponse.status);
       console.log("✅ Response Headers:", Object.fromEntries(testResponse.headers.entries()));
-      
+
       if (testResponse.ok) {
         const responseData = await testResponse.text();
         console.log("✅ Response Data Preview:", responseData.substring(0, 200));
@@ -150,65 +149,17 @@ export default function App() {
         console.error("❌ Error Response:", errorText);
         alert(`⚠️ Backend Respondeu com Erro\n\nStatus: ${testResponse.status}\nErro: ${errorText.substring(0, 150)}...`);
       }
-      
+
     } catch (error: unknown) {
-      console.error("❌ Erro completo no teste:", error);
-      console.error("❌ Stack trace:", error instanceof Error ? error.stack : 'N/A');
-      
-      let errorMessage = "Erro desconhecido";
-      let errorDetails = "";
-      let diagn
-
-óstico = "";
-      
-      if (error instanceof Error) {
-        if (error.message.includes("Timeout")) {
-          errorMessage = "Timeout - Backend não responde";
-          diagn
-
-óstico = "O servidor pode estar offline ou sobrecarregado";
-        } else if (error.message.includes("fetch")) {
-          errorMessage = "Erro de rede - Backend inacessível";
-          diagn
-
-óstico = "Verifique se a URL está correta e o servidor está online";
-        } else if (error.name === 'TypeError') {
-          errorMessage = "Erro de CORS ou rede";
-          diagn
-
-óstico = "Backend pode estar bloqueando requisições ou offline";
-        } else {
-          errorMessage = error.message;
-          diagn
-
-óstico = error.name;
-        }
-        errorDetails = error.stack?.split('\n')[0] || error.toString();
-      }
-      
+      console.error("❌ Erro no teste de conexão:", error);
       setConnectionStatus('offline');
-      
-      const diagnosticInfo = `
-🔍 DIAGNÓSTICO DETALHADO:
-      
-❌ Erro: ${errorMessage}
-🔧 Causa Provável: ${diagn
 
-óstico}
-📍 Detalhes Técnicos: ${errorDetails}
+      let errorMessage = "Erro de conexão";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
 
-🌐 URL Testada: ${backendUrl}
-📡 Endpoint API: ${apiEndpoint}
-
-💡 Possíveis Soluções:
-1. Verificar se o backend está online
-2. Verificar configuração de CORS no backend
-3. Testar URL manualmente no navegador
-4. Verificar logs do backend
-      `.trim();
-      
-      console.error(diagnosticInfo);
-      alert(diagnosticInfo);
+      alert(`❌ Erro de conexão com backend:\n\n${errorMessage}\n\nURL testada: ${apiEndpoint}`);
     }
   };
 
