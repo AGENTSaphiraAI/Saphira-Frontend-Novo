@@ -95,76 +95,120 @@ export default function App() {
     const apiEndpoint = `${backendUrl}/api/analyze`;
     
     try {
+      // Timeout de 10 segundos para cada teste
+      const timeoutPromise = (ms: number) => 
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout de conexão')), ms)
+        );
+
       // Primeiro teste: verificar se o servidor está respondendo
       console.log("🌐 Testando servidor base:", backendUrl);
       
-      const baseResponse = await fetch(backendUrl, {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache"
-      });
+      const baseResponse = await Promise.race([
+        fetch(backendUrl, {
+          method: "GET",
+          mode: "cors",
+          cache: "no-cache"
+        }),
+        timeoutPromise(10000)
+      ]) as Response;
       
       console.log("✅ Servidor base - Status:", baseResponse.status);
       console.log("✅ Servidor base - Headers:", Object.fromEntries(baseResponse.headers.entries()));
       
-      // Segundo teste: verificar endpoint da API
+      // Segundo teste: verificar endpoint da API com timeout
       console.log("🎯 Testando endpoint API:", apiEndpoint);
       
-      const apiResponse = await fetch(apiEndpoint, {
-        method: "OPTIONS",
-        headers: {
-          "Content-Type": "application/json",
-          "Origin": window.location.origin
-        },
-        mode: "cors",
-        cache: "no-cache"
-      });
-      
-      console.log("✅ API OPTIONS - Status:", apiResponse.status);
-      console.log("✅ API Headers CORS:", Object.fromEntries(apiResponse.headers.entries()));
-      
-      // Terceiro teste: POST de teste
-      const testResponse = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Origin": window.location.origin
-        },
-        body: JSON.stringify({
-          user_text: "teste de conexão",
-          question: "este é apenas um teste"
+      const testResponse = await Promise.race([
+        fetch(apiEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Origin": window.location.origin
+          },
+          body: JSON.stringify({
+            user_text: "teste de conexão",
+            question: "este é apenas um teste"
+          }),
+          mode: "cors",
+          cache: "no-cache"
         }),
-        mode: "cors",
-        cache: "no-cache"
-      });
+        timeoutPromise(15000)
+      ]) as Response;
       
       console.log("✅ API POST - Status:", testResponse.status);
+      console.log("✅ Response Headers:", Object.fromEntries(testResponse.headers.entries()));
       
       if (testResponse.ok) {
+        const responseData = await testResponse.text();
+        console.log("✅ Response Data Preview:", responseData.substring(0, 200));
         setConnectionStatus('online');
-        alert(`✅ Conexão Completa OK!\n\nServidor: ${baseResponse.status}\nAPI OPTIONS: ${apiResponse.status}\nAPI POST: ${testResponse.status}\n\nBackend está funcionando!`);
+        alert(`✅ Conexão OK!\n\nServidor: ${baseResponse.status}\nAPI: ${testResponse.status}\n\nBackend está funcionando!\n\nPrimeiros 100 chars da resposta:\n${responseData.substring(0, 100)}...`);
       } else {
         setConnectionStatus('offline');
         const errorText = await testResponse.text();
-        alert(`⚠️ Conexão Parcial\n\nServidor: OK (${baseResponse.status})\nAPI: ${testResponse.status}\n\nErro: ${errorText.substring(0, 100)}...`);
+        console.error("❌ Error Response:", errorText);
+        alert(`⚠️ Backend Respondeu com Erro\n\nStatus: ${testResponse.status}\nErro: ${errorText.substring(0, 150)}...`);
       }
       
     } catch (error: unknown) {
       console.error("❌ Erro completo no teste:", error);
+      console.error("❌ Stack trace:", error instanceof Error ? error.stack : 'N/A');
       
       let errorMessage = "Erro desconhecido";
       let errorDetails = "";
+      let diagn
+
+óstico = "";
       
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        errorMessage = "Erro de rede - Backend offline ou inacessível";
-        errorDetails = error.message;
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
-        errorDetails = error.name;
+      if (error instanceof Error) {
+        if (error.message.includes("Timeout")) {
+          errorMessage = "Timeout - Backend não responde";
+          diagn
+
+óstico = "O servidor pode estar offline ou sobrecarregado";
+        } else if (error.message.includes("fetch")) {
+          errorMessage = "Erro de rede - Backend inacessível";
+          diagn
+
+óstico = "Verifique se a URL está correta e o servidor está online";
+        } else if (error.name === 'TypeError') {
+          errorMessage = "Erro de CORS ou rede";
+          diagn
+
+óstico = "Backend pode estar bloqueando requisições ou offline";
+        } else {
+          errorMessage = error.message;
+          diagn
+
+óstico = error.name;
+        }
+        errorDetails = error.stack?.split('\n')[0] || error.toString();
       }
       
       setConnectionStatus('offline');
-      alert(`❌ Falha na Conexão\n\nErro: ${errorMessage}\nDetalhes: ${errorDetails}\n\nVerifique se o backend está online em:\n${backendUrl}`);
+      
+      const diagnosticInfo = `
+🔍 DIAGNÓSTICO DETALHADO:
+      
+❌ Erro: ${errorMessage}
+🔧 Causa Provável: ${diagn
+
+óstico}
+📍 Detalhes Técnicos: ${errorDetails}
+
+🌐 URL Testada: ${backendUrl}
+📡 Endpoint API: ${apiEndpoint}
+
+💡 Possíveis Soluções:
+1. Verificar se o backend está online
+2. Verificar configuração de CORS no backend
+3. Testar URL manualmente no navegador
+4. Verificar logs do backend
+      `.trim();
+      
+      console.error(diagnosticInfo);
+      alert(diagnosticInfo);
     }
   };
 
