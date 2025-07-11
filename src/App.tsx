@@ -55,14 +55,14 @@ export default function App() {
       const data = await response.json();
       console.log("✅ Resposta recebida:", data);
       setResult(data.displayData);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("💥 Erro completo na análise:", error);
       console.error("💥 Tipo do erro:", typeof error);
-      console.error("💥 Nome do erro:", error?.constructor?.name);
+      console.error("💥 Nome do erro:", error instanceof Error ? error.constructor.name : 'unknown');
       
       let errorMessage = "Tive dificuldades para refletir sobre seu texto.";
       
-      if (error?.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         errorMessage = "⏱️ Timeout: Servidor demorou muito para responder. Tente novamente.";
       } else if (error instanceof TypeError && error.message.includes("fetch")) {
         errorMessage = "🌐 Erro de conexão: Não foi possível conectar ao servidor. Backend pode estar offline.";
@@ -104,7 +104,7 @@ export default function App() {
       console.log("✅ Headers CORS:", Object.fromEntries(response.headers.entries()));
       
       alert(`✅ Conexão OK! Status: ${response.status}`);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("❌ Erro no teste de conexão:", error);
       alert(`❌ Erro de conexão: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
