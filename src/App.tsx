@@ -16,14 +16,22 @@ export default function App() {
     console.log("📤 Dados enviados:", { user_text: userText, question: specificQuestion });
 
     try {
+      // URL correta do backend (ajuste conforme necessário)
       const backendUrl = "https://saphiraengine-backend-guilhermegmarci.replit.app/api/analyze";
+      
+      // Fallback para desenvolvimento local se backend estiver offline
+      const fallbackUrl = "/api/analyze";
       console.log("🌐 URL do backend:", backendUrl);
 
       // Timeout manual para evitar requests infinitos
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
 
-      const response = await fetch(backendUrl, {
+      let response;
+      
+      try {
+        // Tentar backend externo primeiro
+        response = await fetch(backendUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,7 +46,23 @@ export default function App() {
         mode: "cors",
         cache: "no-cache",
         signal: controller.signal
-      });
+        });
+      } catch (fetchError) {
+        console.log("🔄 Backend externo falhou, tentando fallback local...");
+        // Tentar endpoint local como fallback
+        response = await fetch(fallbackUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            user_text: userText,
+            question: specificQuestion,
+          }),
+          signal: controller.signal
+        });
+      }
 
       clearTimeout(timeoutId);
 
@@ -90,6 +114,8 @@ export default function App() {
     console.log("🔗 Testando conexão com backend...");
     setConnectionStatus('testing');
 
+    // Teste com JSONPlaceholder para verificar se fetch funciona
+    const testUrl = "https://jsonplaceholder.typicode.com/posts/1";
     const backendUrl = "https://saphiraengine-backend-guilhermegmarci.replit.app";
     const apiEndpoint = `${backendUrl}/api/analyze`;
 
