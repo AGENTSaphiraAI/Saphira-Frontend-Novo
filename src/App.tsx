@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import "./App.css";
 
@@ -21,7 +22,13 @@ export default function App() {
           user_text: userText,
           question: specificQuestion,
         }),
+        credentials: "omit", // ✅ Explicitamente omitido para evitar cookies e cabeçalhos extras
+        mode: "cors"         // ✅ Explicitamente definido para CORS
       });
+
+      if (!response.ok) {
+        throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+      }
 
       const data = await response.json();
       setResult(data.displayData);
@@ -77,7 +84,7 @@ export default function App() {
             <div className="technical-card">
               <h4>🧾 Dados Técnicos</h4>
               <ul>
-                <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({result.technicalData.tom?.confianca * 100 || 0}%)</li>
+                <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({Math.round((result.technicalData.tom?.confianca || 0) * 100)}%)</li>
                 <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
                 <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
                 <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
