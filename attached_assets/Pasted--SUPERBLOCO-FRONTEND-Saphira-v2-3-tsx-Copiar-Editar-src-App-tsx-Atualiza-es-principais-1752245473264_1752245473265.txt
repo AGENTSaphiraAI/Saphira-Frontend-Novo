@@ -1,0 +1,168 @@
+🟦 SUPERBLOCO FRONTEND — Saphira v2.3
+tsx
+Copiar
+Editar
+// src/App.tsx
+
+/*
+✅ Atualizações principais:
+- Integração total com respostas "alma" e "ScanCross"
+- Separação clara entre interpretação humanizada e dados técnicos
+- Ajustes visuais para melhor leitura (desktop e mobile)
+*/
+
+import React, { useState } from 'react';
+import './App.css';
+
+function App() {
+  const [text, setText] = useState('');
+  const [question, setQuestion] = useState('');
+  const [response, setResponse] = useState('');
+  const [technicalData, setTechnicalData] = useState('');
+  const [status, setStatus] = useState('');
+
+  const analyze = async () => {
+    setStatus('Analisando...');
+    try {
+      const res = await fetch('https://saphira-engine-guilhermegnarci.replit.app/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, question })
+      });
+      const data = await res.json();
+      setResponse(data.interpreted_response);
+      setTechnicalData(
+        `✅ Tom: ${data.synthesis.tone}\n` +
+        `✅ Viés: ${data.synthesis.bias}\n` +
+        `✅ Contradições: ${data.synthesis.contradictions}\n` +
+        `💡 Sugestão: ${data.synthesis.suggestion}`
+      );
+      setStatus('Análise concluída!');
+    } catch (error) {
+      setStatus('Erro na análise. Verifique sua conexão ou tente novamente.');
+    }
+  };
+
+  const clearAll = () => {
+    setText('');
+    setQuestion('');
+    setResponse('');
+    setTechnicalData('');
+    setStatus('');
+  };
+
+  return (
+    <div className="container">
+      <h1>💙 Saphira</h1>
+      <h2>Análise Inteligente</h2>
+      <p className="status">{status || 'Digite ou cole seu texto para análise.'}</p>
+      
+      <textarea
+        placeholder="Digite sua pergunta ou cole o texto que deseja analisar..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Pergunta Específica (Opcional)"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+      />
+
+      <div className="button-group">
+        <button onClick={analyze}>🔎 Analisar</button>
+        <button onClick={clearAll}>🧹 Limpar</button>
+      </div>
+
+      {response && (
+        <div className="card response-card">
+          <h3>💙 Resposta da Saphira</h3>
+          <p>{response}</p>
+        </div>
+      )}
+
+      {technicalData && (
+        <div className="card tech-card">
+          <h4>📄 Dados Técnicos</h4>
+          <pre>{technicalData}</pre>
+        </div>
+      )}
+
+      <footer>
+        <p>📄 Área reservada para módulos futuros (Nexum, ScanCross)</p>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
+🟣 CSS (se precisar)
+css
+Copiar
+Editar
+/* src/App.css */
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 1rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.status {
+  color: #444;
+  margin-bottom: 10px;
+}
+
+textarea, input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #6ec1e4, #5f86f2);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.card {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.response-card {
+  border-left: 4px solid #5f86f2;
+}
+
+.tech-card {
+  border-left: 4px solid #aaa;
+}
+
+footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+}
