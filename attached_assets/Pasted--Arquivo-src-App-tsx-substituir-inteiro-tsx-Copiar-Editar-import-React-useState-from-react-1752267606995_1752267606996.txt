@@ -1,0 +1,182 @@
+🟦 Arquivo src/App.tsx (substituir inteiro)
+tsx
+Copiar
+Editar
+import React, { useState } from "react";
+import "./App.css";
+
+export default function App() {
+  const [userText, setUserText] = useState("");
+  const [specificQuestion, setSpecificQuestion] = useState("");
+  const [result, setResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleAnalyze = async () => {
+    setLoading(true);
+    setResult(null);
+
+    try {
+      const response = await fetch("https://saphira-engine-guilhermegmarci.replit.app/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_text: userText,
+          question: specificQuestion,
+        }),
+      });
+
+      const data = await response.json();
+      setResult(data.displayData);
+    } catch (error) {
+      console.error("Erro na análise:", error);
+      setResult({
+        humanized_text: "Tive dificuldades para refletir sobre seu texto. Tente novamente ou envie outro conteúdo.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClear = () => {
+    setUserText("");
+    setSpecificQuestion("");
+    setResult(null);
+  };
+
+  return (
+    <div className="container">
+      <h1>💙 Saphira</h1>
+      <p className="subtitle">Análise Inteligente e Empática</p>
+
+      <textarea
+        placeholder="Digite seu texto ou pergunta para análise..."
+        value={userText}
+        onChange={(e) => setUserText(e.target.value)}
+      />
+
+      <input
+        type="text"
+        placeholder="Pergunta Específica (Opcional)"
+        value={specificQuestion}
+        onChange={(e) => setSpecificQuestion(e.target.value)}
+      />
+
+      <div className="button-group">
+        <button onClick={handleAnalyze} disabled={loading}>
+          {loading ? "Saphira está refletindo..." : "🔎 Analisar"}
+        </button>
+        <button onClick={handleClear}>🧹 Limpar</button>
+      </div>
+
+      {result && (
+        <>
+          <div className="response-card">
+            <h3>💬 Saphira diz:</h3>
+            <p>{result.humanized_text}</p>
+          </div>
+
+          {result.technicalData && (
+            <div className="technical-card">
+              <h4>🧾 Dados Técnicos</h4>
+              <ul>
+                <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({result.technicalData.tom?.confianca * 100 || 0}%)</li>
+                <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
+                <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
+                <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
+              </ul>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+🟦 Arquivo src/App.css (substituir inteiro)
+css
+Copiar
+Editar
+body {
+  background: linear-gradient(135deg, #7ea7ff, #d4e0ff);
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  background: #ffffff;
+  margin: 30px auto;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #2f4eb0;
+}
+
+.subtitle {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+textarea,
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.button-group button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #4a6cf7;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.button-group button:disabled {
+  background-color: #b3c2f3;
+  cursor: wait;
+}
+
+.button-group button:hover:not(:disabled) {
+  background-color: #3450db;
+}
+
+.response-card, .technical-card {
+  background: #f7f9ff;
+  border-left: 5px solid #4a6cf7;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.response-card h3,
+.technical-card h4 {
+  margin-top: 0;
+  color: #4a6cf7;
+}
+
+.response-card p {
+  white-space: pre-line;
+}
