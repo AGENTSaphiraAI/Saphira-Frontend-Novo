@@ -19,19 +19,28 @@ export default function App() {
       const backendUrl = "https://saphira-engine-guilhermegmarci.replit.app/api/analyze";
       console.log("🌐 URL do backend:", backendUrl);
 
+      // Timeout manual para evitar requests infinitos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
+
       const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
+          "Origin": window.location.origin,
         },
         body: JSON.stringify({
           user_text: userText,
           question: specificQuestion,
         }),
         credentials: "omit",
-        mode: "cors"
+        mode: "cors",
+        cache: "no-cache",
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       console.log("📡 Status da resposta:", response.status);
       console.log("📡 Headers da resposta:", Object.fromEntries(response.headers.entries()));
@@ -48,14 +57,19 @@ export default function App() {
       setResult(data.displayData);
     } catch (error) {
       console.error("💥 Erro completo na análise:", error);
+      console.error("💥 Tipo do erro:", typeof error);
+      console.error("💥 Nome do erro:", error?.constructor?.name);
       
-      // Tratamento específico para diferentes tipos de erro
       let errorMessage = "Tive dificuldades para refletir sobre seu texto.";
       
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        errorMessage = "🌐 Erro de conexão: Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente.";
+      if (error?.name === 'AbortError') {
+        errorMessage = "⏱️ Timeout: Servidor demorou muito para responder. Tente novamente.";
+      } else if (error instanceof TypeError && error.message.includes("fetch")) {
+        errorMessage = "🌐 Erro de conexão: Não foi possível conectar ao servidor. Backend pode estar offline.";
       } else if (error instanceof Error) {
         errorMessage = `⚠️ Erro: ${error.message}`;
+      } else {
+        errorMessage = "❓ Erro desconhecido. Verifique o console para mais detalhes.";
       }
       
       setResult({
