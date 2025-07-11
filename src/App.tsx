@@ -1,144 +1,91 @@
+import React, { useState } from "react";
+import "./App.css";
 
-import React, { useState } from 'react';
-import './App.css';
-import HumanizedResponse from './components/analysis/HumanizedResponse';
-import TechnicalDetails from './components/analysis/TechnicalDetails';
-import MetadataInfo from './components/analysis/MetadataInfo';
+export default function App() {
+  const [userText, setUserText] = useState("");
+  const [specificQuestion, setSpecificQuestion] = useState("");
+  const [result, setResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-function App() {
-  const [text, setText] = useState('');
-  const [question, setQuestion] = useState('');
-  const [response, setResponse] = useState('');
-  const [technicalData, setTechnicalData] = useState('');
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
-  const [status, setStatus] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const handleAnalyze = async () => {
+    setLoading(true);
+    setResult(null);
 
-  const analyze = async () => {
-    setIsLoading(true);
-    setError('');
-    setStatus('Analisando...');
-    
     try {
-      const res = await fetch('https://saphira-engine-guilhermegnarci.replit.app/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, question })
-      });
-      
-      const data = await res.json();
-      
-      // Estrutura dos dados para os componentes
-      setAnalysisResult({
-        displayData: {
-          humanized_text: data.interpreted_response || data.synthesis?.summary || "Análise concluída",
-          resposta_geral: data.synthesis?.suggestion || "Sem sugestões específicas"
+      const response = await fetch("https://saphira-engine-guilhermegmarci.replit.app/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        technicalData: {
-          tom: { 
-            tipo: data.synthesis?.tone || "neutro", 
-            confianca: 0.85 
-          },
-          vies: { 
-            detectado: data.synthesis?.bias !== "nenhum", 
-            confianca: 0.75 
-          },
-          contradicoes: { 
-            detectada: data.synthesis?.contradictions !== "não detectadas", 
-            confianca: 0.80 
-          },
-          sugestao: data.synthesis?.suggestion || "Análise processada com sucesso"
-        },
-        metadata: {
-          source_type: "texto manual",
-          processing_time: "< 1s",
-          modules_used: ["Saphira Core", "Análise Paraconsistente"]
-        }
+        body: JSON.stringify({
+          user_text: userText,
+          question: specificQuestion,
+        }),
       });
 
-      setResponse(data.interpreted_response);
-      setTechnicalData(
-        `✅ Tom: ${data.synthesis.tone}\n` +
-        `✅ Viés: ${data.synthesis.bias}\n` +
-        `✅ Contradições: ${data.synthesis.contradictions}\n` +
-        `💡 Sugestão: ${data.synthesis.suggestion}`
-      );
-      setStatus('Análise concluída!');
+      const data = await response.json();
+      setResult(data.displayData);
     } catch (error) {
-      setError('Erro na análise. Verifique sua conexão ou tente novamente.');
-      setStatus('');
+      console.error("Erro na análise:", error);
+      setResult({
+        humanized_text: "Tive dificuldades para refletir sobre seu texto. Tente novamente ou envie outro conteúdo.",
+      });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const clearAll = () => {
-    setText('');
-    setQuestion('');
-    setResponse('');
-    setTechnicalData('');
-    setAnalysisResult(null);
-    setStatus('');
-    setError('');
+  const handleClear = () => {
+    setUserText("");
+    setSpecificQuestion("");
+    setResult(null);
   };
 
   return (
     <div className="container">
       <h1>💙 Saphira</h1>
-      <h2>Análise Inteligente</h2>
-      <p className="status">{status || 'Digite ou cole seu texto para análise.'}</p>
-      
+      <p className="subtitle">Análise Inteligente e Empática</p>
+
       <textarea
-        placeholder="Digite sua pergunta ou cole o texto que deseja analisar..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+        placeholder="Digite seu texto ou pergunta para análise..."
+        value={userText}
+        onChange={(e) => setUserText(e.target.value)}
       />
+
       <input
         type="text"
         placeholder="Pergunta Específica (Opcional)"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
+        value={specificQuestion}
+        onChange={(e) => setSpecificQuestion(e.target.value)}
       />
 
       <div className="button-group">
-        <button onClick={analyze} disabled={isLoading}>
-          {isLoading ? '⏳ Analisando...' : '🔎 Analisar'}
+        <button onClick={handleAnalyze} disabled={loading}>
+          {loading ? "Saphira está refletindo..." : "🔎 Analisar"}
         </button>
-        <button onClick={clearAll}>🧹 Limpar</button>
+        <button onClick={handleClear}>🧹 Limpar</button>
       </div>
 
-      {isLoading && <p>Analisando...</p>}
-      {error && <p className="error">Erro: {error}</p>}
-      
-      {analysisResult && (
+      {result && (
         <>
-          <HumanizedResponse data={analysisResult.displayData} />
-          <TechnicalDetails data={analysisResult.technicalData} />
-          <MetadataInfo data={analysisResult.metadata} />
+          <div className="response-card">
+            <h3>💬 Saphira diz:</h3>
+            <p>{result.humanized_text}</p>
+          </div>
+
+          {result.technicalData && (
+            <div className="technical-card">
+              <h4>🧾 Dados Técnicos</h4>
+              <ul>
+                <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({result.technicalData.tom?.confianca * 100 || 0}%)</li>
+                <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
+                <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
+                <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
+              </ul>
+            </div>
+          )}
         </>
       )}
-
-      {/* Fallback para interface antiga */}
-      {response && !analysisResult && (
-        <div className="card response-card">
-          <h3>💙 Resposta da Saphira</h3>
-          <p>{response}</p>
-        </div>
-      )}
-
-      {technicalData && !analysisResult && (
-        <div className="card tech-card">
-          <h4>📄 Dados Técnicos</h4>
-          <pre>{technicalData}</pre>
-        </div>
-      )}
-
-      <footer>
-        <p>📄 Área reservada para módulos futuros (Nexum, ScanCross)</p>
-      </footer>
     </div>
   );
 }
-
-export default App;

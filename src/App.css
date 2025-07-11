@@ -1,109 +1,83 @@
-/* src/App.css */
+body {
+  background: linear-gradient(135deg, #7ea7ff, #d4e0ff);
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
 .container {
   max-width: 600px;
-  margin: auto;
-  padding: 1rem;
-  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  margin: 30px auto;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-.status {
-  color: #444;
-  margin-bottom: 10px;
+h1 {
+  text-align: center;
+  color: #2f4eb0;
 }
 
-textarea, input {
+.subtitle {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+textarea,
+input[type="text"] {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
+  border-radius: 8px;
   resize: vertical;
 }
 
 .button-group {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
-button {
+.button-group button {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(to right, #6ec1e4, #5f86f2);
+  background-color: #4a6cf7;
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.1s ease;
+  transition: background 0.3s;
 }
 
-button:hover {
-  transform: scale(1.05);
+.button-group button:disabled {
+  background-color: #b3c2f3;
+  cursor: wait;
 }
 
-.card {
-  background: #f5f5f5;
-  border-radius: 12px;
+.button-group button:hover:not(:disabled) {
+  background-color: #3450db;
+}
+
+.response-card, .technical-card {
+  background: #f7f9ff;
+  border-left: 5px solid #4a6cf7;
   padding: 15px;
-  margin-top: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
 }
 
-.response-card {
-  border-left: 4px solid #5f86f2;
+.response-card h3,
+.technical-card h4 {
+  margin-top: 0;
+  color: #4a6cf7;
 }
 
-.tech-card {
-  border-left: 4px solid #aaa;
-}
-
-footer {
-  margin-top: 30px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #777;
-}
-
-/* New component styles */
 .response-card p {
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.technical-card p, .metadata-card p {
-  font-size: 0.9rem;
-}
-
-.metadata-card {
-  background: #f8f9fa;
-  border-left: 4px solid #6c757d;
-}
-
-.badge {
-  display: inline-block;
-  margin: 0.2rem;
-  padding: 0.4rem 0.7rem;
-  border-radius: 20px;
-  background-color: #38bdf8;
-  color: white;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.badge.tom { 
-  background-color: #38bdf8; 
-}
-
-.badge.vies { 
-  background-color: #f97316; 
-}
-
-.badge.contradicao { 
-  background-color: #ef4444; 
-}
-
-.error {
-  color: #ef4444;
-  font-weight: 500;
+  white-space: pre-line;
 }
