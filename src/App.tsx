@@ -108,6 +108,8 @@ export default function App() {
           method: "GET",
           mode: "cors",
           cache: "no-cache"
+        }).catch(err => {
+          throw new Error(`Fetch failed: ${err.message}`);
         }),
         timeoutPromise(10000)
       ]) as Response;
@@ -131,6 +133,8 @@ export default function App() {
           }),
           mode: "cors",
           cache: "no-cache"
+        }).catch(err => {
+          throw new Error(`API fetch failed: ${err.message}`);
         }),
         timeoutPromise(15000)
       ]) as Response;
