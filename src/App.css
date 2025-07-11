@@ -221,7 +221,7 @@ body {
   margin-top: 2rem;
 }
 
-.result-card {
+.card-humanized {
   background: #f8fafc;
   border: 2px solid #e2e8f0;
   border-radius: 16px;
@@ -245,6 +245,44 @@ body {
   line-height: 1.7;
   white-space: pre-wrap;
   color: #374151;
+}
+
+/* Technical Section */
+.technical-section {
+  margin-top: 1rem;
+}
+
+.card-technical {
+  background: #f0f9ff;
+  border: 2px solid #bae6fd;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.technical-title {
+  color: #0369a1;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.technical-content {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #bae6fd;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #374151;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+/* Export Section */
+.export-section {
+  margin-top: 1rem;
 }
 
 .export-buttons {

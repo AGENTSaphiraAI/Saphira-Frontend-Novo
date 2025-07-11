@@ -9,6 +9,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [humanizedResponse, setHumanizedResponse] = useState('');
+  const [technicalData, setTechnicalData] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://saphira-engine-guilhermegnarci.replit.app';
@@ -60,6 +61,13 @@ export default function App() {
         setHumanizedResponse(fallbackMessage);
         setStatus('✨ Análise processada.');
       }
+
+      // Processar dados técnicos
+      const technicalSummary = data?.technical_summary || 
+        data?.synthesis?.technical_analysis ||
+        `✅ Tom: ${data?.analysis?.tone || 'neutro'}\n⚖️ Viés: ${data?.analysis?.bias || 'nenhum detectado'}\n🔍 Contradições: ${data?.analysis?.contradictions || 'não detectadas'}\n💡 Sugestão: análise concluída com sucesso!`;
+      
+      setTechnicalData(technicalSummary);
     } catch (error) {
       console.error('Erro:', error);
       setResult(`🚨 Ops! Não consegui me conectar ao backend.\n\nPor favor, verifique se o sistema está funcionando.\n\nTente novamente em alguns instantes.`);
@@ -126,6 +134,7 @@ export default function App() {
     setResult('');
     setAnalysisData(null);
     setHumanizedResponse('');
+    setTechnicalData('');
     setUploadedFile(null);
     setStatus('💙 Campos limpos! Pronta para uma nova análise.');
   };
@@ -243,17 +252,33 @@ export default function App() {
           </button>
         </div>
 
-        {/* Result Section */}
-        {result && (
+        {/* Card Humanizado */}
+        {humanizedResponse && (
           <div className="result-section">
-            <div className="result-card">
+            <div className="card-humanized">
               <h3 className="result-title">💙 Resposta da Saphira</h3>
               <div className="result-content">
-                {result}
+                {humanizedResponse}
               </div>
             </div>
+          </div>
+        )}
 
-            {/* Export Buttons */}
+        {/* Card Técnico */}
+        {technicalData && (
+          <div className="technical-section">
+            <div className="card-technical">
+              <h4 className="technical-title">🛠️ Dados Técnicos</h4>
+              <pre className="technical-content">
+                {technicalData}
+              </pre>
+            </div>
+          </div>
+        )}
+
+        {/* Export Buttons */}
+        {(humanizedResponse || analysisData) && (
+          <div className="export-section">
             <div className="export-buttons">
               {humanizedResponse && (
                 <button 
