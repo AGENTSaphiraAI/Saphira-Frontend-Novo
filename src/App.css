@@ -41,10 +41,12 @@ input[type="text"] {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .button-group button {
   flex: 1;
+  min-width: 120px;
   padding: 12px;
   border: none;
   border-radius: 8px;

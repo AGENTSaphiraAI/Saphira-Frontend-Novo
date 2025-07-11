@@ -12,30 +12,54 @@ export default function App() {
     setLoading(true);
     setResult(null);
 
+    console.log("🔍 Iniciando análise...");
+    console.log("📤 Dados enviados:", { user_text: userText, question: specificQuestion });
+
     try {
-      const response = await fetch("https://saphira-engine-guilhermegmarci.replit.app/api/analyze", {
+      const backendUrl = "https://saphira-engine-guilhermegmarci.replit.app/api/analyze";
+      console.log("🌐 URL do backend:", backendUrl);
+
+      const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
         body: JSON.stringify({
           user_text: userText,
           question: specificQuestion,
         }),
-        credentials: "omit", // ✅ Explicitamente omitido para evitar cookies e cabeçalhos extras
-        mode: "cors"         // ✅ Explicitamente definido para CORS
+        credentials: "omit",
+        mode: "cors"
       });
 
+      console.log("📡 Status da resposta:", response.status);
+      console.log("📡 Headers da resposta:", Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
-        throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error("❌ Erro HTTP:", response.status, response.statusText);
+        console.error("❌ Corpo da resposta de erro:", errorText);
+        throw new Error(`Erro HTTP ${response.status}: ${response.statusText}. Detalhes: ${errorText}`);
       }
 
       const data = await response.json();
+      console.log("✅ Resposta recebida:", data);
       setResult(data.displayData);
     } catch (error) {
-      console.error("Erro na análise:", error);
+      console.error("💥 Erro completo na análise:", error);
+      
+      // Tratamento específico para diferentes tipos de erro
+      let errorMessage = "Tive dificuldades para refletir sobre seu texto.";
+      
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        errorMessage = "🌐 Erro de conexão: Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente.";
+      } else if (error instanceof Error) {
+        errorMessage = `⚠️ Erro: ${error.message}`;
+      }
+      
       setResult({
-        humanized_text: "Tive dificuldades para refletir sobre seu texto. Tente novamente ou envie outro conteúdo.",
+        humanized_text: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -46,6 +70,30 @@ export default function App() {
     setUserText("");
     setSpecificQuestion("");
     setResult(null);
+  };
+
+  const handleTestConnection = async () => {
+    console.log("🔗 Testando conexão com backend...");
+    
+    try {
+      const backendUrl = "https://saphira-engine-guilhermegmarci.replit.app/api/analyze";
+      
+      const response = await fetch(backendUrl, {
+        method: "OPTIONS",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "cors"
+      });
+      
+      console.log("✅ Teste OPTIONS - Status:", response.status);
+      console.log("✅ Headers CORS:", Object.fromEntries(response.headers.entries()));
+      
+      alert(`✅ Conexão OK! Status: ${response.status}`);
+    } catch (error) {
+      console.error("❌ Erro no teste de conexão:", error);
+      alert(`❌ Erro de conexão: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+    }
   };
 
   return (
@@ -71,6 +119,7 @@ export default function App() {
           {loading ? "Saphira está refletindo..." : "🔎 Analisar"}
         </button>
         <button onClick={handleClear}>🧹 Limpar</button>
+        <button onClick={handleTestConnection}>🔗 Testar Conexão</button>
       </div>
 
       {result && (
