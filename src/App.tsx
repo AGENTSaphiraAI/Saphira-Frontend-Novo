@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import './App.css';
 
@@ -6,37 +5,27 @@ export default function App() {
   const [text, setText] = useState('');
   const [question, setQuestion] = useState('');
   const [result, setResult] = useState('');
-  const [status, setStatus] = useState('Aguardando entrada...');
+  const [status, setStatus] = useState('💙 Olá! Sou a Saphira. Como posso ajudar você hoje?');
   const [isLoading, setIsLoading] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [humanizedResponse, setHumanizedResponse] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [connectionTestResult, setConnectionTestResult] = useState<any>(null);
 
-  // ✅ URL correta do backend
   const API_URL = import.meta.env.VITE_API_URL || 'https://saphira-engine-guilhermegnarci.replit.app';
 
-  const handleSubmit = async () => {
+  const handleAnalyze = async () => {
     // Priorizar anexo se existir, senão usar texto manual
     const finalText = uploadedFile ? await readFileContent(uploadedFile) : text.trim();
-    
+
     // ✅ Permitir pergunta isolada (sem texto ou anexo)
     if (!finalText && !question.trim()) {
-      setResult('⚠️ Para uma análise da Saphira, é necessário:\n\n1️⃣ Texto/arquivo para análise OU\n2️⃣ Pergunta específica (pode ser enviada sozinha)\n\n💡 A Saphira pode responder perguntas gerais ou analisar conteúdo específico!');
-      setStatus('⚠️ Informe pelo menos texto/arquivo OU pergunta');
+      setResult('💙 Para uma análise, você pode:\n\n🔹 Fazer uma pergunta direta\n🔹 Enviar texto para análise\n🔹 Anexar um arquivo\n🔹 Combinar pergunta + conteúdo\n\nEstou aqui para ajudar! 😊');
+      setStatus('⚠️ Informe pelo menos uma pergunta ou conteúdo para análise');
       return;
-    }
-    
-    if (!finalText && question.trim()) {
-      // Somente pergunta enviada - modo consulta direta
-      setStatus('🤖 Processando pergunta direta à Saphira...');
-    } else {
-      // Texto + pergunta ou apenas texto
-      setStatus('💙 Processando análise com carinho, Guardião...');
     }
 
     setIsLoading(true);
-    setStatus('💙 Processando análise com carinho, Guardião...');
+    setStatus('🤖 Analisando... A Saphira está trabalhando para você!');
     setResult('');
     setHumanizedResponse('');
 
@@ -58,35 +47,23 @@ export default function App() {
       setAnalysisData(data);
 
       if (data?.interpreted_response) {
-        // ✅ PRIORIDADE MÁXIMA: Resposta interpretada humanizada
         setResult(data.interpreted_response);
         setHumanizedResponse(data.interpreted_response);
-        setStatus('✨ Saphira analisou seu conteúdo! Confira a resposta interpretada abaixo.');
+        setStatus('✨ Análise concluída! Confira a resposta da Saphira abaixo.');
       } else if (data?.synthesis?.summary) {
-        // FALLBACK 1: Resumo técnico disponível
         setResult(data.synthesis.summary);
         setHumanizedResponse(data.synthesis.summary);
-        setStatus('✨ Análise concluída! Resumo disponível (resposta interpretada não gerada).');
+        setStatus('✨ Análise concluída! Resumo disponível.');
       } else {
-        // FALLBACK 2: Mensagem padrão
-        const fallbackMessage = 'Análise concluída, mas sem resposta detalhada.';
+        const fallbackMessage = '💙 Análise processada! Embora não tenha uma resposta detalhada específica, os dados foram analisados com sucesso.';
         setResult(fallbackMessage);
         setHumanizedResponse(fallbackMessage);
-        setStatus('✨ Análise processada, mas sem interpretação detalhada disponível.');
+        setStatus('✨ Análise processada.');
       }
     } catch (error) {
-      console.error('Erro detalhado:', error);
-      console.error('URL da API:', `${API_URL}/api/analyze`);
-
-      let errorMessage = 'Erro desconhecido';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-
-      setResult(`🚨 Erro na conexão com Saphira\n\nDetalhes: ${errorMessage}\n\nURL testada: ${API_URL}/api/analyze\n\nVerifique se o backend está rodando e acessível.`);
-      setStatus('⚠️ Falha na conexão - Verifique o backend');
+      console.error('Erro:', error);
+      setResult(`🚨 Ops! Não consegui me conectar ao backend.\n\nPor favor, verifique se o sistema está funcionando.\n\nTente novamente em alguns instantes.`);
+      setStatus('⚠️ Erro de conexão - Tente novamente');
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +77,6 @@ export default function App() {
           const content = e.target?.result as string;
           if (file.name.toLowerCase().endsWith('.json')) {
             const jsonData = JSON.parse(content);
-            // Extrair texto relevante do JSON
             let extractedText = '';
             if (jsonData.text) extractedText = jsonData.text;
             else if (jsonData.content) extractedText = jsonData.content;
@@ -128,22 +104,19 @@ export default function App() {
     const fileExtension = file.name.toLowerCase().split('.').pop();
 
     if (!['txt', 'json', 'pdf', 'doc', 'docx'].includes(fileExtension || '')) {
-      setResult('⚠️ Tipo de arquivo não suportado. Use arquivos .txt, .json, .pdf, .doc ou .docx');
-      setStatus('Erro no upload - Formato não suportado');
+      setResult('⚠️ Arquivo não suportado. Use: .txt, .json, .pdf, .doc ou .docx');
+      setStatus('Formato não suportado');
       return;
     }
 
-    // Verificar se é PDF ou DOC
     if (['pdf', 'doc', 'docx'].includes(fileExtension || '')) {
-      setResult('📄 Arquivo PDF/DOC detectado! Suporte completo em breve. Por enquanto, apenas upload permitido.');
-      setStatus('⚠️ PDF/DOC: Upload realizado, processamento em desenvolvimento');
+      setResult('📄 Arquivo PDF/DOC detectado! Suporte completo em breve.');
+      setStatus('⚠️ PDF/DOC: Upload ok, processamento em desenvolvimento');
     }
 
     setUploadedFile(file);
-    setStatus(`📁 Arquivo ${file.name} carregado! Será usado na análise.`);
+    setStatus(`📁 Arquivo "${file.name}" carregado com sucesso!`);
     setResult('');
-
-    // Limpar o input para permitir upload do mesmo arquivo novamente
     event.target.value = '';
   };
 
@@ -154,99 +127,12 @@ export default function App() {
     setAnalysisData(null);
     setHumanizedResponse('');
     setUploadedFile(null);
-    setConnectionTestResult(null);
-    setStatus('Campos limpos. Pronto para nova entrada.');
-  };
-
-  const testConnection = async () => {
-    setIsLoading(true);
-    setStatus('🔍 Testando conexão com backend...');
-    setConnectionTestResult(null);
-
-    try {
-      console.log('Testando URL:', `${API_URL}/api/analyze`);
-      console.log('Variável de ambiente:', import.meta.env.VITE_API_URL);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-
-      const response = await fetch(`${API_URL}/api/analyze`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          text: "teste de conexão",
-          question: "Este é um teste?"
-        }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const data = await response.json();
-        setStatus('✅ Conexão com backend funcionando!');
-        
-        // Formatar dados técnicos de forma legível
-        const formattedData = {
-          status: '✅ Conectado',
-          response_time: 'Rápida',
-          backend_url: `${API_URL}/api/analyze`,
-          modules_active: data?.modules || 'Detectado automaticamente',
-          synthesis_available: data?.synthesis ? '✅ Sim' : '❌ Não',
-          interpreted_response_available: data?.interpreted_response ? '✅ Sim' : '❌ Não',
-          timestamp: new Date().toLocaleString()
-        };
-        
-        setConnectionTestResult(formattedData);
-        setResult('🎉 Backend respondeu corretamente!\n\nTeste realizado com sucesso.');
-      } else {
-        const errorText = await response.text();
-        setStatus(`❌ Backend retornou erro: ${response.status}`);
-        
-        const errorData = {
-          status: `❌ Erro ${response.status}`,
-          backend_url: `${API_URL}/api/analyze`,
-          error_details: errorText,
-          timestamp: new Date().toLocaleString()
-        };
-        
-        setConnectionTestResult(errorData);
-        setResult(`Erro HTTP: ${response.status}\nURL: ${API_URL}/api/analyze\nResposta: ${errorText}`);
-      }
-    } catch (error) {
-      console.error('Erro no teste completo:', error);
-      let errorMessage = 'Erro desconhecido';
-
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = 'Timeout - Backend não respondeu em 10 segundos';
-        } else {
-          errorMessage = error.message;
-        }
-      }
-
-      setStatus('❌ Falha total na conexão');
-      
-      const errorData = {
-        status: '❌ Desconectado',
-        backend_url: `${API_URL}/api/analyze`,
-        error_type: error instanceof Error ? error.name : 'UnknownError',
-        error_message: errorMessage,
-        timestamp: new Date().toLocaleString()
-      };
-      
-      setConnectionTestResult(errorData);
-      setResult(`🚨 Erro de conexão com Saphira Backend\n\nDetalhes: ${errorMessage}\n\nURL testada: ${API_URL}/api/analyze\n\nVerifique se:\n1. O backend está rodando\n2. A URL está correta\n3. Não há problemas de CORS`);
-    } finally {
-      setIsLoading(false);
-    }
+    setStatus('💙 Campos limpos! Pronta para uma nova análise.');
   };
 
   const exportTXT = () => {
     if (!humanizedResponse) {
-      alert('Nenhuma resposta humanizada disponível para exportar');
+      alert('Nenhuma resposta disponível para exportar');
       return;
     }
 
@@ -259,17 +145,6 @@ export default function App() {
     URL.revokeObjectURL(url);
   };
 
-  const copyTXT = () => {
-    if (!humanizedResponse) {
-      alert('Nenhuma resposta humanizada disponível para copiar');
-      return;
-    }
-
-    navigator.clipboard.writeText(humanizedResponse)
-      .then(() => alert('Resposta copiada para área de transferência! 💙'))
-      .catch(() => alert('Erro ao copiar resposta'));
-  };
-
   const exportJSON = () => {
     if (!analysisData) {
       alert('Nenhuma análise disponível para exportar');
@@ -280,383 +155,131 @@ export default function App() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'saphira-analise.json';
+    a.download = 'saphira-analise-completa.json';
     a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
-    <div style={{ 
-      padding: window.innerWidth <= 768 ? '1rem' : '2rem', 
-      fontFamily: 'Inter, Arial, sans-serif',
-      maxWidth: '1200px',
-      margin: '0 auto',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      minHeight: '100vh',
-      color: 'white'
-    }}>
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.1)',
-        padding: window.innerWidth <= 768 ? '1rem' : '2rem',
-        borderRadius: '15px',
-        backdropFilter: 'blur(10px)'
-      }}>
-        <h1 style={{ 
-          textAlign: 'center', 
-          marginBottom: '1rem',
-          fontSize: '2.5rem',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
-        }}>
-          💙 Saphira - Análise Inteligente
-        </h1>
-
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '2rem',
-          padding: '1rem',
-          background: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '10px',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}>
-          <p style={{ 
-            fontSize: window.innerWidth <= 768 ? '1rem' : '1.1rem',
-            opacity: 0.9,
-            marginBottom: '0.5rem'
-          }}>
-            {status}
-          </p>
-          <p style={{ 
-            fontSize: window.innerWidth <= 768 ? '0.85rem' : '0.95rem',
-            opacity: 0.8,
-            fontStyle: 'italic',
-            margin: 0,
-            color: '#FFD700'
-          }}>
-            🤖 A Saphira analisa conteúdo e responde perguntas de forma humanizada
-          </p>
-          <p style={{ 
-            fontSize: '12px', 
-            color: '#ffcc00',
-            marginTop: '0.5rem',
-            fontWeight: 'bold'
-          }}>
-            📄 Suporte completo à leitura de PDF e DOC em breve. No momento, apenas upload permitido.
-          </p>
+    <div className="app-container">
+      <div className="main-card">
+        {/* Header */}
+        <div className="header">
+          <h1 className="title">💙 Saphira</h1>
+          <p className="subtitle">Análise Inteligente</p>
+          <div className="status-card">
+            <p className="status-text">{status}</p>
+          </div>
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <textarea
-            rows={6}
-            style={{
-              width: '100%',
-              padding: '1rem',
-              borderRadius: '10px',
-              border: 'none',
-              fontSize: '1rem',
-              resize: 'vertical',
-              fontFamily: 'Arial, sans-serif',
-              marginBottom: '1rem'
-            }}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Cole ou digite seu texto aqui para análise... (ou anexe um arquivo .txt/.json usando o botão de upload)"
-            disabled={isLoading}
-          />
+        {/* Input Section */}
+        <div className="input-section">
+          <div className="input-group">
+            <label className="input-label">Pergunta ou Texto para Análise</label>
+            <textarea
+              className="text-area"
+              rows={6}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Digite sua pergunta ou cole o texto que deseja analisar..."
+              disabled={isLoading}
+            />
+          </div>
 
-          <input
-            type="text"
-            style={{
-              width: '100%',
-              padding: '1rem',
-              borderRadius: '10px',
-              border: 'none',
-              fontSize: '1rem',
-              fontFamily: 'Arial, sans-serif',
-              marginBottom: '1rem'
-            }}
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Faça uma pergunta específica sobre o conteúdo OU uma pergunta geral à Saphira..."
-            disabled={isLoading}
-          />
+          <div className="input-group">
+            <label className="input-label">Pergunta Específica (Opcional)</label>
+            <input
+              type="text"
+              className="question-input"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Faça uma pergunta específica sobre o conteúdo..."
+              disabled={isLoading}
+            />
+          </div>
 
-          {uploadedFile && (
-            <div style={{
-              background: 'rgba(76, 175, 80, 0.2)',
-              padding: '0.8rem',
-              borderRadius: '8px',
-              marginBottom: '1rem',
-              border: '1px solid rgba(76, 175, 80, 0.5)'
-            }}>
-              📎 Arquivo anexado: <strong>{uploadedFile.name}</strong>
-              <button
-                onClick={() => setUploadedFile(null)}
-                style={{
-                  marginLeft: '1rem',
-                  padding: '0.3rem 0.8rem',
-                  borderRadius: '15px',
-                  border: 'none',
-                  background: 'rgba(244, 67, 54, 0.8)',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontSize: '0.8rem'
-                }}
-              >
-                ✕ Remover
-              </button>
-            </div>
-          )}
+          {/* File Upload */}
+          <div className="file-section">
+            <label className="file-upload-btn">
+              📎 Anexar Arquivo
+              <input
+                type="file"
+                accept=".txt,.json,.pdf,.doc,.docx"
+                onChange={handleFileUpload}
+                style={{ display: 'none' }}
+              />
+            </label>
+
+            {uploadedFile && (
+              <div className="file-attached">
+                <span>📄 {uploadedFile.name}</span>
+                <button 
+                  onClick={() => setUploadedFile(null)}
+                  className="remove-file-btn"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div style={{ 
-          display: 'flex', 
-          gap: '1rem', 
-          marginBottom: '2rem',
-          flexWrap: 'wrap',
-          justifyContent: 'center'
-        }}>
+        {/* Action Buttons */}
+        <div className="action-buttons">
           <button 
-            onClick={handleSubmit} 
+            onClick={handleAnalyze} 
             disabled={isLoading}
-            className={isLoading ? 'pulse-loading' : ''}
-            style={{
-              padding: '12px 24px',
-              fontSize: '1.1rem',
-              borderRadius: '25px',
-              border: 'none',
-              background: isLoading ? 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)' : 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-              color: 'white',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              fontWeight: 'bold',
-              boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-              transition: 'all 0.3s',
-              opacity: isLoading ? 0.8 : 1
-            }}
+            className={`btn btn-primary ${isLoading ? 'loading' : ''}`}
           >
-            {isLoading ? '⏳ Analisando...' : '🔍 Analisar com Saphira'}
+            {isLoading ? '⏳ Analisando...' : '🔍 Analisar'}
           </button>
 
           <button 
             onClick={handleClear}
-            style={{
-              padding: '12px 24px',
-              fontSize: '1rem',
-              borderRadius: '25px',
-              border: 'none',
-              background: 'rgba(255, 255, 255, 0.2)',
-              color: 'white',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              transition: 'all 0.3s'
-            }}
+            className="btn btn-secondary"
+            disabled={isLoading}
           >
             🧹 Limpar
           </button>
-
-          <button 
-            onClick={testConnection}
-            disabled={isLoading}
-            style={{
-              padding: '12px 24px',
-              fontSize: '1rem',
-              borderRadius: '25px',
-              border: 'none',
-              background: 'rgba(255, 193, 7, 0.8)',
-              color: 'white',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              fontWeight: 'bold',
-              transition: 'all 0.3s'
-            }}
-          >
-            🔍 Testar Conexão
-          </button>
-
-          <label 
-            style={{
-              padding: '12px 24px',
-              fontSize: '1rem',
-              borderRadius: '25px',
-              border: 'none',
-              background: 'rgba(103, 58, 183, 0.8)',
-              color: 'white',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              transition: 'all 0.3s',
-              display: 'inline-block'
-            }}
-          >
-            📁 Upload Arquivo
-            <input
-              type="file"
-              accept=".txt,.json,.pdf,.doc,.docx,application/json,text/plain,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              onChange={handleFileUpload}
-              style={{ display: 'none' }}
-            />
-          </label>
         </div>
 
-        {connectionTestResult && (
-          <div style={{
-            background: 'rgba(0, 123, 255, 0.2)',
-            padding: '1.5rem',
-            borderRadius: '10px',
-            marginBottom: '2rem',
-            border: '2px solid rgba(0, 123, 255, 0.4)'
-          }}>
-            <h3 style={{ marginBottom: '1rem', color: '#87CEEB' }}>
-              🔧 Diagnóstico de Conexão:
-            </h3>
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              padding: '1rem',
-              borderRadius: '8px',
-              fontFamily: 'monospace',
-              fontSize: '0.9rem'
-            }}>
-              {Object.entries(connectionTestResult).map(([key, value]) => (
-                <div key={key} style={{ marginBottom: '0.5rem' }}>
-                  <strong>{key.replace(/_/g, ' ').toUpperCase()}:</strong> {String(value)}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
+        {/* Result Section */}
         {result && (
-          <div className="result-panel smooth-transition" style={{
-            background: 'rgba(0, 0, 0, 0.4)',
-            padding: '1.5rem',
-            borderRadius: '10px',
-            marginTop: '2rem',
-            border: '2px solid rgba(255, 255, 255, 0.3)'
-          }}>
-            <h3 style={{ marginBottom: '1rem', color: '#FFD700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
-              🤖 Resposta Interpretada da Saphira:
-            </h3>
-            <div className="result-content" style={{ 
-              background: 'rgba(255, 255, 255, 0.15)', 
-              padding: '1.5rem',
-              borderRadius: '8px',
-              fontSize: '1.1rem',
-              lineHeight: '1.8',
-              overflow: 'auto',
-              maxHeight: '400px',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              whiteSpace: 'pre-wrap',
-              fontFamily: 'Arial, sans-serif',
-              color: '#ffffff',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
-            }}>
-              {result}
+          <div className="result-section">
+            <div className="result-card">
+              <h3 className="result-title">💙 Resposta da Saphira</h3>
+              <div className="result-content">
+                {result}
+              </div>
             </div>
 
-            {/* Botões de exportação */}
-            {(humanizedResponse || analysisData) && (
-              <div style={{
-                marginTop: '1.5rem',
-                display: 'flex',
-                gap: '1rem',
-                flexWrap: 'wrap',
-                justifyContent: 'center'
-              }}>
-                {humanizedResponse && (
-                  <>
-                    <button 
-                      onClick={exportTXT}
-                      style={{
-                        padding: '10px 20px',
-                        fontSize: '0.9rem',
-                        borderRadius: '20px',
-                        border: 'none',
-                        background: 'rgba(76, 175, 80, 0.8)',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        transition: 'all 0.3s'
-                      }}
-                      title="Salvar resposta humanizada da Saphira em arquivo .txt"
-                    >
-                      📄 Exportar Resposta (TXT)
-                    </button>
+            {/* Export Buttons */}
+            <div className="export-buttons">
+              {humanizedResponse && (
+                <button 
+                  onClick={exportTXT}
+                  className="btn btn-export"
+                >
+                  📄 Exportar TXT
+                </button>
+              )}
 
-                    <button 
-                      onClick={copyTXT}
-                      style={{
-                        padding: '10px 20px',
-                        fontSize: '0.9rem',
-                        borderRadius: '20px',
-                        border: 'none',
-                        background: 'rgba(255, 152, 0, 0.8)',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        transition: 'all 0.3s'
-                      }}
-                      title="Copiar resposta humanizada para área de transferência"
-                    >
-                      📋 Copiar Resposta
-                    </button>
-                  </>
-                )}
-
-                {analysisData && (
-                  <button 
-                    onClick={exportJSON}
-                    style={{
-                      padding: '10px 20px',
-                      fontSize: '0.9rem',
-                      borderRadius: '20px',
-                      border: 'none',
-                      background: 'rgba(33, 150, 243, 0.8)',
-                      color: 'white',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      transition: 'all 0.3s'
-                    }}
-                    title="Exportar dados técnicos completos (para usuários avançados)"
-                  >
-                    🔧 Exportar JSON Técnico
-                  </button>
-                )}
-              </div>
-            )}
+              {analysisData && (
+                <button 
+                  onClick={exportJSON}
+                  className="btn btn-export"
+                >
+                  🔧 Exportar JSON
+                </button>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Área reservada para gráficos futuros */}
-        <div style={{
-          marginTop: '2rem',
-          padding: '2rem',
-          background: 'rgba(0, 0, 0, 0.2)',
-          borderRadius: '15px',
-          textAlign: 'center',
-          border: '2px dashed rgba(255, 255, 255, 0.3)'
-        }}>
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            padding: '1.5rem',
-            borderRadius: '10px',
-            backdropFilter: 'blur(5px)',
-            margin: '0 auto',
-            maxWidth: '600px'
-          }}>
-            <h3 style={{ 
-              marginBottom: '1rem', 
-              color: '#FFD700',
-              fontSize: '1.3rem',
-              opacity: 0.8
-            }}>
-              📊 Área reservada para gráficos futuros
-            </h3>
-            <p style={{ 
-              fontSize: '1rem', 
-              lineHeight: '1.6', 
-              margin: 0,
-              opacity: 0.7,
-              fontStyle: 'italic'
-            }}>
-              Em breve: Visualizações interativas, gráficos de radar para Lógica Paraconsistente e mapas conceituais do módulo Nexum serão exibidos aqui.
-            </p>
+        {/* Future Cards Area */}
+        <div className="future-cards">
+          <div className="placeholder-card">
+            <p>📊 Área reservada para módulos futuros (Nexum, ScanCross)</p>
           </div>
         </div>
       </div>
