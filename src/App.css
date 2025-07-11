@@ -64,3 +64,46 @@ footer {
   font-size: 0.9rem;
   color: #777;
 }
+
+/* New component styles */
+.response-card p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.technical-card p, .metadata-card p {
+  font-size: 0.9rem;
+}
+
+.metadata-card {
+  background: #f8f9fa;
+  border-left: 4px solid #6c757d;
+}
+
+.badge {
+  display: inline-block;
+  margin: 0.2rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  background-color: #38bdf8;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.badge.tom { 
+  background-color: #38bdf8; 
+}
+
+.badge.vies { 
+  background-color: #f97316; 
+}
+
+.badge.contradicao { 
+  background-color: #ef4444; 
+}
+
+.error {
+  color: #ef4444;
+  font-weight: 500;
+}
