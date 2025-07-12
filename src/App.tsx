@@ -7,10 +7,13 @@ export default function App() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'testing' | 'online' | 'offline'>('unknown');
+  const [keepAliveActive, setKeepAliveActive] = useState(false);
 
   // Keep-alive ping para manter backend ativo
   useEffect(() => {
     const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+    
+    setKeepAliveActive(true);
     
     const ping = setInterval(() => {
       fetch(`${BACKEND_BASE_URL}/health`, {
@@ -21,16 +24,19 @@ export default function App() {
         .then(response => {
           if (response.ok) {
             console.log("✅ Backend ping OK (keep-alive)");
+            setKeepAliveActive(true);
           } else {
             console.warn("⚠️ Backend ping com status:", response.status);
+            setKeepAliveActive(false);
           }
         })
         .catch((err) => {
           console.error("⚠️ Erro no ping (keep-alive):", err);
+          setKeepAliveActive(false);
         });
-    }, 120000); // a cada 2 minutos
+    }, 300000); // a cada 5 minutos (menos agressivo)
 
-    // Ping inicial após 10 segundos
+    // Ping inicial após 30 segundos (dar tempo para o app carregar)
     const initialPing = setTimeout(() => {
       fetch(`${BACKEND_BASE_URL}/health`, {
         method: "GET",
@@ -39,7 +45,7 @@ export default function App() {
       })
         .then(() => console.log("✅ Ping inicial do backend realizado"))
         .catch(() => console.log("⚠️ Ping inicial falhou"));
-    }, 10000);
+    }, 30000);
 
     return () => {
       clearInterval(ping);
@@ -246,6 +252,12 @@ export default function App() {
           {connectionStatus === 'testing' && "🔄 Testando conexão..."}
           {connectionStatus === 'online' && "✅ Backend Online"}
           {connectionStatus === 'offline' && "❌ Backend Offline"}
+        </div>
+      )}
+
+      {keepAliveActive && (
+        <div className="keep-alive-indicator">
+          🔄 Keep-alive ativo (Backend protegido de idle)
         </div>
       )}
 
