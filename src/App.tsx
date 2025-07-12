@@ -16,8 +16,8 @@ export default function App() {
     console.log("📤 Dados enviados:", { user_text: userText, question: specificQuestion });
 
     try {
-      // URL correta do backend (ajuste conforme necessário)
-      const backendUrl = "https://saphiraengine-backend-guilhermegmarci.replit.app/api/analyze";
+      // URL correta do backend (conforme indicado pelo backend)
+      const backendUrl = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev/api/analyze";
       
       // Fallback para desenvolvimento local se backend estiver offline
       const fallbackUrl = "/api/analyze";
@@ -116,7 +116,7 @@ export default function App() {
 
     // Teste com JSONPlaceholder para verificar se fetch funciona
     const testUrl = "https://jsonplaceholder.typicode.com/posts/1";
-    const backendUrl = "https://saphiraengine-backend-guilhermegmarci.replit.app";
+    const backendUrl = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev";
     const apiEndpoint = `${backendUrl}/api/analyze`;
 
     try {
