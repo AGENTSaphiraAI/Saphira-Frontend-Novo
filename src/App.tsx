@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import "./App.css";
+
+// Cache global para as respostas (fora do componente)
+const responseCache = new Map();
 
 export default function App() {
   const [userText, setUserText] = useState("");
@@ -8,7 +11,19 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'testing' | 'online' | 'offline'>('unknown');
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = useCallback(async () => {
+    if (!userText.trim()) return;
+
+    // Verificar cache primeiro
+    const cacheKey = `${userText.trim()}_${specificQuestion.trim()}`;
+    const cachedResult = responseCache.get(cacheKey);
+
+    if (cachedResult) {
+      console.log("🚀 Usando resposta em cache");
+      setResult(cachedResult);
+      return;
+    }
+
     setLoading(true);
     setResult(null);
 
@@ -23,11 +38,11 @@ export default function App() {
       console.log("✅ URL OFICIAL do backend:", BACKEND_BASE_URL);
       console.log("✅ Endpoint completo:", backendUrl);
 
-      // Timeout manual para evitar requests infinitos
+      // Timeout reduzido para melhor UX
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos
 
-      // Requisição direta para o backend confirmado
+      // Requisição otimizada
       const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
@@ -36,29 +51,37 @@ export default function App() {
           "Origin": window.location.origin,
         },
         body: JSON.stringify({
-          text: userText,
+          user_text: userText,
           question: specificQuestion || ""
         }),
         credentials: "omit",
         mode: "cors",
-        cache: "no-cache",
+        cache: "force-cache", // Otimização de cache
         signal: controller.signal
       });
 
       clearTimeout(timeoutId);
 
       console.log("📡 Status da resposta:", response.status);
-      console.log("📡 Headers da resposta:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error("❌ Erro HTTP:", response.status, response.statusText);
-        console.error("❌ Corpo da resposta de erro:", errorText);
         throw new Error(`Erro HTTP ${response.status}: ${response.statusText}. Detalhes: ${errorText}`);
       }
 
       const data = await response.json();
       console.log("✅ Resposta recebida:", data);
+
+      // Salvar no cache
+      responseCache.set(cacheKey, data.displayData);
+
+      // Limpar cache antigo (manter apenas 10 entradas)
+      if (responseCache.size > 10) {
+        const firstKey = responseCache.keys().next().value;
+        responseCache.delete(firstKey);
+      }
+
       setResult(data.displayData);
     } catch (error: unknown) {
       console.error("💥 Erro completo na análise:", error);
@@ -83,7 +106,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [specificQuestion, userText]);
 
   const handleClear = () => {
     setUserText("");
@@ -116,7 +139,7 @@ export default function App() {
         console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
       }
 
-      // Timeout de 10 segundos para cada teste
+      // Timeout reduzido para teste rápido
       const timeoutPromise = (ms: number) => 
         new Promise<never>((_, reject) => 
           setTimeout(() => reject(new Error('Timeout de conexão')), ms)
@@ -134,16 +157,16 @@ export default function App() {
             "Origin": window.location.origin
           },
           body: JSON.stringify({
-            text: "teste básico de conexão",
+            user_text: "teste básico de conexão",
             question: "este é um teste"
           }),
           mode: "cors",
-          cache: "no-cache"
+          cache: "force-cache" // Cache para teste
         }).catch(err => {
           console.error("❌ API fetch error:", err);
           throw new Error(`API test failed: ${err.message}`);
         }),
-        timeoutPromise(8000)
+        timeoutPromise(5000) // Reduzido para 5 segundos
       ]) as Response;
 
       console.log("✅ API Response - Status:", testResponse.status);
