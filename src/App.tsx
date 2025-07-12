@@ -19,7 +19,7 @@ export default function App() {
       // URL DEFINITIVA do backend (confirmada pelo diagnóstico)
       const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
       const backendUrl = `${BACKEND_BASE_URL}/api/analyze`;
-      
+
       console.log("✅ URL OFICIAL do backend:", BACKEND_BASE_URL);
       console.log("✅ Endpoint completo:", backendUrl);
 
@@ -99,12 +99,23 @@ export default function App() {
     const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
     const healthEndpoint = `${BACKEND_BASE_URL}/health`;
     const apiEndpoint = `${BACKEND_BASE_URL}/api/analyze`;
-    
+
     console.log("🎯 [TESTE] Backend oficial:", BACKEND_BASE_URL);
     console.log("🎯 [TESTE] Health check:", healthEndpoint);
     console.log("🎯 [TESTE] API endpoint:", apiEndpoint);
 
     try {
+      // PRIMEIRO: Teste GET simples na raiz
+      console.log("🎯 TESTE 1: GET simples na raiz do backend");
+      const getRootTest = await fetch(BACKEND_BASE_URL, {
+        method: "GET",
+        mode: "cors"
+      }).catch(e => console.error("❌ GET raiz falhou:", e));
+
+      if (getRootTest && getRootTest.ok) {
+        console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
+      }
+
       // Timeout de 10 segundos para cada teste
       const timeoutPromise = (ms: number) => 
         new Promise<never>((_, reject) => 
@@ -112,7 +123,7 @@ export default function App() {
         );
 
       // Teste direto no endpoint que sabemos que funciona
-      console.log("🎯 Testando endpoint funcionando:", apiEndpoint);
+      console.log("🎯 TESTE 2: POST no endpoint API:", apiEndpoint);
 
       const testResponse = await Promise.race([
         fetch(apiEndpoint, {
