@@ -16,8 +16,8 @@ export default function App() {
     console.log("📤 Dados enviados:", { user_text: userText, question: specificQuestion });
 
     try {
-      // URL correta do backend (conforme indicado pelo backend)
-      const BACKEND_BASE_URL = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev";
+      // URL correta do backend (conforme relatório confirmado)
+      const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
       const backendUrl = `${BACKEND_BASE_URL}/api/analyze`;
       
       // Fallback para desenvolvimento local se backend estiver offline
@@ -118,7 +118,7 @@ export default function App() {
 
     // Teste com JSONPlaceholder para verificar se fetch funciona
     const testUrl = "https://jsonplaceholder.typicode.com/posts/1";
-    const BACKEND_BASE_URL = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev";
+    const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
     const apiEndpoint = `${BACKEND_BASE_URL}/api/analyze`;
     
     console.log("🔧 [TESTE] URL base definida:", BACKEND_BASE_URL);
