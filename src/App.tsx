@@ -34,7 +34,7 @@ export default function App() {
   // Estados principais
   const [userText, setUserText] = useState("");
   const [specificQuestion, setSpecificQuestion] = useState("");
-  const [result, setResult] = useState<{ humanized_text: string; technicalData?: any } | null>(null);
+  const [result, setResult] = useState<{ humanized_text: string; technicalData?: any; verificationCode?: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'unknown' });
   const [keepAliveActive, setKeepAliveActive] = useState(false);
@@ -225,7 +225,7 @@ export default function App() {
         }
       }
 
-      setResult({ humanized_text: errorMessage });
+      setResult({ humanized_text: errorMessage, verificationCode: undefined });
     } finally {
       setLoading(false);
     }
