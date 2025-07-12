@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
+import FileUploader from "./components/FileUploader";
 
 interface ConnectionStatus {
   status: 'unknown' | 'testing' | 'online' | 'offline';
@@ -26,6 +27,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'unknown' });
   const [keepAliveActive, setKeepAliveActive] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<{ content: string; name: string } | null>(null);
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -116,9 +118,18 @@ export default function App() {
     return startKeepAlive();
   }, [createRequestWithTimeout]);
 
+  // Handler para arquivo carregado
+  const handleFileContentChange = useCallback((content: string, fileName: string) => {
+    setUploadedFile({ content, name: fileName });
+    console.log(`📁 Arquivo integrado: ${fileName}`);
+  }, []);
+
   // Função de análise otimizada com debounce
   const handleAnalyze = useCallback(async () => {
-    if (loading || !userText.trim()) return;
+    // Priorizar arquivo carregado sobre texto manual
+    const textToAnalyze = uploadedFile?.content || userText.trim();
+    
+    if (loading || !textToAnalyze) return;
 
     // Cancelar request anterior se existir
     if (abortControllerRef.current) {
@@ -139,7 +150,7 @@ export default function App() {
           "Origin": window.location.origin,
         },
         body: JSON.stringify({
-          text: userText.trim(),
+          text: textToAnalyze,
           question: specificQuestion.trim() || ""
         }),
         credentials: "omit",
@@ -178,7 +189,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, [userText, specificQuestion, loading, createRequestWithTimeout]);
+  }, [userText, specificQuestion, loading, createRequestWithTimeout, uploadedFile]);
 
   // Função de limpeza otimizada
   const handleClear = useCallback(() => {
@@ -187,6 +198,7 @@ export default function App() {
     setUserText("");
     setSpecificQuestion("");
     setResult(null);
+    setUploadedFile(null);
     console.log("🧹 Interface limpa");
   }, [loading]);
 
@@ -283,10 +295,19 @@ export default function App() {
           />
         </div>
 
+        <FileUploader onFileContentChange={handleFileContentChange} />
+
+        {uploadedFile && (
+          <div className="upload-info">
+            📁 <strong>Arquivo ativo:</strong> {uploadedFile.name} 
+            <span className="priority-note">(Será usado em vez do texto manual)</span>
+          </div>
+        )}
+
         <div className="button-group">
           <button 
             onClick={handleAnalyze} 
-            disabled={loading || !userText.trim()}
+            disabled={loading || (!userText.trim() && !uploadedFile?.content)}
             className={loading ? "loading" : ""}
           >
             {loading ? "🔄 Analisando..." : "🔎 Analisar"}

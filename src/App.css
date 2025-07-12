@@ -308,3 +308,159 @@ button.loading {
     text-align: center;
   }
 }
+.timer-display {
+  font-size: 24px;
+  margin-top: 20px;
+}
+
+/* FileUploader Styles */
+.file-uploader {
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.upload-section {
+  margin-bottom: 15px;
+}
+
+.upload-label {
+  display: inline-block;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+}
+
+.upload-label:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-status {
+  padding: 10px;
+  background: #e3f2fd;
+  border-radius: 6px;
+  color: #1976d2;
+  font-weight: 500;
+  animation: pulse 1.5s infinite;
+}
+
+.file-preview {
+  border: 2px dashed #667eea;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.file-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.file-size {
+  color: #666;
+  font-weight: normal;
+}
+
+.remove-button {
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.remove-button:hover {
+  background: #ff3742;
+  transform: scale(1.05);
+}
+
+.file-content {
+  margin: 15px 0;
+}
+
+.content-preview {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 15px;
+  max-height: 200px;
+  overflow: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.export-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.pdf-button {
+  background: #dc3545;
+  color: white;
+}
+
+.pdf-button:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+}
+
+.doc-button {
+  background: #007bff;
+  color: white;
+}
+
+.doc-button:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
+
+.export-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
