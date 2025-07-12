@@ -1,0 +1,83 @@
+/**
+ * ✅ Saphira Upload & Export Module
+ * Versão pronta para o assistente do Replit rodar inteira sem passo manual
+ */
+
+import React, { useState } from "react";
+import jsPDF from "jspdf";
+import { saveAs } from "file-saver";
+import { Document, Packer, Paragraph, TextRun } from "docx";
+
+function FileUploader() {
+  const [fileContent, setFileContent] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith(".txt") && !file.name.endsWith(".json")) {
+      alert("Apenas arquivos .txt ou .json são permitidos.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFileContent(event.target?.result as string);
+      setFileName(file.name);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleExportPDF = () => {
+    if (!fileContent) return;
+    const doc = new jsPDF();
+    doc.text(fileContent, 10, 10);
+    doc.save(fileName ? fileName.replace(/\.[^/.]+$/, "") + ".pdf" : "arquivo.pdf");
+  };
+
+  const handleExportDOC = async () => {
+    if (!fileContent) return;
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [new Paragraph({ children: [new TextRun(fileContent)] })],
+        },
+      ],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, fileName ? fileName.replace(/\.[^/.]+$/, "") + ".docx" : "arquivo.docx");
+  };
+
+  return (
+    <div style={{ margin: "1rem 0" }}>
+      <input type="file" accept=".txt,.json" onChange={handleFileChange} />
+      {fileName && (
+        <div style={{ marginTop: "1rem" }}>
+          <strong>Arquivo:</strong> {fileName}
+          <pre
+            style={{
+              whiteSpace: "pre-wrap",
+              background: "#f0f0f0",
+              padding: "1rem",
+              borderRadius: "6px",
+              marginTop: "0.5rem",
+              maxHeight: "200px",
+              overflow: "auto",
+            }}
+          >
+            {fileContent}
+          </pre>
+          <button onClick={handleExportPDF} style={{ marginRight: "10px" }}>
+            Exportar PDF
+          </button>
+          <button onClick={handleExportDOC}>Exportar DOC</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default FileUploader;
