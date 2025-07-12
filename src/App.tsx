@@ -16,24 +16,19 @@ export default function App() {
     console.log("📤 Dados enviados:", { user_text: userText, question: specificQuestion });
 
     try {
-      // URL correta do backend (conforme relatório confirmado)
+      // URL DEFINITIVA do backend (confirmada pelo diagnóstico)
       const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
       const backendUrl = `${BACKEND_BASE_URL}/api/analyze`;
       
-      // Fallback para desenvolvimento local se backend estiver offline
-      const fallbackUrl = "/api/analyze";
-      console.log("🌐 URL do backend (constante):", BACKEND_BASE_URL);
-      console.log("🌐 URL completa:", backendUrl);
+      console.log("✅ URL OFICIAL do backend:", BACKEND_BASE_URL);
+      console.log("✅ Endpoint completo:", backendUrl);
 
       // Timeout manual para evitar requests infinitos
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
 
-      let response;
-      
-      try {
-        // Tentar backend externo primeiro
-        response = await fetch(backendUrl, {
+      // Requisição direta para o backend confirmado
+      const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,23 +43,7 @@ export default function App() {
         mode: "cors",
         cache: "no-cache",
         signal: controller.signal
-        });
-      } catch (fetchError) {
-        console.log("🔄 Backend externo falhou, tentando fallback local...");
-        // Tentar endpoint local como fallback
-        response = await fetch(fallbackUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-          body: JSON.stringify({
-            user_text: userText,
-            question: specificQuestion,
-          }),
-          signal: controller.signal
-        });
-      }
+      });
 
       clearTimeout(timeoutId);
 
@@ -116,13 +95,14 @@ export default function App() {
     console.log("🔗 Testando conexão com backend...");
     setConnectionStatus('testing');
 
-    // Teste com JSONPlaceholder para verificar se fetch funciona
-    const testUrl = "https://jsonplaceholder.typicode.com/posts/1";
+    // URL OFICIAL do backend (do diagnóstico)
     const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+    const healthEndpoint = `${BACKEND_BASE_URL}/health`;
     const apiEndpoint = `${BACKEND_BASE_URL}/api/analyze`;
     
-    console.log("🔧 [TESTE] URL base definida:", BACKEND_BASE_URL);
-    console.log("🔧 [TESTE] Endpoint completo:", apiEndpoint);
+    console.log("🎯 [TESTE] Backend oficial:", BACKEND_BASE_URL);
+    console.log("🎯 [TESTE] Health check:", healthEndpoint);
+    console.log("🎯 [TESTE] API endpoint:", apiEndpoint);
 
     try {
       // Timeout de 10 segundos para cada teste
@@ -131,26 +111,26 @@ export default function App() {
           setTimeout(() => reject(new Error('Timeout de conexão')), ms)
         );
 
-      // Primeiro teste: verificar se o servidor está respondendo
-      console.log("🌐 Testando servidor base:", BACKEND_BASE_URL);
+      // Primeiro teste: verificar health endpoint (conforme diagnóstico)
+      console.log("🩺 Testando /health:", healthEndpoint);
 
-      const baseResponse = await Promise.race([
-        fetch(BACKEND_BASE_URL, {
+      const healthResponse = await Promise.race([
+        fetch(healthEndpoint, {
           method: "GET",
           mode: "cors",
           cache: "no-cache"
         }).catch(err => {
-          console.error("❌ Base fetch error:", err);
-          throw new Error(`Fetch failed: ${err.message}`);
+          console.error("❌ Health fetch error:", err);
+          throw new Error(`Health check failed: ${err.message}`);
         }),
         timeoutPromise(5000)
       ]) as Response;
 
-      console.log("✅ Servidor base - Status:", baseResponse.status);
-      console.log("✅ Servidor base - Headers:", Object.fromEntries(baseResponse.headers.entries()));
+      console.log("✅ Health check - Status:", healthResponse.status);
+      console.log("✅ Health check - Headers:", Object.fromEntries(healthResponse.headers.entries()));
 
-      // Segundo teste: verificar endpoint da API com timeout
-      console.log("🎯 Testando endpoint API:", apiEndpoint);
+      // Segundo teste: verificar endpoint da API
+      console.log("🎯 Testando /api/analyze:", apiEndpoint);
 
       const testResponse = await Promise.race([
         fetch(apiEndpoint, {
@@ -177,9 +157,9 @@ export default function App() {
 
       if (testResponse.ok) {
         const responseData = await testResponse.text();
-        console.log("✅ Response Data Preview:", responseData.substring(0, 200));
+        console.log("✅ API Response Preview:", responseData.substring(0, 200));
         setConnectionStatus('online');
-        alert(`✅ Conexão OK!\n\nServidor: ${baseResponse.status}\nAPI: ${testResponse.status}\n\nBackend está funcionando!\n\nPrimeiros 100 chars da resposta:\n${responseData.substring(0, 100)}...`);
+        alert(`🎉 BACKEND CONECTADO!\n\nHealth: ${healthResponse.status} OK\nAPI: ${testResponse.status} OK\n\n✅ Saphira Engine está online!\n\nURL confirmada: ${BACKEND_BASE_URL}\n\nResposta da API:\n${responseData.substring(0, 100)}...`);
       } else {
         setConnectionStatus('offline');
         const errorText = await testResponse.text();
