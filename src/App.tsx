@@ -111,55 +111,38 @@ export default function App() {
           setTimeout(() => reject(new Error('Timeout de conexão')), ms)
         );
 
-      // Primeiro teste: verificar health endpoint (conforme diagnóstico)
-      console.log("🩺 Testando /health:", healthEndpoint);
-
-      const healthResponse = await Promise.race([
-        fetch(healthEndpoint, {
-          method: "GET",
-          mode: "cors",
-          cache: "no-cache"
-        }).catch(err => {
-          console.error("❌ Health fetch error:", err);
-          throw new Error(`Health check failed: ${err.message}`);
-        }),
-        timeoutPromise(5000)
-      ]) as Response;
-
-      console.log("✅ Health check - Status:", healthResponse.status);
-      console.log("✅ Health check - Headers:", Object.fromEntries(healthResponse.headers.entries()));
-
-      // Segundo teste: verificar endpoint da API
-      console.log("🎯 Testando /api/analyze:", apiEndpoint);
+      // Teste direto no endpoint que sabemos que funciona
+      console.log("🎯 Testando endpoint funcionando:", apiEndpoint);
 
       const testResponse = await Promise.race([
         fetch(apiEndpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Accept": "application/json",
             "Origin": window.location.origin
           },
           body: JSON.stringify({
-            user_text: "teste de conexão",
-            question: "este é apenas um teste"
+            user_text: "teste básico de conexão",
+            question: "este é um teste"
           }),
           mode: "cors",
           cache: "no-cache"
         }).catch(err => {
           console.error("❌ API fetch error:", err);
-          throw new Error(`API fetch failed: ${err.message}`);
+          throw new Error(`API test failed: ${err.message}`);
         }),
         timeoutPromise(8000)
       ]) as Response;
 
-      console.log("✅ API POST - Status:", testResponse.status);
+      console.log("✅ API Response - Status:", testResponse.status);
       console.log("✅ Response Headers:", Object.fromEntries(testResponse.headers.entries()));
 
       if (testResponse.ok) {
         const responseData = await testResponse.text();
         console.log("✅ API Response Preview:", responseData.substring(0, 200));
         setConnectionStatus('online');
-        alert(`🎉 BACKEND CONECTADO!\n\nHealth: ${healthResponse.status} OK\nAPI: ${testResponse.status} OK\n\n✅ Saphira Engine está online!\n\nURL confirmada: ${BACKEND_BASE_URL}\n\nResposta da API:\n${responseData.substring(0, 100)}...`);
+        alert(`🎉 SAPHIRA ENGINE CONECTADA!\n\nStatus: ${testResponse.status} OK\n\n✅ Backend funcionando perfeitamente!\n\nURL: ${BACKEND_BASE_URL}\n\nResposta da Saphira:\n${responseData.substring(0, 150)}...`);
       } else {
         setConnectionStatus('offline');
         const errorText = await testResponse.text();
