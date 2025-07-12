@@ -17,7 +17,7 @@ export default function App() {
     };
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
+
     return () => {
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
@@ -26,13 +26,13 @@ export default function App() {
   // Keep-alive ping para manter backend ativo
   useEffect(() => {
     const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
-    
+
     setKeepAliveActive(true);
-    
+
     const ping = setInterval(async () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
-      
+
       try {
         const response = await fetch(`${BACKEND_BASE_URL}/health`, {
           method: "GET",
@@ -40,9 +40,9 @@ export default function App() {
           cache: "no-cache",
           signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
-        
+
         if (response.ok) {
           console.log("✅ Backend ping OK (keep-alive)");
           setKeepAliveActive(true);
@@ -63,7 +63,7 @@ export default function App() {
     const initialPing = setTimeout(async () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
+
       try {
         await fetch(`${BACKEND_BASE_URL}/health`, {
           method: "GET",
@@ -191,7 +191,7 @@ export default function App() {
           method: "GET",
           mode: "cors"
         });
-        
+
         if (getRootTest && getRootTest.ok) {
           console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
         } else {
@@ -238,6 +238,7 @@ export default function App() {
         alert(`🎉 SAPHIRA ENGINE CONECTADA!\n\nStatus: ${testResponse.status} OK\n\n✅ Backend funcionando perfeitamente!\n\nURL: ${BACKEND_BASE_URL}\n\nResposta da Saphira:\n${responseData.substring(0, 150)}...`);
       } else {
         setConnectionStatus('offline');
+        localStorage.setItem('saphira-connection-status', 'offline');
         const errorText = await testResponse.text();
         console.error("❌ Error Response:", errorText);
         alert(`⚠️ Backend Respondeu com Erro\n\nStatus: ${testResponse.status}\nErro: ${errorText.substring(0, 150)}...`);
@@ -246,6 +247,7 @@ export default function App() {
     } catch (error: unknown) {
       console.error("❌ Erro no teste de conexão:", error);
       setConnectionStatus('offline');
+      localStorage.setItem('saphira-connection-status', 'offline');
 
       let errorMessage = "Erro de conexão";
       if (error instanceof Error) {
