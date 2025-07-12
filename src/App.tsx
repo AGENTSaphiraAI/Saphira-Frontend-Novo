@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 
 export default function App() {
@@ -7,6 +7,45 @@ export default function App() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'testing' | 'online' | 'offline'>('unknown');
+
+  // Keep-alive ping para manter backend ativo
+  useEffect(() => {
+    const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+    
+    const ping = setInterval(() => {
+      fetch(`${BACKEND_BASE_URL}/health`, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache"
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log("✅ Backend ping OK (keep-alive)");
+          } else {
+            console.warn("⚠️ Backend ping com status:", response.status);
+          }
+        })
+        .catch((err) => {
+          console.error("⚠️ Erro no ping (keep-alive):", err);
+        });
+    }, 120000); // a cada 2 minutos
+
+    // Ping inicial após 10 segundos
+    const initialPing = setTimeout(() => {
+      fetch(`${BACKEND_BASE_URL}/health`, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache"
+      })
+        .then(() => console.log("✅ Ping inicial do backend realizado"))
+        .catch(() => console.log("⚠️ Ping inicial falhou"));
+    }, 10000);
+
+    return () => {
+      clearInterval(ping);
+      clearTimeout(initialPing);
+    };
+  }, []);
 
   const handleAnalyze = async () => {
     setLoading(true);
