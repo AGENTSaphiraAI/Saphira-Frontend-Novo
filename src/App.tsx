@@ -20,18 +20,39 @@ export default function App() {
       const BACKEND_BASE_URL = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev";
       const backendUrl = `${BACKEND_BASE_URL}/api/analyze`;
       
-      console.log("🌐 URL do backend:", backendUrl);
+      // Fallback para desenvolvimento local se backend estiver offline
+      const fallbackUrl = "/api/analyze";
+      console.log("🌐 URL do backend (constante):", BACKEND_BASE_URL);
+      console.log("🌐 URL completa:", backendUrl);
 
-      // Timeout mais curto para falhar rápido
+      // Timeout manual para evitar requests infinitos
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
 
       let response;
-      let backendWorking = false;
       
       try {
         // Tentar backend externo primeiro
         response = await fetch(backendUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Origin": window.location.origin,
+        },
+        body: JSON.stringify({
+          user_text: userText,
+          question: specificQuestion,
+        }),
+        credentials: "omit",
+        mode: "cors",
+        cache: "no-cache",
+        signal: controller.signal
+        });
+      } catch (fetchError) {
+        console.log("🔄 Backend externo falhou, tentando fallback local...");
+        // Tentar endpoint local como fallback
+        response = await fetch(fallbackUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -41,74 +62,48 @@ export default function App() {
             user_text: userText,
             question: specificQuestion,
           }),
-          mode: "cors",
-          cache: "no-cache",
           signal: controller.signal
         });
-        
-        if (response.ok) {
-          backendWorking = true;
-          clearTimeout(timeoutId);
-          const data = await response.json();
-          console.log("✅ Resposta do backend:", data);
-          setResult(data.displayData);
-          return;
-        }
-      } catch (fetchError) {
-        console.log("🔄 Backend externo não disponível, usando modo local...");
       }
-      
+
       clearTimeout(timeoutId);
 
-      // MODO LOCAL: Análise simulada inteligente
-      console.log("🧠 Executando análise local...");
-      
-      const mockAnalysis = generateMockAnalysis(userText, specificQuestion);
-      setResult(mockAnalysis);
+      console.log("📡 Status da resposta:", response.status);
+      console.log("📡 Headers da resposta:", Object.fromEntries(response.headers.entries()));
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Erro HTTP:", response.status, response.statusText);
+        console.error("❌ Corpo da resposta de erro:", errorText);
+        throw new Error(`Erro HTTP ${response.status}: ${response.statusText}. Detalhes: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("✅ Resposta recebida:", data);
+      setResult(data.displayData);
     } catch (error: unknown) {
-      console.error("💥 Erro na análise:", error);
-      
-      // Fallback final com análise local
-      const mockAnalysis = generateMockAnalysis(userText, specificQuestion);
-      setResult(mockAnalysis);
+      console.error("💥 Erro completo na análise:", error);
+      console.error("💥 Tipo do erro:", typeof error);
+      console.error("💥 Nome do erro:", error instanceof Error ? error.constructor.name : 'unknown');
+
+      let errorMessage = "Tive dificuldades para refletir sobre seu texto.";
+
+      if (error instanceof Error && error.name === 'AbortError') {
+        errorMessage = "⏱️ Timeout: Servidor demorou muito para responder. Tente novamente.";
+      } else if (error instanceof TypeError && error.message.includes("fetch")) {
+        errorMessage = "🌐 Erro de conexão: Não foi possível conectar ao servidor. Backend pode estar offline.";
+      } else if (error instanceof Error) {
+        errorMessage = `⚠️ Erro: ${error.message}`;
+      } else {
+        errorMessage = "❓ Erro desconhecido. Verifique o console para mais detalhes.";
+      }
+
+      setResult({
+        humanized_text: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
-  };
-
-  // Função para gerar análise simulada inteligente
-  const generateMockAnalysis = (text: string, question: string) => {
-    const textLength = text.length;
-    const hasQuestion = question && question.trim().length > 0;
-    
-    let analysis = "";
-    
-    if (textLength === 0) {
-      analysis = "🤔 Você esqueceu de escrever algo! Digite seu texto para que eu possa analisá-lo.";
-    } else if (textLength < 50) {
-      analysis = `✨ Analisando seu texto curto (${textLength} caracteres). Parece ser uma reflexão concisa.`;
-    } else if (textLength < 200) {
-      analysis = `📝 Texto de tamanho médio detectado (${textLength} caracteres). Vejo elementos interessantes para análise.`;
-    } else {
-      analysis = `📚 Texto extenso identificado (${textLength} caracteres). Uma análise aprofundada seria ideal.`;
-    }
-    
-    if (hasQuestion) {
-      analysis += `\n\n💭 Pergunta específica: "${question}"\nEsta pergunta direcionará minha análise para aspectos mais específicos.`;
-    }
-    
-    analysis += "\n\n⚠️ **Modo Local Ativo**: O backend Saphira não está disponível no momento. Esta é uma análise simulada do frontend.";
-    
-    return {
-      humanized_text: analysis,
-      technicalData: {
-        tom: { tipo: "neutro", confianca: 0.75 },
-        vies: { detectado: false, confianca: 0.80 },
-        contradicoes: { detectada: false, confianca: 0.85 },
-        sugestao: "Conecte-se ao backend para análise completa da Saphira."
-      }
-    };
   };
 
   const handleClear = () => {
@@ -121,60 +116,87 @@ export default function App() {
     console.log("🔗 Testando conexão com backend...");
     setConnectionStatus('testing');
 
+    // Teste com JSONPlaceholder para verificar se fetch funciona
+    const testUrl = "https://jsonplaceholder.typicode.com/posts/1";
     const BACKEND_BASE_URL = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev";
     const apiEndpoint = `${BACKEND_BASE_URL}/api/analyze`;
     
-    console.log("🔧 [TESTE] URL testada:", apiEndpoint);
+    console.log("🔧 [TESTE] URL base definida:", BACKEND_BASE_URL);
+    console.log("🔧 [TESTE] Endpoint completo:", apiEndpoint);
 
     try {
-      // Teste rápido e direto
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos
+      // Timeout de 10 segundos para cada teste
+      const timeoutPromise = (ms: number) => 
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout de conexão')), ms)
+        );
 
-      const testResponse = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_text: "teste de conexão",
-          question: "este é apenas um teste"
+      // Primeiro teste: verificar se o servidor está respondendo
+      console.log("🌐 Testando servidor base:", BACKEND_BASE_URL);
+
+      const baseResponse = await Promise.race([
+        fetch(BACKEND_BASE_URL, {
+          method: "GET",
+          mode: "cors",
+          cache: "no-cache"
+        }).catch(err => {
+          console.error("❌ Base fetch error:", err);
+          throw new Error(`Fetch failed: ${err.message}`);
         }),
-        mode: "cors",
-        cache: "no-cache",
-        signal: controller.signal
-      });
+        timeoutPromise(5000)
+      ]) as Response;
 
-      clearTimeout(timeoutId);
+      console.log("✅ Servidor base - Status:", baseResponse.status);
+      console.log("✅ Servidor base - Headers:", Object.fromEntries(baseResponse.headers.entries()));
 
-      console.log("✅ Status:", testResponse.status);
+      // Segundo teste: verificar endpoint da API com timeout
+      console.log("🎯 Testando endpoint API:", apiEndpoint);
+
+      const testResponse = await Promise.race([
+        fetch(apiEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Origin": window.location.origin
+          },
+          body: JSON.stringify({
+            user_text: "teste de conexão",
+            question: "este é apenas um teste"
+          }),
+          mode: "cors",
+          cache: "no-cache"
+        }).catch(err => {
+          console.error("❌ API fetch error:", err);
+          throw new Error(`API fetch failed: ${err.message}`);
+        }),
+        timeoutPromise(8000)
+      ]) as Response;
+
+      console.log("✅ API POST - Status:", testResponse.status);
+      console.log("✅ Response Headers:", Object.fromEntries(testResponse.headers.entries()));
 
       if (testResponse.ok) {
         const responseData = await testResponse.text();
-        console.log("✅ Resposta:", responseData.substring(0, 200));
+        console.log("✅ Response Data Preview:", responseData.substring(0, 200));
         setConnectionStatus('online');
-        alert(`✅ Backend Online!\n\nStatus: ${testResponse.status}\nResposta: ${responseData.substring(0, 100)}...`);
+        alert(`✅ Conexão OK!\n\nServidor: ${baseResponse.status}\nAPI: ${testResponse.status}\n\nBackend está funcionando!\n\nPrimeiros 100 chars da resposta:\n${responseData.substring(0, 100)}...`);
       } else {
         setConnectionStatus('offline');
         const errorText = await testResponse.text();
-        console.error("❌ Erro HTTP:", testResponse.status, errorText);
-        alert(`⚠️ Backend com Problema\n\nStatus: ${testResponse.status}\nErro: ${errorText.substring(0, 100)}...`);
+        console.error("❌ Error Response:", errorText);
+        alert(`⚠️ Backend Respondeu com Erro\n\nStatus: ${testResponse.status}\nErro: ${errorText.substring(0, 150)}...`);
       }
 
     } catch (error: unknown) {
-      console.error("❌ Erro no teste:", error);
+      console.error("❌ Erro no teste de conexão:", error);
       setConnectionStatus('offline');
 
       let errorMessage = "Erro de conexão";
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = "Timeout - Backend demorou muito para responder";
-        } else {
-          errorMessage = error.message;
-        }
+        errorMessage = error.message;
       }
 
-      alert(`❌ Backend Offline\n\n${errorMessage}\n\n💡 Sugestão: O backend pode estar hibernando no Replit. Tente acessar a URL diretamente para "acordá-lo":\n\n${BACKEND_BASE_URL}`);
+      alert(`❌ Erro de conexão com backend:\n\n${errorMessage}\n\nURL testada: ${apiEndpoint}`);
     }
   };
 
