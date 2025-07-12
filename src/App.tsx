@@ -17,11 +17,13 @@ export default function App() {
 
     try {
       // URL correta do backend (conforme indicado pelo backend)
-      const backendUrl = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev/api/analyze";
+      const BACKEND_BASE_URL = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev";
+      const backendUrl = `${BACKEND_BASE_URL}/api/analyze`;
       
       // Fallback para desenvolvimento local se backend estiver offline
       const fallbackUrl = "/api/analyze";
-      console.log("🌐 URL do backend:", backendUrl);
+      console.log("🌐 URL do backend (constante):", BACKEND_BASE_URL);
+      console.log("🌐 URL completa:", backendUrl);
 
       // Timeout manual para evitar requests infinitos
       const controller = new AbortController();
@@ -116,8 +118,11 @@ export default function App() {
 
     // Teste com JSONPlaceholder para verificar se fetch funciona
     const testUrl = "https://jsonplaceholder.typicode.com/posts/1";
-    const backendUrl = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev";
-    const apiEndpoint = `${backendUrl}/api/analyze`;
+    const BACKEND_BASE_URL = "https://7e7bc873-5ac1-4669-ac5d-3129659167a8-00-3ccd6v5wjgz9z.riker.replit.dev";
+    const apiEndpoint = `${BACKEND_BASE_URL}/api/analyze`;
+    
+    console.log("🔧 [TESTE] URL base definida:", BACKEND_BASE_URL);
+    console.log("🔧 [TESTE] Endpoint completo:", apiEndpoint);
 
     try {
       // Timeout de 10 segundos para cada teste
