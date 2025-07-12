@@ -363,7 +363,7 @@ export default function App() {
       {/* Header */}
       <div className="saphira-header">
         <h1 className="saphira-title">💙 Saphira</h1>
-        <p className="saphira-subtitle">Análise Inteligente e Empática</p>
+        <p className="saphira-subtitle">Análise Inteligente, Técnica e Auditável</p>
       </div>
 
       {/* Input Section */}
