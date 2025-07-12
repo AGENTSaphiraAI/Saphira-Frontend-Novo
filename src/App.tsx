@@ -9,42 +9,59 @@ export default function App() {
   const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'testing' | 'online' | 'offline'>('unknown');
   const [keepAliveActive, setKeepAliveActive] = useState(false);
 
+  // Global error handler for unhandled promise rejections
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      event.preventDefault(); // Prevent the default unhandled rejection behavior
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
   // Keep-alive ping para manter backend ativo
   useEffect(() => {
     const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
     
     setKeepAliveActive(true);
     
-    const ping = setInterval(() => {
-      fetch(`${BACKEND_BASE_URL}/health`, {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache"
-      })
-        .then(response => {
-          if (response.ok) {
-            console.log("✅ Backend ping OK (keep-alive)");
-            setKeepAliveActive(true);
-          } else {
-            console.warn("⚠️ Backend ping com status:", response.status);
-            setKeepAliveActive(false);
-          }
-        })
-        .catch((err) => {
-          console.error("⚠️ Erro no ping (keep-alive):", err);
-          setKeepAliveActive(false);
+    const ping = setInterval(async () => {
+      try {
+        const response = await fetch(`${BACKEND_BASE_URL}/health`, {
+          method: "GET",
+          mode: "cors",
+          cache: "no-cache"
         });
+        
+        if (response.ok) {
+          console.log("✅ Backend ping OK (keep-alive)");
+          setKeepAliveActive(true);
+        } else {
+          console.warn("⚠️ Backend ping com status:", response.status);
+          setKeepAliveActive(false);
+        }
+      } catch (err) {
+        console.error("⚠️ Erro no ping (keep-alive):", err instanceof Error ? err.message : 'Erro desconhecido');
+        setKeepAliveActive(false);
+      }
     }, 300000); // a cada 5 minutos (menos agressivo)
 
     // Ping inicial após 30 segundos (dar tempo para o app carregar)
-    const initialPing = setTimeout(() => {
-      fetch(`${BACKEND_BASE_URL}/health`, {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache"
-      })
-        .then(() => console.log("✅ Ping inicial do backend realizado"))
-        .catch(() => console.log("⚠️ Ping inicial falhou"));
+    const initialPing = setTimeout(async () => {
+      try {
+        await fetch(`${BACKEND_BASE_URL}/health`, {
+          method: "GET",
+          mode: "cors",
+          cache: "no-cache"
+        });
+        console.log("✅ Ping inicial do backend realizado");
+      } catch (err) {
+        console.log("⚠️ Ping inicial falhou:", err instanceof Error ? err.message : 'Erro desconhecido');
+      }
     }, 30000);
 
     return () => {
@@ -155,7 +172,10 @@ export default function App() {
       const getRootTest = await fetch(BACKEND_BASE_URL, {
         method: "GET",
         mode: "cors"
-      }).catch(e => console.error("❌ GET raiz falhou:", e));
+      }).catch(e => {
+        console.error("❌ GET raiz falhou:", e instanceof Error ? e.message : 'Erro desconhecido');
+        return null;
+      });
 
       if (getRootTest && getRootTest.ok) {
         console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
@@ -185,8 +205,8 @@ export default function App() {
           mode: "cors",
           cache: "no-cache"
         }).catch(err => {
-          console.error("❌ API fetch error:", err);
-          throw new Error(`API test failed: ${err.message}`);
+          console.error("❌ API fetch error:", err instanceof Error ? err.message : 'Erro desconhecido');
+          throw new Error(`API test failed: ${err instanceof Error ? err.message : 'Erro desconhecido'}`);
         }),
         timeoutPromise(8000)
       ]) as Response;
