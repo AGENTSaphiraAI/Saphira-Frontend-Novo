@@ -36,8 +36,8 @@ export default function App() {
           "Origin": window.location.origin,
         },
         body: JSON.stringify({
-          user_text: userText,
-          question: specificQuestion,
+          text: userText,
+          question: specificQuestion || ""
         }),
         credentials: "omit",
         mode: "cors",
@@ -134,7 +134,7 @@ export default function App() {
             "Origin": window.location.origin
           },
           body: JSON.stringify({
-            user_text: "teste básico de conexão",
+            text: "teste básico de conexão",
             question: "este é um teste"
           }),
           mode: "cors",
