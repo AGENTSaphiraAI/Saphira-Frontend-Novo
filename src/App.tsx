@@ -1,113 +1,137 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
 
+interface ConnectionStatus {
+  status: 'unknown' | 'testing' | 'online' | 'offline';
+  lastChecked?: Date;
+  responseTime?: number;
+}
+
+interface ApiResponse {
+  humanized_text: string;
+  technicalData?: {
+    tom?: { tipo: string; confianca: number };
+    vies?: { detectado: boolean; confianca: number };
+    contradicoes?: { detectada: boolean; confianca: number };
+    sugestao?: string;
+  };
+}
+
 export default function App() {
+  // Estados principais
   const [userText, setUserText] = useState("");
   const [specificQuestion, setSpecificQuestion] = useState("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{ humanized_text: string; technicalData?: any } | null>(null);
   const [loading, setLoading] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'testing' | 'online' | 'offline'>('unknown');
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'unknown' });
   const [keepAliveActive, setKeepAliveActive] = useState(false);
 
-  // Global error handler for unhandled promise rejections
+  // Refs para controle de state
+  const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Constantes
+  const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+  const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
+  const REQUEST_TIMEOUT = 12000; // 12 segundos
+
+  // Utilitário para criar requests com timeout
+  const createRequestWithTimeout = useCallback((url: string, options: RequestInit, timeout = REQUEST_TIMEOUT) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    return {
+      request: fetch(url, { ...options, signal: controller.signal }),
+      cleanup: () => clearTimeout(timeoutId)
+    };
+  }, []);
+
+  // Handler global para promises rejeitadas
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.error('Unhandled promise rejection:', event.reason);
-      event.preventDefault(); // Prevent the default unhandled rejection behavior
+      // Filtrar erros conhecidos que são esperados
+      if (event.reason?.name === 'AbortError' || 
+          event.reason?.message?.includes('fetch')) {
+        return; // Ignorar erros de rede esperados
+      }
+      
+      console.warn('Unhandled promise rejection:', event.reason);
+      event.preventDefault();
     };
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
-
-    return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
+    return () => window.removeEventListener('unhandledrejection', handleUnhandledRejection);
   }, []);
 
-  // Keep-alive ping para manter backend ativo
+  // Keep-alive otimizado
   useEffect(() => {
-    const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+    const startKeepAlive = () => {
+      if (keepAliveIntervalRef.current) {
+        clearInterval(keepAliveIntervalRef.current);
+      }
 
-    setKeepAliveActive(true);
+      setKeepAliveActive(true);
 
-    const ping = setInterval(async () => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
+      const pingBackend = async () => {
+        try {
+          const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/health`, {
+            method: "GET",
+            mode: "cors",
+            cache: "no-cache"
+          }, 8000);
 
-      try {
-        const response = await fetch(`${BACKEND_BASE_URL}/health`, {
-          method: "GET",
-          mode: "cors",
-          cache: "no-cache",
-          signal: controller.signal
-        });
+          const response = await request;
+          cleanup();
 
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          console.log("✅ Backend ping OK (keep-alive)");
-          setKeepAliveActive(true);
-        } else {
-          console.warn("⚠️ Backend ping com status:", response.status);
+          if (response.ok) {
+            console.log("✅ Keep-alive OK");
+            setKeepAliveActive(true);
+          } else {
+            console.warn("⚠️ Keep-alive warning:", response.status);
+            setKeepAliveActive(false);
+          }
+        } catch (err) {
+          if (err instanceof Error && err.name !== 'AbortError') {
+            console.warn("⚠️ Keep-alive falhou:", err.message);
+          }
           setKeepAliveActive(false);
         }
-      } catch (err) {
-        clearTimeout(timeoutId);
-        if (err instanceof Error && err.name !== 'AbortError') {
-          console.error("⚠️ Erro no ping (keep-alive):", err.message);
+      };
+
+      // Ping inicial após 30 segundos
+      const initialTimeout = setTimeout(pingBackend, 30000);
+      
+      // Pings regulares
+      keepAliveIntervalRef.current = setInterval(pingBackend, KEEP_ALIVE_INTERVAL);
+
+      return () => {
+        clearTimeout(initialTimeout);
+        if (keepAliveIntervalRef.current) {
+          clearInterval(keepAliveIntervalRef.current);
         }
-        setKeepAliveActive(false);
-      }
-    }, 300000); // a cada 5 minutos (menos agressivo)
-
-    // Ping inicial após 30 segundos (dar tempo para o app carregar)
-    const initialPing = setTimeout(async () => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      try {
-        await fetch(`${BACKEND_BASE_URL}/health`, {
-          method: "GET",
-          mode: "cors",
-          cache: "no-cache",
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        console.log("✅ Ping inicial do backend realizado");
-      } catch (err) {
-        clearTimeout(timeoutId);
-        if (err instanceof Error && err.name !== 'AbortError') {
-          console.log("⚠️ Ping inicial falhou:", err.message);
-        }
-      }
-    }, 30000);
-
-    return () => {
-      clearInterval(ping);
-      clearTimeout(initialPing);
+      };
     };
-  }, []);
 
-  const handleAnalyze = async () => {
+    return startKeepAlive();
+  }, [createRequestWithTimeout]);
+
+  // Função de análise otimizada com debounce
+  const handleAnalyze = useCallback(async () => {
+    if (loading || !userText.trim()) return;
+
+    // Cancelar request anterior se existir
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
     setLoading(true);
     setResult(null);
 
     console.log("🔍 Iniciando análise...");
-    console.log("📤 Dados enviados:", { user_text: userText, question: specificQuestion });
 
     try {
-      // URL DEFINITIVA do backend (confirmada pelo diagnóstico)
-      const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
-      const backendUrl = `${BACKEND_BASE_URL}/api/analyze`;
-
-      console.log("✅ URL OFICIAL do backend:", BACKEND_BASE_URL);
-      console.log("✅ Endpoint completo:", backendUrl);
-
-      // Timeout manual para evitar requests infinitos
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
-
-      // Requisição direta para o backend confirmado
-      const response = await fetch(backendUrl, {
+      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,211 +139,221 @@ export default function App() {
           "Origin": window.location.origin,
         },
         body: JSON.stringify({
-          text: userText,
-          question: specificQuestion || ""
+          text: userText.trim(),
+          question: specificQuestion.trim() || ""
         }),
         credentials: "omit",
         mode: "cors",
-        cache: "no-cache",
-        signal: controller.signal
-      });
+        cache: "no-cache"
+      }, 30000);
 
-      clearTimeout(timeoutId);
-
-      console.log("📡 Status da resposta:", response.status);
-      console.log("📡 Headers da resposta:", Object.fromEntries(response.headers.entries()));
+      const response = await request;
+      cleanup();
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("❌ Erro HTTP:", response.status, response.statusText);
-        console.error("❌ Corpo da resposta de erro:", errorText);
-        throw new Error(`Erro HTTP ${response.status}: ${response.statusText}. Detalhes: ${errorText}`);
+        throw new Error(`Erro HTTP ${response.status}: ${errorText.substring(0, 100)}`);
       }
 
       const data = await response.json();
-      console.log("✅ Resposta recebida:", data);
+      console.log("✅ Análise concluída");
       setResult(data.displayData);
+
     } catch (error: unknown) {
-      console.error("💥 Erro completo na análise:", error);
-      console.error("💥 Tipo do erro:", typeof error);
-      console.error("💥 Nome do erro:", error instanceof Error ? error.constructor.name : 'unknown');
+      console.error("❌ Erro na análise:", error);
 
-      let errorMessage = "Tive dificuldades para refletir sobre seu texto.";
+      let errorMessage = "Tive dificuldades para analisar seu texto.";
 
-      if (error instanceof Error && error.name === 'AbortError') {
-        errorMessage = "⏱️ Timeout: Servidor demorou muito para responder. Tente novamente.";
-      } else if (error instanceof TypeError && error.message.includes("fetch")) {
-        errorMessage = "🌐 Erro de conexão: Não foi possível conectar ao servidor. Backend pode estar offline.";
-      } else if (error instanceof Error) {
-        errorMessage = `⚠️ Erro: ${error.message}`;
-      } else {
-        errorMessage = "❓ Erro desconhecido. Verifique o console para mais detalhes.";
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = "⏱️ Timeout: Análise cancelada. Tente novamente.";
+        } else if (error.message.includes("fetch")) {
+          errorMessage = "🌐 Erro de conexão. Verifique se o backend está online.";
+        } else {
+          errorMessage = `⚠️ ${error.message}`;
+        }
       }
 
-      setResult({
-        humanized_text: errorMessage,
-      });
+      setResult({ humanized_text: errorMessage });
     } finally {
       setLoading(false);
     }
-  };
+  }, [userText, specificQuestion, loading, createRequestWithTimeout]);
 
-  const handleClear = () => {
+  // Função de limpeza otimizada
+  const handleClear = useCallback(() => {
+    if (loading) return; // Não limpar durante loading
+    
     setUserText("");
     setSpecificQuestion("");
     setResult(null);
-  };
+    console.log("🧹 Interface limpa");
+  }, [loading]);
 
-  const handleTestConnection = async () => {
-    console.log("🔗 Testando conexão com backend...");
-    setConnectionStatus('testing');
+  // Teste de conexão otimizado
+  const handleTestConnection = useCallback(async () => {
+    if (connectionStatus.status === 'testing') return;
 
-    // URL OFICIAL do backend (do diagnóstico)
-    const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
-    const healthEndpoint = `${BACKEND_BASE_URL}/health`;
-    const apiEndpoint = `${BACKEND_BASE_URL}/api/analyze`;
-
-    console.log("🎯 [TESTE] Backend oficial:", BACKEND_BASE_URL);
-    console.log("🎯 [TESTE] Health check:", healthEndpoint);
-    console.log("🎯 [TESTE] API endpoint:", apiEndpoint);
+    console.log("🔗 Testando conexão...");
+    const startTime = Date.now();
+    
+    setConnectionStatus({ status: 'testing' });
 
     try {
-      // PRIMEIRO: Teste GET simples na raiz (opcional - pode falhar)
-      console.log("🎯 TESTE 1: GET simples na raiz do backend");
-      try {
-        const getRootTest = await fetch(BACKEND_BASE_URL, {
-          method: "GET",
-          mode: "cors"
-        });
-
-        if (getRootTest && getRootTest.ok) {
-          console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
-        } else {
-          console.log("⚠️ GET raiz retornou status:", getRootTest?.status || 'indefinido');
-        }
-      } catch (e) {
-        console.log("ℹ️ GET raiz não disponível (normal):", e instanceof Error ? e.message : 'Erro de conexão');
-      }
-
-      // Timeout de 10 segundos para cada teste
-      const timeoutPromise = (ms: number) => 
-        new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout de conexão')), ms)
-        );
-
-      // Teste direto no endpoint que sabemos que funciona
-      console.log("🎯 TESTE 2: POST no endpoint API:", apiEndpoint);
-
-      const testResponse = await Promise.race([
-        fetch(apiEndpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Origin": window.location.origin
-          },
-          body: JSON.stringify({
-            text: "teste básico de conexão",
-            question: "este é um teste"
-          }),
-          mode: "cors",
-          cache: "no-cache"
+      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Origin": window.location.origin
+        },
+        body: JSON.stringify({
+          text: "teste de conexão",
+          question: "verificar funcionamento"
         }),
-        timeoutPromise(8000)
-      ]) as Response;
+        mode: "cors",
+        cache: "no-cache"
+      }, 10000);
 
-      console.log("✅ API Response - Status:", testResponse.status);
-      console.log("✅ Response Headers:", Object.fromEntries(testResponse.headers.entries()));
+      const response = await request;
+      cleanup();
 
-      if (testResponse.ok) {
-        const responseData = await testResponse.text();
-        console.log("✅ API Response Preview:", responseData.substring(0, 200));
-        setConnectionStatus('online');
-        alert(`🎉 SAPHIRA ENGINE CONECTADA!\n\nStatus: ${testResponse.status} OK\n\n✅ Backend funcionando perfeitamente!\n\nURL: ${BACKEND_BASE_URL}\n\nResposta da Saphira:\n${responseData.substring(0, 150)}...`);
+      const responseTime = Date.now() - startTime;
+
+      if (response.ok) {
+        const data = await response.text();
+        setConnectionStatus({ 
+          status: 'online', 
+          lastChecked: new Date(), 
+          responseTime 
+        });
+        
+        alert(`🎉 CONEXÃO ESTABELECIDA!\n\n✅ Status: ${response.status} OK\n⚡ Tempo: ${responseTime}ms\n🔗 Backend: Online\n\nResposta: ${data.substring(0, 100)}...`);
       } else {
-        setConnectionStatus('offline');
-        localStorage.setItem('saphira-connection-status', 'offline');
-        const errorText = await testResponse.text();
-        console.error("❌ Error Response:", errorText);
-        alert(`⚠️ Backend Respondeu com Erro\n\nStatus: ${testResponse.status}\nErro: ${errorText.substring(0, 150)}...`);
+        throw new Error(`Status ${response.status}`);
       }
 
     } catch (error: unknown) {
-      console.error("❌ Erro no teste de conexão:", error);
-      setConnectionStatus('offline');
-      localStorage.setItem('saphira-connection-status', 'offline');
+      setConnectionStatus({ 
+        status: 'offline', 
+        lastChecked: new Date() 
+      });
 
-      let errorMessage = "Erro de conexão";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      alert(`❌ Erro de conexão com backend:\n\n${errorMessage}\n\nURL testada: ${apiEndpoint}`);
+      const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido';
+      alert(`❌ FALHA NA CONEXÃO\n\n${errorMsg}\n\nVerifique se o backend está online.`);
+      console.error("❌ Teste de conexão falhou:", error);
     }
-  };
+  }, [connectionStatus.status, createRequestWithTimeout]);
+
+  // Cleanup ao desmontar
+  useEffect(() => {
+    return () => {
+      if (keepAliveIntervalRef.current) {
+        clearInterval(keepAliveIntervalRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return (
     <div className="container">
-      <h1>💙 Saphira</h1>
-      <p className="subtitle">Análise Inteligente e Empática</p>
+      <header>
+        <h1>💙 Saphira</h1>
+        <p className="subtitle">Análise Inteligente e Empática</p>
+      </header>
 
-      <textarea
-        placeholder="Digite seu texto ou pergunta para análise..."
-        value={userText}
-        onChange={(e) => setUserText(e.target.value)}
-      />
+      <main>
+        <div className="input-section">
+          <textarea
+            placeholder="Digite seu texto ou pergunta para análise..."
+            value={userText}
+            onChange={(e) => setUserText(e.target.value)}
+            disabled={loading}
+            rows={6}
+          />
 
-      <input
-        type="text"
-        placeholder="Pergunta Específica (Opcional)"
-        value={specificQuestion}
-        onChange={(e) => setSpecificQuestion(e.target.value)}
-      />
-
-      <div className="button-group">
-        <button onClick={handleAnalyze} disabled={loading}>
-          {loading ? "Saphira está refletindo..." : "🔎 Analisar"}
-        </button>
-        <button onClick={handleClear}>🧹 Limpar</button>
-        <button onClick={handleTestConnection} disabled={connectionStatus === 'testing'}>
-          {connectionStatus === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
-        </button>
-      </div>
-
-      {connectionStatus !== 'unknown' && (
-        <div className={`connection-status ${connectionStatus}`}>
-          {connectionStatus === 'testing' && "🔄 Testando conexão..."}
-          {connectionStatus === 'online' && "✅ Backend Online"}
-          {connectionStatus === 'offline' && "❌ Backend Offline"}
+          <input
+            type="text"
+            placeholder="Pergunta Específica (Opcional)"
+            value={specificQuestion}
+            onChange={(e) => setSpecificQuestion(e.target.value)}
+            disabled={loading}
+          />
         </div>
-      )}
 
-      {keepAliveActive && (
-        <div className="keep-alive-indicator">
-          🔄 Keep-alive ativo (Backend protegido de idle)
+        <div className="button-group">
+          <button 
+            onClick={handleAnalyze} 
+            disabled={loading || !userText.trim()}
+            className={loading ? "loading" : ""}
+          >
+            {loading ? "🔄 Analisando..." : "🔎 Analisar"}
+          </button>
+          
+          <button 
+            onClick={handleClear} 
+            disabled={loading}
+          >
+            🧹 Limpar
+          </button>
+          
+          <button 
+            onClick={handleTestConnection} 
+            disabled={connectionStatus.status === 'testing'}
+            className={connectionStatus.status === 'testing' ? "loading" : ""}
+          >
+            {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
+          </button>
         </div>
-      )}
 
-      {result && (
-        <>
-          <div className="response-card">
-            <h3>💬 Saphira diz:</h3>
-            <p>{result.humanized_text}</p>
-          </div>
-
-          {result.technicalData && (
-            <div className="technical-card">
-              <h4>🧾 Dados Técnicos</h4>
-              <ul>
-                <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({Math.round((result.technicalData.tom?.confianca || 0) * 100)}%)</li>
-                <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
-                <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
-                <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
-              </ul>
+        {/* Status de Conexão */}
+        <div className="status-bar">
+          {connectionStatus.status !== 'unknown' && (
+            <div className={`connection-status ${connectionStatus.status}`}>
+              {connectionStatus.status === 'testing' && "🔄 Testando conexão..."}
+              {connectionStatus.status === 'online' && (
+                <>
+                  ✅ Backend Online
+                  {connectionStatus.responseTime && (
+                    <span className="response-time"> ({connectionStatus.responseTime}ms)</span>
+                  )}
+                </>
+              )}
+              {connectionStatus.status === 'offline' && "❌ Backend Offline"}
             </div>
           )}
-        </>
-      )}
+
+          {keepAliveActive && (
+            <div className="keep-alive-indicator">
+              🔄 Keep-alive ativo
+            </div>
+          )}
+        </div>
+
+        {/* Resultados */}
+        {result && (
+          <div className="results-section">
+            <div className="response-card">
+              <h3>💬 Saphira diz:</h3>
+              <p>{result.humanized_text}</p>
+            </div>
+
+            {result.technicalData && (
+              <details className="technical-card">
+                <summary>🧾 Dados Técnicos</summary>
+                <ul>
+                  <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({Math.round((result.technicalData.tom?.confianca || 0) * 100)}%)</li>
+                  <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
+                  <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
+                  <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
+                </ul>
+              </details>
+            )}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

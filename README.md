@@ -131,6 +131,7 @@ O sistema inclui diagnóstico completo que verifica:
 ---
 
 ## 📜 Histórico de Alterações
+- [2025-01-17 18:45:00 UTC] **v2.2 - Frontend Otimizado:** Performance aprimorada, UX fluida, loading states melhorados, error handling robusto, keep-alive otimizado, debounce nos botões
 - [2025-01-17 15:30:00 UTC] **v2.1 - Sistema Totalmente Funcional:** CORS resolvido, integração backend/frontend 100% operacional, teste de conexão aprimorado
 - [2025-01-10 17:00:00 UTC] **v2.0 - Integração Total:** Upload de arquivos, teste de conexão avançado, novos botões de exportação, área para gráficos
 - [2025-01-10 16:15:00 UTC] Interface reorganizada: resposta humanizada priorizada, novos botões TXT, área para gráficos futuros
