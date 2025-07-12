@@ -52,12 +52,10 @@ export default function App() {
   // Handler global para promises rejeitadas
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      // Filtrar erros conhecidos que são esperados
       if (event.reason?.name === 'AbortError' || 
           event.reason?.message?.includes('fetch')) {
-        return; // Ignorar erros de rede esperados
+        return;
       }
-      
       console.warn('Unhandled promise rejection:', event.reason);
       event.preventDefault();
     };
@@ -101,10 +99,7 @@ export default function App() {
         }
       };
 
-      // Ping inicial após 30 segundos
       const initialTimeout = setTimeout(pingBackend, 30000);
-      
-      // Pings regulares
       keepAliveIntervalRef.current = setInterval(pingBackend, KEEP_ALIVE_INTERVAL);
 
       return () => {
@@ -124,14 +119,12 @@ export default function App() {
     console.log(`📁 Arquivo integrado: ${fileName}`);
   }, []);
 
-  // Função de análise otimizada com debounce
+  // Função de análise otimizada
   const handleAnalyze = useCallback(async () => {
-    // Priorizar arquivo carregado sobre texto manual
     const textToAnalyze = uploadedFile?.content || userText.trim();
     
     if (loading || !textToAnalyze) return;
 
-    // Cancelar request anterior se existir
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -191,9 +184,9 @@ export default function App() {
     }
   }, [userText, specificQuestion, loading, createRequestWithTimeout, uploadedFile]);
 
-  // Função de limpeza otimizada
+  // Função de limpeza
   const handleClear = useCallback(() => {
-    if (loading) return; // Não limpar durante loading
+    if (loading) return;
     
     setUserText("");
     setSpecificQuestion("");
@@ -202,7 +195,7 @@ export default function App() {
     console.log("🧹 Interface limpa");
   }, [loading]);
 
-  // Teste de conexão otimizado
+  // Teste de conexão
   const handleTestConnection = useCallback(async () => {
     if (connectionStatus.status === 'testing') return;
 
@@ -270,111 +263,117 @@ export default function App() {
   }, []);
 
   return (
-    <div className="container">
-      <header>
-        <h1>💙 Saphira</h1>
-        <p className="subtitle">Análise Inteligente e Empática</p>
-      </header>
+    <div className="saphira-container">
+      {/* Header */}
+      <div className="saphira-header">
+        <h1 className="saphira-title">💙 Saphira</h1>
+        <p className="saphira-subtitle">Análise Inteligente e Empática</p>
+      </div>
 
-      <main>
-        <div className="input-section">
-          <textarea
-            placeholder="Digite seu texto ou pergunta para análise..."
-            value={userText}
-            onChange={(e) => setUserText(e.target.value)}
-            disabled={loading}
-            rows={6}
-          />
+      {/* Input Section */}
+      <div className="saphira-input-section">
+        <textarea
+          className="saphira-textarea"
+          placeholder="Digite seu texto ou pergunta para análise..."
+          value={userText}
+          onChange={(e) => setUserText(e.target.value)}
+          disabled={loading}
+          rows={6}
+        />
 
-          <input
-            type="text"
-            placeholder="Pergunta Específica (Opcional)"
-            value={specificQuestion}
-            onChange={(e) => setSpecificQuestion(e.target.value)}
-            disabled={loading}
-          />
+        <input
+          className="saphira-input"
+          type="text"
+          placeholder="Pergunta Específica (Opcional)"
+          value={specificQuestion}
+          onChange={(e) => setSpecificQuestion(e.target.value)}
+          disabled={loading}
+        />
+      </div>
+
+      {/* File Uploader */}
+      <FileUploader onFileContentChange={handleFileContentChange} />
+
+      {/* Upload Status */}
+      {uploadedFile && (
+        <div className="saphira-upload-info">
+          📁 <strong>Arquivo ativo:</strong> {uploadedFile.name} 
+          <span className="priority-note">(Será usado em vez do texto manual)</span>
         </div>
+      )}
 
-        <FileUploader onFileContentChange={handleFileContentChange} />
+      {/* Buttons */}
+      <div className="saphira-buttons">
+        <button 
+          className={`saphira-button ${loading ? 'loading' : ''}`}
+          onClick={handleAnalyze} 
+          disabled={loading || (!userText.trim() && !uploadedFile?.content)}
+        >
+          {loading ? "🔄 Analisando..." : "🔎 Analisar"}
+        </button>
+        
+        <button 
+          className="saphira-button"
+          onClick={handleClear} 
+          disabled={loading}
+        >
+          🧹 Limpar
+        </button>
+        
+        <button 
+          className={`saphira-button ${connectionStatus.status === 'testing' ? 'loading' : ''}`}
+          onClick={handleTestConnection} 
+          disabled={connectionStatus.status === 'testing'}
+        >
+          {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
+        </button>
+      </div>
 
-        {uploadedFile && (
-          <div className="upload-info">
-            📁 <strong>Arquivo ativo:</strong> {uploadedFile.name} 
-            <span className="priority-note">(Será usado em vez do texto manual)</span>
-          </div>
-        )}
-
-        <div className="button-group">
-          <button 
-            onClick={handleAnalyze} 
-            disabled={loading || (!userText.trim() && !uploadedFile?.content)}
-            className={loading ? "loading" : ""}
-          >
-            {loading ? "🔄 Analisando..." : "🔎 Analisar"}
-          </button>
-          
-          <button 
-            onClick={handleClear} 
-            disabled={loading}
-          >
-            🧹 Limpar
-          </button>
-          
-          <button 
-            onClick={handleTestConnection} 
-            disabled={connectionStatus.status === 'testing'}
-            className={connectionStatus.status === 'testing' ? "loading" : ""}
-          >
-            {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
-          </button>
-        </div>
-
-        {/* Status de Conexão */}
-        <div className="status-bar">
-          {connectionStatus.status !== 'unknown' && (
-            <div className={`connection-status ${connectionStatus.status}`}>
-              {connectionStatus.status === 'testing' && "🔄 Testando conexão..."}
-              {connectionStatus.status === 'online' && (
-                <>
-                  ✅ Backend Online
-                  {connectionStatus.responseTime && (
-                    <span className="response-time"> ({connectionStatus.responseTime}ms)</span>
-                  )}
-                </>
-              )}
-              {connectionStatus.status === 'offline' && "❌ Backend Offline"}
-            </div>
-          )}
-
-          {keepAliveActive && (
-            <div className="keep-alive-indicator">
-              🔄 Keep-alive ativo
-            </div>
-          )}
-        </div>
-
-        {/* Resultados */}
-        {result && (
-          <div className="results-section">
-            <div className="response-card">
-              <h3>💬 Saphira diz:</h3>
-              <p>{result.humanized_text}</p>
-            </div>
-
-            {result.technicalData && (
-              <details className="technical-card">
-                <summary>🧾 Dados Técnicos</summary>
-                <ul>
-                  <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({Math.round((result.technicalData.tom?.confianca || 0) * 100)}%)</li>
-                  <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
-                  <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
-                  <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
-                </ul>
-              </details>
+      {/* Status Bar */}
+      <div className="saphira-status-bar">
+        {connectionStatus.status !== 'unknown' && (
+          <div className={`saphira-status ${connectionStatus.status}`}>
+            {connectionStatus.status === 'testing' && "🔄 Testando conexão..."}
+            {connectionStatus.status === 'online' && (
+              <>
+                ✅ Backend Online
+                {connectionStatus.responseTime && (
+                  <span className="response-time"> ({connectionStatus.responseTime}ms)</span>
+                )}
+              </>
             )}
+            {connectionStatus.status === 'offline' && "❌ Backend Offline"}
           </div>
         )}
-      </main>
+
+        {keepAliveActive && (
+          <div className="saphira-keep-alive">
+            🔄 Keep-alive ativo
+          </div>
+        )}
+      </div>
+
+      {/* Results */}
+      {result && (
+        <div className="saphira-results">
+          <div className="saphira-response-card">
+            <h3>💬 Saphira diz:</h3>
+            <p>{result.humanized_text}</p>
+          </div>
+
+          {result.technicalData && (
+            <details className="saphira-technical-card">
+              <summary>🧾 Dados Técnicos</summary>
+              <ul>
+                <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({Math.round((result.technicalData.tom?.confianca || 0) * 100)}%)</li>
+                <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
+                <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
+                <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
+              </ul>
+            </details>
+          )}
+        </div>
+      )}
     </div>
   );
 }
