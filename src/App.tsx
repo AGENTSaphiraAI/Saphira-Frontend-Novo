@@ -122,7 +122,7 @@ export default function App() {
     try {
       // Timeout de 10 segundos para cada teste
       const timeoutPromise = (ms: number) => 
-        new Promise((_, reject) => 
+        new Promise<never>((_, reject) => 
           setTimeout(() => reject(new Error('Timeout de conexão')), ms)
         );
 
@@ -135,6 +135,7 @@ export default function App() {
           mode: "cors",
           cache: "no-cache"
         }).catch(err => {
+          console.error("❌ Base fetch error:", err);
           throw new Error(`Fetch failed: ${err.message}`);
         }),
         timeoutPromise(10000)
@@ -160,6 +161,7 @@ export default function App() {
           mode: "cors",
           cache: "no-cache"
         }).catch(err => {
+          console.error("❌ API fetch error:", err);
           throw new Error(`API fetch failed: ${err.message}`);
         }),
         timeoutPromise(15000)
