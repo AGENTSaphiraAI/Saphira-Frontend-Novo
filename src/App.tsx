@@ -30,12 +30,18 @@ export default function App() {
     setKeepAliveActive(true);
     
     const ping = setInterval(async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
+      
       try {
         const response = await fetch(`${BACKEND_BASE_URL}/health`, {
           method: "GET",
           mode: "cors",
-          cache: "no-cache"
+          cache: "no-cache",
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
           console.log("✅ Backend ping OK (keep-alive)");
@@ -45,22 +51,33 @@ export default function App() {
           setKeepAliveActive(false);
         }
       } catch (err) {
-        console.error("⚠️ Erro no ping (keep-alive):", err instanceof Error ? err.message : 'Erro desconhecido');
+        clearTimeout(timeoutId);
+        if (err instanceof Error && err.name !== 'AbortError') {
+          console.error("⚠️ Erro no ping (keep-alive):", err.message);
+        }
         setKeepAliveActive(false);
       }
     }, 300000); // a cada 5 minutos (menos agressivo)
 
     // Ping inicial após 30 segundos (dar tempo para o app carregar)
     const initialPing = setTimeout(async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
       try {
         await fetch(`${BACKEND_BASE_URL}/health`, {
           method: "GET",
           mode: "cors",
-          cache: "no-cache"
+          cache: "no-cache",
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
         console.log("✅ Ping inicial do backend realizado");
       } catch (err) {
-        console.log("⚠️ Ping inicial falhou:", err instanceof Error ? err.message : 'Erro desconhecido');
+        clearTimeout(timeoutId);
+        if (err instanceof Error && err.name !== 'AbortError') {
+          console.log("⚠️ Ping inicial falhou:", err.message);
+        }
       }
     }, 30000);
 
@@ -167,18 +184,21 @@ export default function App() {
     console.log("🎯 [TESTE] API endpoint:", apiEndpoint);
 
     try {
-      // PRIMEIRO: Teste GET simples na raiz
+      // PRIMEIRO: Teste GET simples na raiz (opcional - pode falhar)
       console.log("🎯 TESTE 1: GET simples na raiz do backend");
-      const getRootTest = await fetch(BACKEND_BASE_URL, {
-        method: "GET",
-        mode: "cors"
-      }).catch(e => {
-        console.error("❌ GET raiz falhou:", e instanceof Error ? e.message : 'Erro desconhecido');
-        return null;
-      });
-
-      if (getRootTest && getRootTest.ok) {
-        console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
+      try {
+        const getRootTest = await fetch(BACKEND_BASE_URL, {
+          method: "GET",
+          mode: "cors"
+        });
+        
+        if (getRootTest && getRootTest.ok) {
+          console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
+        } else {
+          console.log("⚠️ GET raiz retornou status:", getRootTest?.status || 'indefinido');
+        }
+      } catch (e) {
+        console.log("ℹ️ GET raiz não disponível (normal):", e instanceof Error ? e.message : 'Erro de conexão');
       }
 
       // Timeout de 10 segundos para cada teste
@@ -204,9 +224,6 @@ export default function App() {
           }),
           mode: "cors",
           cache: "no-cache"
-        }).catch(err => {
-          console.error("❌ API fetch error:", err instanceof Error ? err.message : 'Erro desconhecido');
-          throw new Error(`API test failed: ${err instanceof Error ? err.message : 'Erro desconhecido'}`);
         }),
         timeoutPromise(8000)
       ]) as Response;
