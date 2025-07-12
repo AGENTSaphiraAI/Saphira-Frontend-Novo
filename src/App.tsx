@@ -132,10 +132,10 @@ export default function App() {
         );
 
       // Primeiro teste: verificar se o servidor está respondendo
-      console.log("🌐 Testando servidor base:", backendUrl);
+      console.log("🌐 Testando servidor base:", BACKEND_BASE_URL);
 
       const baseResponse = await Promise.race([
-        fetch(backendUrl, {
+        fetch(BACKEND_BASE_URL, {
           method: "GET",
           mode: "cors",
           cache: "no-cache"
@@ -143,7 +143,7 @@ export default function App() {
           console.error("❌ Base fetch error:", err);
           throw new Error(`Fetch failed: ${err.message}`);
         }),
-        timeoutPromise(10000)
+        timeoutPromise(5000)
       ]) as Response;
 
       console.log("✅ Servidor base - Status:", baseResponse.status);
@@ -169,7 +169,7 @@ export default function App() {
           console.error("❌ API fetch error:", err);
           throw new Error(`API fetch failed: ${err.message}`);
         }),
-        timeoutPromise(15000)
+        timeoutPromise(8000)
       ]) as Response;
 
       console.log("✅ API POST - Status:", testResponse.status);
