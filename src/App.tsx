@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
 import FileUploader from "./components/FileUploader";
+import AuditModal from "./components/AuditModal";
+import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
   status: 'unknown' | 'testing' | 'online' | 'offline';
@@ -19,6 +21,15 @@ interface ApiResponse {
   };
 }
 
+interface AuditEntry {
+  id: string;
+  timestamp: Date;
+  originalText: string;
+  fileName?: string;
+  response: string;
+  verificationCode: string;
+}
+
 export default function App() {
   // Estados principais
   const [userText, setUserText] = useState("");
@@ -28,6 +39,8 @@ export default function App() {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'unknown' });
   const [keepAliveActive, setKeepAliveActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{ content: string; name: string } | null>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -113,6 +126,29 @@ export default function App() {
     return startKeepAlive();
   }, [createRequestWithTimeout]);
 
+  // Utilitário para gerar código de verificação
+  const generateVerificationCode = useCallback(() => {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    return `SAP-${timestamp.toString(36).toUpperCase()}-${random.toUpperCase()}`;
+  }, []);
+
+  // Utilitário para adicionar entrada de auditoria
+  const addAuditEntry = useCallback((originalText: string, response: string, fileName?: string) => {
+    const entry: AuditEntry = {
+      id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      timestamp: new Date(),
+      originalText,
+      fileName,
+      response,
+      verificationCode: generateVerificationCode()
+    };
+    
+    setAuditLogs(prev => [entry, ...prev]);
+    console.log(`🛡️ Auditoria registrada: ${entry.verificationCode}`);
+    return entry.verificationCode;
+  }, [generateVerificationCode]);
+
   // Handler para arquivo carregado
   const handleFileContentChange = useCallback((content: string, fileName: string) => {
     setUploadedFile({ content, name: fileName });
@@ -161,7 +197,18 @@ export default function App() {
 
       const data = await response.json();
       console.log("✅ Análise concluída");
-      setResult(data.displayData);
+      
+      // Registrar na auditoria
+      const verificationCode = addAuditEntry(
+        textToAnalyze,
+        data.displayData?.humanized_text || "Resposta não disponível",
+        uploadedFile?.name
+      );
+      
+      setResult({
+        ...data.displayData,
+        verificationCode
+      });
 
     } catch (error: unknown) {
       console.error("❌ Erro na análise:", error);
@@ -194,6 +241,55 @@ export default function App() {
     setUploadedFile(null);
     console.log("🧹 Interface limpa");
   }, [loading]);
+
+  // Função para exportar resposta em JSON
+  const handleExportResponseJSON = useCallback(() => {
+    if (!result) {
+      alert("⚠️ Nenhuma resposta para exportar.");
+      return;
+    }
+
+    const exportData = {
+      response: result.humanized_text,
+      technicalData: result.technicalData,
+      verificationCode: result.verificationCode,
+      timestamp: new Date().toISOString(),
+      metadata: {
+        originalText: uploadedFile?.content || userText,
+        fileName: uploadedFile?.name,
+        question: specificQuestion
+      }
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const fileName = `saphira_response_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+    saveAs(blob, fileName);
+    
+    console.log(`📥 Resposta JSON exportada: ${fileName}`);
+  }, [result, uploadedFile, userText, specificQuestion]);
+
+  // Função para exportar logs de auditoria
+  const handleExportAuditLogs = useCallback(() => {
+    if (auditLogs.length === 0) {
+      alert("⚠️ Nenhum log de auditoria para exportar.");
+      return;
+    }
+
+    const exportData = {
+      exportTimestamp: new Date().toISOString(),
+      totalEntries: auditLogs.length,
+      auditLogs: auditLogs.map(log => ({
+        ...log,
+        timestamp: log.timestamp.toISOString()
+      }))
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const fileName = `saphira_audit_logs_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+    saveAs(blob, fileName);
+    
+    console.log(`🛡️ Logs de auditoria exportados: ${fileName}`);
+  }, [auditLogs]);
 
   // Teste de conexão
   const handleTestConnection = useCallback(async () => {
@@ -329,6 +425,32 @@ export default function App() {
         </button>
       </div>
 
+      {/* Export and Audit Section */}
+      <div className="saphira-export-section">
+        <div className="export-buttons">
+          <button 
+            className="saphira-button export-button"
+            onClick={handleExportResponseJSON}
+            disabled={!result}
+            title="Exportar resposta em formato JSON"
+          >
+            📥 Exportar JSON
+          </button>
+          
+          <button 
+            className="saphira-button audit-button"
+            onClick={() => setIsAuditModalOpen(true)}
+            title="Ver histórico de análises"
+          >
+            🛡️ Ver Auditoria ({auditLogs.length})
+          </button>
+        </div>
+        
+        <div className="future-exports">
+          <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
+        </div>
+      </div>
+
       {/* Status Bar */}
       <div className="saphira-status-bar">
         {connectionStatus.status !== 'unknown' && (
@@ -361,6 +483,13 @@ export default function App() {
             <p>{result.humanized_text}</p>
           </div>
 
+          {result.verificationCode && (
+            <div className="saphira-verification">
+              <span className="verification-label">🔐 Código de verificação:</span>
+              <code className="verification-code">{result.verificationCode}</code>
+            </div>
+          )}
+
           {result.technicalData && (
             <details className="saphira-technical-card">
               <summary>🧾 Dados Técnicos</summary>
@@ -374,6 +503,14 @@ export default function App() {
           )}
         </div>
       )}
+
+      {/* Audit Modal */}
+      <AuditModal
+        isOpen={isAuditModalOpen}
+        onClose={() => setIsAuditModalOpen(false)}
+        auditLogs={auditLogs}
+        onExportLogs={handleExportAuditLogs}
+      />
     </div>
   );
 }

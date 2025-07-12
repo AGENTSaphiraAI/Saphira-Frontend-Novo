@@ -17,8 +17,9 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.endsWith(".txt") && !file.name.endsWith(".json")) {
-      alert("⚠️ Apenas arquivos .txt ou .json são permitidos.");
+    // Only allow .txt files for upload
+    if (!file.name.endsWith(".txt")) {
+      alert("⚠️ Apenas arquivos .txt são permitidos para upload.");
       return;
     }
 
@@ -116,16 +117,19 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     <div className="file-uploader">
       <div className="upload-section">
         <label htmlFor="file-upload" className="upload-label">
-          📁 Selecionar Arquivo (.txt/.json)
+          📁 Selecionar Arquivo (.txt)
         </label>
         <input
           id="file-upload"
           type="file"
-          accept=".txt,.json"
+          accept=".txt"
           onChange={handleFileChange}
           disabled={isUploading}
           className="file-input"
         />
+        <div className="upload-info">
+          <p className="upload-note">📝 Suporte futuro: PDF e DOC</p>
+        </div>
       </div>
 
       {isUploading && (
