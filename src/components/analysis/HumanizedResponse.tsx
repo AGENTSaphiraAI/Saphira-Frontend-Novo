@@ -18,4 +18,4 @@ const HumanizedResponse: React.FC<HumanizedResponseProps> = ({ data }) => {
   );
 };
 
-export default HumanizedResponse;se;
+export default HumanizedResponse;
