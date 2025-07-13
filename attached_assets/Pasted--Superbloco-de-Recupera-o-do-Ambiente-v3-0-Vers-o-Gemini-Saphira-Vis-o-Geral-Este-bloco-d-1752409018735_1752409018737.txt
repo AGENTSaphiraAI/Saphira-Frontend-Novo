@@ -1,0 +1,51 @@
+ Superbloco de Recuperação do Ambiente — v3.0 (Versão Gemini & Saphira)
+✅ Visão Geral: Este bloco de comando foi projetado para executar uma recuperação de "nível de fábrica" no ambiente npm do Replit, corrigindo quaisquer problemas de cache corrompido ou dependências inconsistentes. A ordem dos comandos é crítica para o sucesso.
+➡️ Instrução Final para o Agente do Replit:
+Execute as seguintes duas etapas em ordem.
+Etapa 1: Garantir a Integridade do package.json
+Primeiro, atualize o arquivo package.json para garantir que ele contenha a lista de dependências correta e auditada. Isso prepara o terreno para a reinstalação.
+// 📄 ATUALIZAR ARQUIVO: package.json
+Substitua todo o conteúdo do arquivo package.json por este código:
+Generated json
+{
+  "name": "saphira-frontend-novo",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "framer-motion": "^11.2.10",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "lucide-react": "^0.395.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react18-json-view": "^0.2.6",
+    "recharts": "^2.12.7"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  }
+}
+Use code with caution.
+Json
+✨ Otimização Gemini: Atualizei as versões para as últimas estáveis compatíveis com Vite 5 e React 18 e removi o radix-ui já que ainda não foi usado, para manter o build limpo. Também adicionei dependências de desenvolvimento (@vitejs/plugin-react, eslint, etc.) que são padrão em um projeto Vite moderno, caso o Replit precise delas.
+Etapa 2: Executar o "Reset de Fábrica"
+Agora que o package.json está perfeito, execute este comando único e poderoso no Shell para reconstruir todo o ambiente do zero absoluto.
+// ⚡ EXECUTAR COMANDO NO SHELL:
+Generated bash
+rm -rf node_modules package-lock.json && npm cache clean --force && npm install
