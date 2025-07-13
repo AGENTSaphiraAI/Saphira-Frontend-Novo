@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, BarChart3, Code, Download } from 'lucide-react';
 import ReportTab from './tabs/ReportTab';
@@ -42,7 +42,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
     }
   ];
 
-  const handleExportPdf = async () => {
+  const handleExportPdf = useCallback(async () => {
     setIsExporting(true);
     try {
       await exportSaphiraReportToPdf(response);
@@ -52,7 +52,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
     } finally {
       setIsExporting(false);
     }
-  };
+  }, [response]);
 
   return (
     <motion.div 

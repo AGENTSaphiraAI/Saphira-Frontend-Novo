@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import "./App.css";
 import FileUploader from "./components/FileUploader";
 import AnalysisDisplay from "./components/analysis/AnalysisDisplay";
@@ -57,15 +57,15 @@ export default function App() {
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
 
-  // Placeholder examples - prontos para modularização futura
-  const placeholderExamples = [
+  // Placeholder examples - otimizado com useMemo
+  const placeholderExamples = useMemo(() => [
     "Cole aqui um texto para análise de sentimento e tom...",
     "Digite um artigo para verificar contradições e viés...",
     "Analise este conteúdo para detectar padrões linguísticos...",
     "Avalie a coerência e objetividade deste documento...",
     "Verifique a estrutura argumentativa desta mensagem...",
     "Examine este texto para análise técnica completa..."
-  ];
+  ], []);
 
   // Utilitário para criar requests com timeout
   const createRequestWithTimeout = useCallback((url: string, options: RequestInit, timeout = REQUEST_TIMEOUT) => {
@@ -118,14 +118,14 @@ export default function App() {
     }, 800); // 800ms para UX mais suave
   }, []);
 
-  // Keep-alive otimizado
+  // Keep-alive otimizado com debounce
   useEffect(() => {
+    let debounceTimeout: NodeJS.Timeout;
+    
     const startKeepAlive = () => {
       if (keepAliveIntervalRef.current) {
         clearInterval(keepAliveIntervalRef.current);
       }
-
-      setKeepAliveActive(true);
 
       const pingBackend = async () => {
         try {
@@ -133,16 +133,14 @@ export default function App() {
             method: "GET",
             mode: "cors",
             cache: "no-cache"
-          }, 8000);
+          }, 6000); // Reduzido timeout para melhor UX
 
           const response = await request;
           cleanup();
 
           if (response.ok) {
-            console.log("✅ Keep-alive OK");
             setKeepAliveActive(true);
           } else {
-            console.warn("⚠️ Keep-alive warning:", response.status);
             setKeepAliveActive(false);
           }
         } catch (err) {
@@ -153,11 +151,14 @@ export default function App() {
         }
       };
 
-      const initialTimeout = setTimeout(pingBackend, 30000);
-      keepAliveIntervalRef.current = setInterval(pingBackend, KEEP_ALIVE_INTERVAL);
+      // Debounce inicial para evitar múltiplas chamadas
+      debounceTimeout = setTimeout(() => {
+        pingBackend();
+        keepAliveIntervalRef.current = setInterval(pingBackend, KEEP_ALIVE_INTERVAL);
+      }, 2000);
 
       return () => {
-        clearTimeout(initialTimeout);
+        clearTimeout(debounceTimeout);
         if (keepAliveIntervalRef.current) {
           clearInterval(keepAliveIntervalRef.current);
         }
@@ -390,14 +391,18 @@ export default function App() {
   // Cleanup ao desmontar - prevenção de vazamento de memória
   useEffect(() => {
     return () => {
+      // Cleanup mais robusto
       if (keepAliveIntervalRef.current) {
         clearInterval(keepAliveIntervalRef.current);
+        keepAliveIntervalRef.current = null;
       }
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
+        abortControllerRef.current = null;
       }
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
       }
     };
   }, []);
