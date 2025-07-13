@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import jsPDF from "jspdf";
 import { saveAs } from "file-saver";
-import { Document, Packer, Paragraph, TextRun } from "docx";
+// import { Document, Packer, Paragraph, TextRun } from 'docx';
 
 interface FileUploaderProps {
   onFileContentChange?: (content: string, fileName: string) => void;
@@ -31,20 +30,20 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
       setFileContent(content);
       setFileName(file.name);
       setIsUploading(false);
-      
+
       // Notificar componente pai se callback fornecido
       if (onFileContentChange) {
         onFileContentChange(content, file.name);
       }
-      
+
       console.log(`📁 Arquivo carregado: ${file.name} (${content.length} caracteres)`);
     };
-    
+
     reader.onerror = () => {
       setIsUploading(false);
       alert("❌ Erro ao ler o arquivo. Tente novamente.");
     };
-    
+
     reader.readAsText(file);
   };
 
@@ -58,10 +57,10 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
       const doc = new jsPDF();
       const lines = doc.splitTextToSize(fileContent, 180);
       doc.text(lines, 10, 10);
-      
+
       const pdfFileName = fileName ? fileName.replace(/\.[^/.]+$/, "") + ".pdf" : "saphira_export.pdf";
       doc.save(pdfFileName);
-      
+
       console.log(`📄 PDF exportado: ${pdfFileName}`);
     } catch (error) {
       console.error("❌ Erro ao exportar PDF:", error);
@@ -76,23 +75,24 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     }
 
     try {
-      const doc = new Document({
-        sections: [
-          {
-            properties: {},
-            children: [
-              new Paragraph({
-                children: [new TextRun(fileContent)],
-              }),
-            ],
-          },
-        ],
-      });
+      // const doc = new Document({
+      //   sections: [
+      //     {
+      //       properties: {},
+      //       children: [
+      //         new Paragraph({
+      //           children: [new TextRun(fileContent)],
+      //         }),
+      //       ],
+      //     },
+      //   ],
+      // });
 
-      const blob = await Packer.toBlob(doc);
+      // const blob = await Packer.toBlob(doc);
       const docFileName = fileName ? fileName.replace(/\.[^/.]+$/, "") + ".docx" : "saphira_export.docx";
-      saveAs(blob, docFileName);
-      
+      // saveAs(blob, docFileName);
+      alert("❌ Exportação DOC não suportada no momento.");
+
       console.log(`📝 DOC exportado: ${docFileName}`);
     } catch (error) {
       console.error("❌ Erro ao exportar DOC:", error);
@@ -103,13 +103,13 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
   const handleRemoveFile = () => {
     setFileContent(null);
     setFileName(null);
-    
+
     // Reset input
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
     }
-    
+
     console.log("🗑️ Arquivo removido");
   };
 
@@ -153,7 +153,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
               🗑️
             </button>
           </div>
-          
+
           <div className="file-content">
             <pre className="content-preview">
               {fileContent.length > 500 
