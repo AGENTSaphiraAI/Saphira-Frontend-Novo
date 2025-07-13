@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
 import FileUploader from "./components/FileUploader";
-import AuditModal from "./components/AuditModal";
 import AnalysisDisplay from "./components/analysis/AnalysisDisplay";
+import AuditModal from "./components/AuditModal";
+import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
 
@@ -56,7 +56,7 @@ export default function App() {
   const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
-  
+
   // Placeholder examples - prontos para modularização futura
   const placeholderExamples = [
     "Cole aqui um texto para análise de sentimento e tom...",
@@ -98,7 +98,7 @@ export default function App() {
     const interval = setInterval(() => {
       setCurrentPlaceholder(prev => (prev + 1) % placeholderExamples.length);
     }, 3500);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -106,12 +106,12 @@ export default function App() {
   const handleTypingFeedback = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserText(e.target.value);
     setIsTyping(true);
-    
+
     // Limpa o timeout anterior se o usuário continuar digitando
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
-    
+
     // Define um novo timeout com duração otimizada
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
@@ -184,7 +184,7 @@ export default function App() {
       response,
       verificationCode: generateVerificationCode()
     };
-    
+
     setAuditLogs(prev => [entry, ...prev]);
     console.log(`🛡️ Auditoria registrada: ${entry.verificationCode}`);
     return entry.verificationCode;
@@ -199,7 +199,7 @@ export default function App() {
   // Função de análise otimizada
   const handleAnalyze = useCallback(async () => {
     const textToAnalyze = uploadedFile?.content || userText.trim();
-    
+
     if (loading || !textToAnalyze) return;
 
     if (abortControllerRef.current) {
@@ -238,14 +238,14 @@ export default function App() {
 
       const data = await response.json();
       console.log("✅ Análise concluída");
-      
+
       // Registrar na auditoria
       const verificationCode = addAuditEntry(
         textToAnalyze,
         data.displayData?.humanized_text || "Resposta não disponível",
         uploadedFile?.name
       );
-      
+
       setResult({
         ...data.displayData,
         verificationCode
@@ -275,7 +275,7 @@ export default function App() {
   // Função de limpeza
   const handleClear = useCallback(() => {
     if (loading) return;
-    
+
     setUserText("");
     setSpecificQuestion("");
     setResult(null);
@@ -305,7 +305,7 @@ export default function App() {
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
     const fileName = `saphira_response_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
     saveAs(blob, fileName);
-    
+
     console.log(`📥 Resposta JSON exportada: ${fileName}`);
   }, [result, uploadedFile, userText, specificQuestion]);
 
@@ -328,7 +328,7 @@ export default function App() {
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
     const fileName = `saphira_audit_logs_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
     saveAs(blob, fileName);
-    
+
     console.log(`🛡️ Logs de auditoria exportados: ${fileName}`);
   }, [auditLogs]);
 
@@ -338,7 +338,7 @@ export default function App() {
 
     console.log("🔗 Testando conexão...");
     const startTime = Date.now();
-    
+
     setConnectionStatus({ status: 'testing' });
 
     try {
@@ -369,7 +369,7 @@ export default function App() {
           lastChecked: new Date(), 
           responseTime 
         });
-        
+
         alert(`🎉 CONEXÃO ESTABELECIDA!\n\n✅ Status: ${response.status} OK\n⚡ Tempo: ${responseTime}ms\n🔗 Backend: Online\n\nResposta: ${data.substring(0, 100)}...`);
       } else {
         throw new Error(`Status ${response.status}`);
@@ -451,7 +451,7 @@ export default function App() {
         >
           {loading ? "🔄 Analisando..." : "🔎 Analisar"}
         </button>
-        
+
         <button 
           className="saphira-button"
           onClick={handleClear} 
@@ -459,7 +459,7 @@ export default function App() {
         >
           🧹 Limpar
         </button>
-        
+
         <button 
           className={`saphira-button ${connectionStatus.status === 'testing' ? 'loading' : ''}`}
           onClick={handleTestConnection} 
@@ -480,7 +480,7 @@ export default function App() {
           >
             📥 Exportar JSON
           </button>
-          
+
           <button 
             className="saphira-button audit-button"
             onClick={() => setIsAuditModalOpen(true)}
@@ -489,7 +489,7 @@ export default function App() {
             🛡️ Ver Auditoria ({auditLogs.length})
           </button>
         </div>
-        
+
         <div className="future-exports">
           <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
         </div>
@@ -522,10 +522,7 @@ export default function App() {
       {/* Results */}
       {result && (
         <div className="saphira-results">
-          <AnalysisDisplay 
-            results={result}
-            onOpenTechnical={() => setIsTechnicalModalOpen(true)}
-          />
+          <AnalysisDashboard response={result} />
         </div>
       )}
 
