@@ -1,0 +1,60 @@
+🚀 SUPERBLOCO CONSOLIDADO E OTIMIZADO — Frontend v3.0 (O Painel de Comando Interativo)
+✅ Visão Geral: O conceito central é abolir a simples "área de resposta" e, após uma análise, transformar toda a seção em um Dashboard de Análise Interativo. Este dashboard se tornará o novo coração da aplicação, oferecendo uma hierarquia de informação que vai da conclusão sumária aos dados mais granulares.
+➡️ Instrução Final para o Agente do Replit:
+Execute o seguinte plano de implementação para o projeto Saphira-Frontend-Novo.
+Etapa 1: A Nova Estrutura da Interface (App.tsx)
+Refatore o componente App.tsx para, após uma análise bem-sucedida, não apenas exibir uma resposta, mas renderizar um componente principal chamado <AnalysisDashboard />, passando a resposta completa da API como prop.
+Generated typescript
+// Em App.tsx
+{analysisResponse ? (
+  <AnalysisDashboard response={analysisResponse} />
+) : (
+  // O que é exibido antes da análise
+)}
+Use code with caution.
+TypeScript
+Etapa 2: O Novo Componente <AnalysisDashboard />
+Este será o contêiner principal para toda a experiência pós-análise.
+// 📁 ARQUIVO NOVO: src/components/dashboard/AnalysisDashboard.tsx
+Ele terá a seguinte estrutura interna:
+1. Um Header Dinâmico: (Elemento Surpresa ✨)
+Um cabeçalho que resume o resultado antes mesmo das abas.
+Conterá um "Selo de Integridade Saphira": um ícone (como um escudo 🛡️) com uma cor que muda baseada na pontuação de coerência (verde para alta, amarelo para média, vermelho para baixa).
+Ao lado do selo, o "Diagnóstico Principal (Core ALMA)" será exibido de forma destacada.
+2. O Sistema de Abas (Tabs):
+Logo abaixo do header, renderizar os 3 botões de abas: Relatório, Métricas Visuais e Dados Brutos.
+Abaixo dos botões, uma área de conteúdo que muda conforme a aba ativa.
+Etapa 3: O Conteúdo Detalhado de Cada Aba e Seus Subcomponentes
+Aba 1: "Relatório"
+// 📄 COMPONENTE: <ReportTab content={response.interpreted_response} />
+Exibirá a resposta Markdown da Saphira.
+✨ Otimização Gemini: Incluirá um botão de cópia (Clipboard API) no canto superior direito do card, permitindo copiar o relatório completo com um clique.
+Aba 2: "Métricas Visuais" (O Ponto Central)
+// 📊 COMPONENTE: <MetricsTab technicalData={response.technicalData} />
+Exibirá o grid 2x2 de cards. Cada card é um componente independente:
+Card #1 - Gráfico de Análise: <RadarAnalysisCard data={...} />
+Exibirá o Gráfico de Radar que já conhecemos. Sem mudanças aqui, ele é perfeito.
+Card #2 - Diagnóstico de Tom: <ToneAnalysisCard data={...} />
+✨ Otimização Gemini: Não será apenas texto. Mostrará um ícone proeminente (:), :|, :() e um termo claro (Positivo, Neutro, Negativo). A cor de fundo do card mudará sutilmente para refletir o tom (verde-claro, cinza-claro, rosa-claro).
+Card #3 - Integridade do Documento: <IntegrityCard data={...} />
+✨ Otimização Gemini: Mostrará as métricas de "Coerência Lógica" e "Clareza" usando barras de progresso ou gráficos de anel (donuts) para uma visualização rápida e impactante.
+Card #4 - Conceitos-Chave (NEXUM): <NexumKeywordsCard keywords={[...]} />
+✨ Otimização Gemini: Exibirá as palavras-chave extraídas não como uma lista, mas como "tags" ou "pills" estilizadas, com um leve efeito de hover. Isso as torna mais interativas e visualmente agradáveis.
+Aba 3: "Dados Brutos"
+// 💾 COMPONENTE: <RawDataTab data={response.technicalData} />
+Usará o react-json-view como planejado, garantindo total transparência e auditabilidade.
+Etapa 4: Implementação das Funcionalidades de Utilidade
+Botão de Exportação para PDF
+// 📄 FUNÇÃO UTILITÁRIA: src/utils/exportToPdf.ts
+✨ Otimização Gemini (Relatório Profissional):
+Página 1: Terá um cabeçalho fixo com o Logo da Saphira, o título "Relatório de Análise Técnica" e o timestamp da geração. Abaixo, o conteúdo da "Aba Relatório".
+Página 2: Terá um título "Análise de Métricas" e uma imagem de alta qualidade gerada com html2canvas da "Aba de Métricas Visuais".
+Rodapé: Todas as páginas terão um rodapé discreto: "Gerado pela Saphira - Análise Inteligente, Técnica e Auditável".
+Etapa 5: Dependências Necessárias
+Instrua o Agente a instalar as bibliotecas necessárias para todas estas funcionalidades.
+// 📦 COMANDO DE INSTALAÇÃO:
+Generated bash
+npm install recharts react-json-view jspdf html2canvas framer-motion lucide-react
+Use code with caution.
+Bash
+(Nota: framer-motion para animações fluidas entre abas e lucide-react para um conjunto de ícones limpos e de alta qualidade para os botões de copiar e cards).
