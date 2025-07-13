@@ -3,6 +3,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
 import FileUploader from "./components/FileUploader";
 import AuditModal from "./components/AuditModal";
+import AnalysisDisplay from "./components/analysis/AnalysisDisplay";
+import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
@@ -41,6 +43,9 @@ export default function App() {
   const [uploadedFile, setUploadedFile] = useState<{ content: string; name: string } | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -50,6 +55,15 @@ export default function App() {
   const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
+  
+  // Placeholder examples
+  const placeholderExamples = [
+    "Cole aqui um texto para análise de sentimento...",
+    "Digite um artigo para verificar contradições...",
+    "Analise este conteúdo para detectar viés...",
+    "Avalie a coerência deste documento...",
+    "Verifique a objetividade desta mensagem..."
+  ];
 
   // Utilitário para criar requests com timeout
   const createRequestWithTimeout = useCallback((url: string, options: RequestInit, timeout = REQUEST_TIMEOUT) => {
@@ -75,6 +89,25 @@ export default function App() {
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
     return () => window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+  }, []);
+
+  // Placeholder dinâmico
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPlaceholder(prev => (prev + 1) % placeholderExamples.length);
+    }, 3500);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  // Typing detection for micro-interactions
+  const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUserText(e.target.value);
+    setIsTyping(true);
+    
+    // Clear typing state after 500ms of no activity
+    const timeoutId = setTimeout(() => setIsTyping(false), 500);
+    return () => clearTimeout(timeoutId);
   }, []);
 
   // Keep-alive otimizado
@@ -362,17 +395,17 @@ export default function App() {
     <div className="saphira-container">
       {/* Header */}
       <div className="saphira-header">
-        <h1 className="saphira-title">💙 Saphira</h1>
+        <h1 className={`saphira-title ${isTyping ? 'logo-typing' : ''}`}>💙 Saphira</h1>
         <p className="saphira-subtitle">Análise Inteligente, Técnica e Auditável</p>
       </div>
 
       {/* Input Section */}
       <div className="saphira-input-section">
         <textarea
-          className="saphira-textarea"
-          placeholder="Digite seu texto ou pergunta para análise..."
+          className={`saphira-textarea ${isTyping ? 'typing' : ''}`}
+          placeholder={placeholderExamples[currentPlaceholder]}
           value={userText}
-          onChange={(e) => setUserText(e.target.value)}
+          onChange={handleTextareaChange}
           disabled={loading}
           rows={6}
         />
@@ -478,29 +511,10 @@ export default function App() {
       {/* Results */}
       {result && (
         <div className="saphira-results">
-          <div className="saphira-response-card">
-            <h3>💬 Saphira diz:</h3>
-            <p>{result.humanized_text}</p>
-          </div>
-
-          {result.verificationCode && (
-            <div className="saphira-verification">
-              <span className="verification-label">🔐 Código de verificação:</span>
-              <code className="verification-code">{result.verificationCode}</code>
-            </div>
-          )}
-
-          {result.technicalData && (
-            <details className="saphira-technical-card">
-              <summary>🧾 Dados Técnicos</summary>
-              <ul>
-                <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({Math.round((result.technicalData.tom?.confianca || 0) * 100)}%)</li>
-                <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
-                <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
-                <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
-              </ul>
-            </details>
-          )}
+          <AnalysisDisplay 
+            results={result}
+            onOpenTechnical={() => setIsTechnicalModalOpen(true)}
+          />
         </div>
       )}
 
@@ -510,6 +524,13 @@ export default function App() {
         onClose={() => setIsAuditModalOpen(false)}
         auditLogs={auditLogs}
         onExportLogs={handleExportAuditLogs}
+      />
+
+      {/* Technical Modal */}
+      <TechnicalModal
+        isOpen={isTechnicalModalOpen}
+        onClose={() => setIsTechnicalModalOpen(false)}
+        technicalData={result?.technicalData}
       />
     </div>
   );
