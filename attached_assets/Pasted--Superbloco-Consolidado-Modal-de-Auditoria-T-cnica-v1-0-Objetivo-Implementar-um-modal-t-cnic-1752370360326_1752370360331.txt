@@ -1,0 +1,243 @@
+🚀 Superbloco Consolidado — Modal de Auditoria Técnica v1.0
+✅ Objetivo: Implementar um modal técnico de alta performance, visualmente impressionante e com experiência de usuário (UX) aprimorada, integrando-o perfeitamente à aplicação principal.
+Nota de Engenharia (Gemini): A estrutura fornecida estava excelente. As otimizações abaixo focam em:
+Segurança de Tipos (TypeScript): Eliminar o uso de any.
+Robustez: Garantir que o componente não quebre com dados inesperados.
+Experiência de Usuário: Adicionar animações sutis e interações intuitivas (como fechar com a tecla 'Escape').
+Performance: Garantir que o CSS seja limpo e as animações, fluidas.
+PASSO 1: Criar o Novo Componente do Modal
+Crie o arquivo abaixo. Este código já está otimizado com segurança de tipos, tratamento para dados ausentes e melhorias de UX.
+// 📁 ARQUIVO NOVO: src/components/analysis/TechnicalAuditModal.tsx
+Generated typescript
+import React, { useEffect } from 'react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, Legend, ResponsiveContainer } from 'recharts';
+import ReactJson from 'react-json-view';
+
+// ✨ OTIMIZAÇÃO: Interface para segurança de tipos. Chega de 'any'.
+interface TechnicalData {
+  tone?: number;
+  bias?: number;
+  clarity?: number;
+  consistency?: number;
+  contradiction?: number;
+  [key: string]: any; // Permite outras chaves
+}
+
+interface TechnicalAuditModalProps {
+  technicalData: TechnicalData | null;
+  onClose: () => void;
+};
+
+const TechnicalAuditModal: React.FC<TechnicalAuditModalProps> = ({ technicalData, onClose }) => {
+  // ✨ OTIMIZAÇÃO: Hook para fechar o modal com a tecla 'Escape' (melhora de UX).
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [onClose]);
+
+  // ✨ OTIMIZAÇÃO: Guarda de segurança. Não renderiza nada se não houver dados.
+  if (!technicalData) {
+    return null;
+  }
+
+  // Mapeamento robusto dos dados para o gráfico.
+  const radarData = [
+    { subject: 'Clareza', score: technicalData.clarity || 0, fullMark: 100 },
+    { subject: 'Consistência', score: technicalData.consistency || 0, fullMark: 100 },
+    { subject: 'Viés Detectado', score: technicalData.bias || 0, fullMark: 100 },
+    { subject: 'Contradição', score: technicalData.contradiction || 0, fullMark: 100 },
+    { subject: 'Tom (Positivo)', score: technicalData.tone || 0, fullMark: 100 },
+  ];
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close-button" onClick={onClose}>×</button>
+        <h2>Análise Técnica Detalhada</h2>
+
+        <div className="chart-container">
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart outerRadius="80%" data={radarData}>
+              <PolarGrid stroke="#4A5568" />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#E2E8F0' }} />
+              <Radar name="Saphira Score" dataKey="score" stroke="#0B74E5" fill="#0B74E5" fillOpacity={0.7} />
+              <Legend />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+        
+        <div className="json-container">
+          <h3>Estrutura de Dados Completa</h3>
+          <ReactJson
+            src={technicalData}
+            theme="ocean"
+            iconStyle="triangle"
+            collapsed={2}
+            displayDataTypes={false}
+            enableClipboard={false}
+            style={{ padding: '1rem', borderRadius: '8px' }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TechnicalAuditModal;
+Use code with caution.
+TypeScript
+PASSO 2: Adicionar o Estilo do Modal
+Adicione este código ao seu arquivo CSS principal. Ele contém as animações e os estilos para todos os novos elementos.
+// 🎨 ARQUIVO A SER ATUALIZADO: src/App.css (ou seu arquivo de estilo principal)
+Generated css
+/* Animação de entrada para o modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Estilo do Overlay (fundo escuro) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 25, 47, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Conteúdo do Modal */
+.modal-content {
+  background: #0A192F; /* Fundo do modal um pouco mais escuro que o overlay */
+  color: #E2E8F0;
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
+  border: 1px solid #0B74E5;
+  box-shadow: 0 10px 30px rgba(2, 12, 27, 0.7);
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.4s ease-out;
+}
+
+.modal-content h2 {
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #0B74E5;
+  padding-bottom: 1rem;
+}
+
+.chart-container {
+  width: 100%;
+  height: 350px;
+  margin-bottom: 2rem;
+}
+
+.json-container h3 {
+  color: #FFFFFF;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Botão de Fechar do Modal (X no canto) */
+.modal-close-button {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: #CBD5E0;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.modal-close-button:hover {
+  color: #FFFFFF;
+  transform: scale(1.1);
+}
+Use code with caution.
+Css
+PASSO 3: Integrar Tudo na Aplicação Principal
+Modifique seu arquivo App.tsx para incluir a lógica que controla a exibição do modal.
+// 🔗 ARQUIVO A SER ATUALIZADO: src/App.tsx
+Generated typescript
+// 1. Adicione a importação do novo modal
+import TechnicalAuditModal from './components/analysis/TechnicalAuditModal';
+
+// 2. Dentro do seu componente App
+function App() {
+  // ...seus outros estados (isAnalyzing, response, etc.)...
+
+  // ✨ OTIMIZAÇÃO: Um único estado para controlar tanto os dados quanto a exibição do botão.
+  // Começa como 'null'. Quando recebe os dados, o botão aparece.
+  const [technicalAuditData, setTechnicalAuditData] = useState<object | null>(null);
+
+  // ✨ OTIMIZAÇÃO: Um estado separado e claro para a visibilidade do modal.
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  // 3. Após a sua chamada de API, quando você recebe a resposta:
+  const handleAnalysisSuccess = (apiResponse: any) => {
+    // ...seu código que processa a resposta principal...
+    
+    // Armazena os dados técnicos para o modal.
+    setTechnicalAuditData(apiResponse.technicalData); 
+  };
+  
+  // Função para limpar o estado (provavelmente usada no seu botão "Limpar")
+  const handleClear = () => {
+    // ...seu outro código de limpeza...
+    setTechnicalAuditData(null);
+    setIsModalOpen(false);
+  };
+
+
+  // 4. No seu JSX, adicione o botão e o modal:
+  return (
+    <div className="app-container">
+      {/* ... seu layout principal, textarea, botões ... */}
+
+      {/* Botão de Análise Detalhada (só aparece se houver dados técnicos) */}
+      {technicalAuditData && (
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="btn-technical-analysis" // Recomendo uma classe específica
+        >
+          🔎 Ver Análise Técnica Detalhada
+        </button>
+      )}
+
+      {/* Renderização do Modal (só monta quando isModalOpen é true) */}
+      {isModalOpen && (
+        <TechnicalAuditModal
+          technicalData={technicalAuditData}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
