@@ -1,0 +1,48 @@
+🚀 Superbloco Definitivo — O Dashboard Saphira v3.1
+✅ Visão: Transformar a interface de resposta em um Dashboard de Análise Interativo completo, com abas, métricas visuais e funcionalidades de exportação profissional.
+➡️ Instrução Final e Única para o Agente do Replit:
+Execute o seguinte plano completo para implementar a nova interface do Saphira-Frontend-Novo.
+Etapa 1: Instalar as Dependências do Dashboard
+Execute o seguinte comando no Shell para adicionar as bibliotecas necessárias para a nova UI.
+Generated bash
+npm install framer-motion lucide-react recharts jspdf html2canvas
+Use code with caution.
+Bash
+(Nota: react18-json-view não está nesta lista, pois já foi instalado e validado com sucesso na etapa anterior. Estamos apenas adicionando o que falta.)
+Etapa 2: A Nova Arquitetura de Exibição
+A. Refatorar App.tsx:
+Modifique o App.tsx para que, após receber uma resposta da API, ele renderize um novo componente <AnalysisDashboard />, passando a resposta completa.
+Generated typescript
+{analysisResponse ? (
+  <AnalysisDashboard response={analysisResponse} />
+) : (
+  /* O layout de boas-vindas que já existe */
+)}
+Use code with caution.
+TypeScript
+B. Criar AnalysisDashboard.tsx:
+Crie o arquivo src/components/dashboard/AnalysisDashboard.tsx. Este será o contêiner que terá o estado para controlar as abas ativas e que renderizará os botões das abas e o conteúdo de cada uma.
+Etapa 3: Criar os Componentes para Cada Aba
+Crie os três componentes que representarão o conteúdo de cada aba.
+1. src/components/dashboard/tabs/ReportTab.tsx
+Receberá o interpreted_response e o renderizará em Markdown.
+Deve incluir um botão com um ícone (lucide-react) para copiar o texto.
+2. src/components/dashboard/tabs/MetricsTab.tsx
+Receberá o technicalData e exibirá um grid 2x2.
+Cada célula do grid será um subcomponente de card: RadarAnalysisCard, ToneAnalysisCard, IntegrityCard e NexumKeywordsCard.
+Esses cards usarão gráficos (Recharts), ícones (Lucide) e barras de progresso para exibir as métricas de forma visual e intuitiva.
+3. src/components/dashboard/tabs/RawDataTab.tsx
+Receberá o technicalData.
+Instrução Crítica: Usará a biblioteca react18-json-view que já foi instalada. O import será:
+import JsonView from 'react18-json-view';
+Renderizará <JsonView data={technicalData} ... />.
+Etapa 4: Implementar a Função de Exportação
+Crie um novo arquivo de utilidade.
+// 📁 ARQUIVO NOVO: src/utils/exportToPdf.ts
+Crie uma função exportSaphiraReportToPdf que use jspdf e html2canvas para:
+Gerar uma imagem da "Aba de Métricas Visuais".
+Criar um PDF com duas páginas:
+Página 1: Um cabeçalho com o logo da Saphira, a data e a resposta de texto do "Relatório Principal".
+Página 2: A imagem gerada da análise de métricas.
+Conclusão para o Agente:
+O objetivo é claro. Instale as dependências. Crie os novos componentes de dashboard e abas. Conecte-os ao App.tsx. Implemente a função de exportação. O resultado final deve ser a nova interface interativa, rica e totalmente funcional.
