@@ -1,0 +1,238 @@
+
+/* Estilos base para todos os cards */
+.analysis-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  height: fit-content;
+}
+
+.analysis-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
+.card-header h3 {
+  margin: 0 0 4px 0;
+  color: #1e293b;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.card-content {
+  color: #374151;
+}
+
+/* Estilos específicos para ToneAnalysisCard */
+.tone-card {
+  transition: all 0.3s ease;
+}
+
+.tone-display {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.tone-icon {
+  flex-shrink: 0;
+}
+
+.tone-info {
+  flex: 1;
+}
+
+.tone-info h4 {
+  margin: 0 0 16px 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.confidence-bar {
+  width: 100%;
+}
+
+.confidence-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #475569;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Estilos específicos para IntegrityCard */
+.overall-score {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 2px solid;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.metrics-rings {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.metric-ring {
+  text-align: center;
+  min-width: 100px;
+}
+
+.ring-svg {
+  transform: rotate(-90deg);
+}
+
+.metric-label {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+/* Estilos específicos para NexumKeywordsCard */
+.keywords-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.keyword-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.keyword-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  filter: brightness(1.1);
+}
+
+.keywords-stats {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #3b82f6;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .analysis-card {
+    padding: 20px;
+  }
+  
+  .tone-display {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .metrics-rings {
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .metric-ring {
+    min-width: 80px;
+  }
+  
+  .keywords-container {
+    gap: 6px;
+  }
+  
+  .keyword-pill {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .analysis-card {
+    padding: 16px;
+  }
+  
+  .card-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .tone-info h4 {
+    font-size: 1.2rem;
+  }
+  
+  .keywords-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

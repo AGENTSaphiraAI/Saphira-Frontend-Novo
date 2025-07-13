@@ -1,0 +1,174 @@
+
+.report-tab {
+  max-width: 100%;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.report-header h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.report-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.copy-button {
+  background: #3b82f6;
+  color: white;
+}
+
+.copy-button:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.copy-button.copied {
+  background: #10b981;
+}
+
+.pdf-button {
+  background: #dc2626;
+  color: white;
+}
+
+.pdf-button:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
+}
+
+.pdf-button.loading {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pdf-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.report-content {
+  margin-bottom: 24px;
+}
+
+.content-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.markdown-content {
+  line-height: 1.7;
+  color: #374151;
+}
+
+.formatted-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.no-content {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+}
+
+.no-content p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.report-footer {
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.footer-text {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.saphira-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .report-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .copy-button {
+    justify-content: center;
+  }
+  
+  .content-card {
+    padding: 20px;
+  }
+  
+  .formatted-text {
+    font-size: 0.95rem;
+  }
+  
+  .footer-text {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-card {
+    padding: 16px;
+  }
+  
+  .formatted-text {
+    font-size: 0.9rem;
+  }
+}
