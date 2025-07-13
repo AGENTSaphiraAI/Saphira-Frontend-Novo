@@ -1,14 +1,26 @@
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
 import FileUploader from "./components/FileUploader";
 import AuditModal from "./components/AuditModal";
-import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
+import AnalysisDisplay from "./components/analysis/AnalysisDisplay";
+import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
   status: 'unknown' | 'testing' | 'online' | 'offline';
   lastChecked?: Date;
   responseTime?: number;
+}
+
+interface ApiResponse {
+  humanized_text: string;
+  technicalData?: {
+    tom?: { tipo: string; confianca: number };
+    vies?: { detectado: boolean; confianca: number };
+    contradicoes?: { detectada: boolean; confianca: number };
+    sugestao?: string;
+  };
 }
 
 interface AuditEntry {
@@ -24,7 +36,7 @@ export default function App() {
   // Estados principais
   const [userText, setUserText] = useState("");
   const [specificQuestion, setSpecificQuestion] = useState("");
-  const [analysisResponse, setAnalysisResponse] = useState<any>(null);
+  const [result, setResult] = useState<{ humanized_text: string; technicalData?: any; verificationCode?: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'unknown' });
   const [keepAliveActive, setKeepAliveActive] = useState(false);
@@ -33,6 +45,7 @@ export default function App() {
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -40,11 +53,11 @@ export default function App() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Constantes
-  const BACKEND_BASE_URL = window.location.origin;
+  const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
-
-  // Placeholder examples
+  
+  // Placeholder examples - prontos para modularização futura
   const placeholderExamples = [
     "Cole aqui um texto para análise de sentimento e tom...",
     "Digite um artigo para verificar contradições e viés...",
@@ -85,7 +98,7 @@ export default function App() {
     const interval = setInterval(() => {
       setCurrentPlaceholder(prev => (prev + 1) % placeholderExamples.length);
     }, 3500);
-
+    
     return () => clearInterval(interval);
   }, []);
 
@@ -93,14 +106,16 @@ export default function App() {
   const handleTypingFeedback = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserText(e.target.value);
     setIsTyping(true);
-
+    
+    // Limpa o timeout anterior se o usuário continuar digitando
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
-
+    
+    // Define um novo timeout com duração otimizada
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
-    }, 800);
+    }, 800); // 800ms para UX mais suave
   }, []);
 
   // Keep-alive otimizado
@@ -169,7 +184,7 @@ export default function App() {
       response,
       verificationCode: generateVerificationCode()
     };
-
+    
     setAuditLogs(prev => [entry, ...prev]);
     console.log(`🛡️ Auditoria registrada: ${entry.verificationCode}`);
     return entry.verificationCode;
@@ -184,7 +199,7 @@ export default function App() {
   // Função de análise otimizada
   const handleAnalyze = useCallback(async () => {
     const textToAnalyze = uploadedFile?.content || userText.trim();
-
+    
     if (loading || !textToAnalyze) return;
 
     if (abortControllerRef.current) {
@@ -192,7 +207,7 @@ export default function App() {
     }
 
     setLoading(true);
-    setAnalysisResponse(null);
+    setResult(null);
 
     console.log("🔍 Iniciando análise...");
 
@@ -223,27 +238,18 @@ export default function App() {
 
       const data = await response.json();
       console.log("✅ Análise concluída");
-
+      
       // Registrar na auditoria
       const verificationCode = addAuditEntry(
         textToAnalyze,
-        data.interpreted_response || data.displayData?.humanized_text || "Resposta não disponível",
+        data.displayData?.humanized_text || "Resposta não disponível",
         uploadedFile?.name
       );
-
-      // Estruturar dados para o dashboard
-      const formattedResponse = {
-        ...data,
-        verificationCode,
-        metadata: {
-          originalText: textToAnalyze,
-          fileName: uploadedFile?.name,
-          question: specificQuestion,
-          timestamp: new Date().toISOString()
-        }
-      };
-
-      setAnalysisResponse(formattedResponse);
+      
+      setResult({
+        ...data.displayData,
+        verificationCode
+      });
 
     } catch (error: unknown) {
       console.error("❌ Erro na análise:", error);
@@ -260,11 +266,7 @@ export default function App() {
         }
       }
 
-      setAnalysisResponse({ 
-        interpreted_response: errorMessage,
-        error: true,
-        verificationCode: undefined 
-      });
+      setResult({ humanized_text: errorMessage, verificationCode: undefined });
     } finally {
       setLoading(false);
     }
@@ -273,18 +275,62 @@ export default function App() {
   // Função de limpeza
   const handleClear = useCallback(() => {
     if (loading) return;
-
+    
     setUserText("");
     setSpecificQuestion("");
-    setAnalysisResponse(null);
+    setResult(null);
     setUploadedFile(null);
     console.log("🧹 Interface limpa");
   }, [loading]);
 
-  // Função para voltar ao painel de entrada
-  const handleBackToInput = useCallback(() => {
-    setAnalysisResponse(null);
-  }, []);
+  // Função para exportar resposta em JSON
+  const handleExportResponseJSON = useCallback(() => {
+    if (!result) {
+      alert("⚠️ Nenhuma resposta para exportar.");
+      return;
+    }
+
+    const exportData = {
+      response: result.humanized_text,
+      technicalData: result.technicalData,
+      verificationCode: result.verificationCode,
+      timestamp: new Date().toISOString(),
+      metadata: {
+        originalText: uploadedFile?.content || userText,
+        fileName: uploadedFile?.name,
+        question: specificQuestion
+      }
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const fileName = `saphira_response_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+    saveAs(blob, fileName);
+    
+    console.log(`📥 Resposta JSON exportada: ${fileName}`);
+  }, [result, uploadedFile, userText, specificQuestion]);
+
+  // Função para exportar logs de auditoria
+  const handleExportAuditLogs = useCallback(() => {
+    if (auditLogs.length === 0) {
+      alert("⚠️ Nenhum log de auditoria para exportar.");
+      return;
+    }
+
+    const exportData = {
+      exportTimestamp: new Date().toISOString(),
+      totalEntries: auditLogs.length,
+      auditLogs: auditLogs.map(log => ({
+        ...log,
+        timestamp: log.timestamp.toISOString()
+      }))
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const fileName = `saphira_audit_logs_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+    saveAs(blob, fileName);
+    
+    console.log(`🛡️ Logs de auditoria exportados: ${fileName}`);
+  }, [auditLogs]);
 
   // Teste de conexão
   const handleTestConnection = useCallback(async () => {
@@ -292,7 +338,7 @@ export default function App() {
 
     console.log("🔗 Testando conexão...");
     const startTime = Date.now();
-
+    
     setConnectionStatus({ status: 'testing' });
 
     try {
@@ -323,7 +369,7 @@ export default function App() {
           lastChecked: new Date(), 
           responseTime 
         });
-
+        
         alert(`🎉 CONEXÃO ESTABELECIDA!\n\n✅ Status: ${response.status} OK\n⚡ Tempo: ${responseTime}ms\n🔗 Backend: Online\n\nResposta: ${data.substring(0, 100)}...`);
       } else {
         throw new Error(`Status ${response.status}`);
@@ -341,7 +387,7 @@ export default function App() {
     }
   }, [connectionStatus.status, createRequestWithTimeout]);
 
-  // Cleanup ao desmontar
+  // Cleanup ao desmontar - prevenção de vazamento de memória
   useEffect(() => {
     return () => {
       if (keepAliveIntervalRef.current) {
@@ -358,110 +404,129 @@ export default function App() {
 
   return (
     <div className="saphira-container">
-      {analysisResponse ? (
-        <AnalysisDashboard 
-          response={analysisResponse} 
-          onBackToInput={handleBackToInput}
+      {/* Header */}
+      <div className="saphira-header">
+        <h1 className={`saphira-title ${isTyping ? 'logo-typing-effect' : ''}`}>💙 Saphira</h1>
+        <p className="saphira-subtitle">Análise Inteligente, Técnica e Auditável</p>
+      </div>
+
+      {/* Input Section */}
+      <div className="saphira-input-section">
+        <textarea
+          className={`saphira-textarea ${isTyping ? 'typing' : ''}`}
+          placeholder={placeholderExamples[currentPlaceholder]}
+          value={userText}
+          onChange={handleTypingFeedback}
+          disabled={loading}
+          rows={6}
         />
-      ) : (
-        <>
-          {/* Header */}
-          <div className="saphira-header">
-            <h1 className={`saphira-title ${isTyping ? 'logo-typing-effect' : ''}`}>💙 Saphira</h1>
-            <p className="saphira-subtitle">Análise Inteligente, Técnica e Auditável</p>
-          </div>
 
-          {/* Input Section */}
-          <div className="saphira-input-section">
-            <textarea
-              className={`saphira-textarea ${isTyping ? 'typing' : ''}`}
-              placeholder={placeholderExamples[currentPlaceholder]}
-              value={userText}
-              onChange={handleTypingFeedback}
-              disabled={loading}
-              rows={6}
-            />
+        <input
+          className="saphira-input"
+          type="text"
+          placeholder="Pergunta Específica (Opcional)"
+          value={specificQuestion}
+          onChange={(e) => setSpecificQuestion(e.target.value)}
+          disabled={loading}
+        />
+      </div>
 
-            <input
-              className="saphira-input"
-              type="text"
-              placeholder="Pergunta Específica (Opcional)"
-              value={specificQuestion}
-              onChange={(e) => setSpecificQuestion(e.target.value)}
-              disabled={loading}
-            />
-          </div>
+      {/* File Uploader */}
+      <FileUploader onFileContentChange={handleFileContentChange} />
 
-          {/* File Uploader */}
-          <FileUploader onFileContentChange={handleFileContentChange} />
+      {/* Upload Status */}
+      {uploadedFile && (
+        <div className="saphira-upload-info">
+          📁 <strong>Arquivo ativo:</strong> {uploadedFile.name} 
+          <span className="priority-note">(Será usado em vez do texto manual)</span>
+        </div>
+      )}
 
-          {/* Upload Status */}
-          {uploadedFile && (
-            <div className="saphira-upload-info">
-              📁 <strong>Arquivo ativo:</strong> {uploadedFile.name} 
-              <span className="priority-note">(Será usado em vez do texto manual)</span>
-            </div>
-          )}
+      {/* Buttons */}
+      <div className="saphira-buttons">
+        <button 
+          className={`saphira-button ${loading ? 'loading' : ''}`}
+          onClick={handleAnalyze} 
+          disabled={loading || (!userText.trim() && !uploadedFile?.content)}
+        >
+          {loading ? "🔄 Analisando..." : "🔎 Analisar"}
+        </button>
+        
+        <button 
+          className="saphira-button"
+          onClick={handleClear} 
+          disabled={loading}
+        >
+          🧹 Limpar
+        </button>
+        
+        <button 
+          className={`saphira-button ${connectionStatus.status === 'testing' ? 'loading' : ''}`}
+          onClick={handleTestConnection} 
+          disabled={connectionStatus.status === 'testing'}
+        >
+          {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
+        </button>
+      </div>
 
-          {/* Buttons */}
-          <div className="saphira-buttons">
-            <button 
-              className={`saphira-button ${loading ? 'loading' : ''}`}
-              onClick={handleAnalyze} 
-              disabled={loading || (!userText.trim() && !uploadedFile?.content)}
-            >
-              {loading ? "🔄 Analisando..." : "🔎 Analisar"}
-            </button>
+      {/* Export and Audit Section */}
+      <div className="saphira-export-section">
+        <div className="export-buttons">
+          <button 
+            className="saphira-button export-button"
+            onClick={handleExportResponseJSON}
+            disabled={!result}
+            title="Exportar resposta em formato JSON"
+          >
+            📥 Exportar JSON
+          </button>
+          
+          <button 
+            className="saphira-button audit-button"
+            onClick={() => setIsAuditModalOpen(true)}
+            title="Ver histórico de análises"
+          >
+            🛡️ Ver Auditoria ({auditLogs.length})
+          </button>
+        </div>
+        
+        <div className="future-exports">
+          <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
+        </div>
+      </div>
 
-            <button 
-              className="saphira-button"
-              onClick={handleClear} 
-              disabled={loading}
-            >
-              🧹 Limpar
-            </button>
-
-            <button 
-              className={`saphira-button ${connectionStatus.status === 'testing' ? 'loading' : ''}`}
-              onClick={handleTestConnection} 
-              disabled={connectionStatus.status === 'testing'}
-            >
-              {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
-            </button>
-
-            <button 
-              className="saphira-button audit-button"
-              onClick={() => setIsAuditModalOpen(true)}
-              title="Ver histórico de análises"
-            >
-              🛡️ Auditoria ({auditLogs.length})
-            </button>
-          </div>
-
-          {/* Status Bar */}
-          <div className="saphira-status-bar">
-            {connectionStatus.status !== 'unknown' && (
-              <div className={`saphira-status ${connectionStatus.status}`}>
-                {connectionStatus.status === 'testing' && "🔄 Testando conexão..."}
-                {connectionStatus.status === 'online' && (
-                  <>
-                    ✅ Backend Online
-                    {connectionStatus.responseTime && (
-                      <span className="response-time"> ({connectionStatus.responseTime}ms)</span>
-                    )}
-                  </>
+      {/* Status Bar */}
+      <div className="saphira-status-bar">
+        {connectionStatus.status !== 'unknown' && (
+          <div className={`saphira-status ${connectionStatus.status}`}>
+            {connectionStatus.status === 'testing' && "🔄 Testando conexão..."}
+            {connectionStatus.status === 'online' && (
+              <>
+                ✅ Backend Online
+                {connectionStatus.responseTime && (
+                  <span className="response-time"> ({connectionStatus.responseTime}ms)</span>
                 )}
-                {connectionStatus.status === 'offline' && "❌ Backend Offline"}
-              </div>
+              </>
             )}
-
-            {keepAliveActive && (
-              <div className="saphira-keep-alive">
-                🔄 Keep-alive ativo
-              </div>
-            )}
+            {connectionStatus.status === 'offline' && "❌ Backend Offline"}
           </div>
-        </>
+        )}
+
+        {keepAliveActive && (
+          <div className="saphira-keep-alive">
+            🔄 Keep-alive ativo
+          </div>
+        )}
+      </div>
+
+      {/* Results */}
+      {result && (
+        <div className="saphira-results">
+          <AnalysisDisplay 
+            results={result}
+            onOpenTechnical={() => setIsTechnicalModalOpen(true)}
+          />
+        </div>
       )}
 
       {/* Audit Modal */}
@@ -469,19 +534,14 @@ export default function App() {
         isOpen={isAuditModalOpen}
         onClose={() => setIsAuditModalOpen(false)}
         auditLogs={auditLogs}
-        onExportLogs={() => {
-          const exportData = {
-            exportTimestamp: new Date().toISOString(),
-            totalEntries: auditLogs.length,
-            auditLogs: auditLogs.map(log => ({
-              ...log,
-              timestamp: log.timestamp.toISOString()
-            }))
-          };
-          const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-          const fileName = `saphira_audit_logs_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
-          saveAs(blob, fileName);
-        }}
+        onExportLogs={handleExportAuditLogs}
+      />
+
+      {/* Technical Modal */}
+      <TechnicalModal
+        isOpen={isTechnicalModalOpen}
+        onClose={() => setIsTechnicalModalOpen(false)}
+        technicalData={result?.technicalData || null}
       />
     </div>
   );

@@ -548,6 +548,49 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* Responsividade */
+@media (max-width: 768px) {
+  .saphira-container {
+    padding: 1rem;
+  }
+
+  .saphira-title {
+    font-size: 2.5rem;
+  }
+
+  .saphira-buttons {
+    flex-direction: column;
+  }
+
+  .saphira-button {
+    min-width: auto;
+  }
+
+  .export-buttons {
+    flex-direction: column;
+  }
+
+  .audit-modal {
+    width: 95%;
+    margin: 0.5rem;
+  }
+
+  .audit-controls {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .audit-entry-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .audit-entry-content {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Export and Audit Styles */
 .saphira-export-section {
   margin: 1.5rem 0;
@@ -868,6 +911,7 @@ body {
 .technical-modal {
   max-width: 900px;
   max-height: 80vh;
+  overflow-y: auto;
 }
 
 .audit-modal-overlay {
@@ -1035,128 +1079,5 @@ body {
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
-  }
-}
-
-/* Estilos para transições suaves */
-.saphira-container {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Animação para mudança de estado */
-.state-transition {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Estilos para overlay de loading */
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #e2e8f0;
-  border-top: 4px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Melhorias nos botões */
-.saphira-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.saphira-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.saphira-button:hover::before {
-  left: 100%;
-}
-
-/* Estilos para cards flutuantes */
-.floating-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .saphira-container {
-    padding: 15px;
-  }
-
-  .saphira-header h1 {
-    font-size: 2rem;
-  }
-
-  .saphira-buttons {
-    flex-direction: column;
-  }
-
-  .saphira-button {
-    width: 100%;
-  }
-
-  .saphira-upload-info {
-    text-align: center;
-  }
-
-  .priority-note {
-    display: block;
-    margin-top: 4px;
-  }
-
-  .export-buttons {
-    flex-direction: column;
-  }
-
-  .export-button, .audit-button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .saphira-header h1 {
-    font-size: 1.8rem;
-  }
-
-  .saphira-subtitle {
-    font-size: 0.9rem;
-  }
-
-  .saphira-textarea {
-    rows: 4;
-  }
-
-  .future-note {
-    font-size: 0.75rem;
   }
 }
