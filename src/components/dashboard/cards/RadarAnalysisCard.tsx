@@ -7,6 +7,9 @@ interface RadarAnalysisCardProps {
   data: any;
 }
 
+import React from 'react';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from 'recharts';
+
 interface RadarAnalysisCardProps {
   data?: any;
 }
