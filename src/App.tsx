@@ -50,19 +50,21 @@ export default function App() {
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Constantes
   const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
   
-  // Placeholder examples
+  // Placeholder examples - prontos para modularização futura
   const placeholderExamples = [
-    "Cole aqui um texto para análise de sentimento...",
-    "Digite um artigo para verificar contradições...",
-    "Analise este conteúdo para detectar viés...",
-    "Avalie a coerência deste documento...",
-    "Verifique a objetividade desta mensagem..."
+    "Cole aqui um texto para análise de sentimento e tom...",
+    "Digite um artigo para verificar contradições e viés...",
+    "Analise este conteúdo para detectar padrões linguísticos...",
+    "Avalie a coerência e objetividade deste documento...",
+    "Verifique a estrutura argumentativa desta mensagem...",
+    "Examine este texto para análise técnica completa..."
   ];
 
   // Utilitário para criar requests com timeout
@@ -100,21 +102,20 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Refs para controle de timeouts
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Typing detection for micro-interactions
-  const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  // Função otimizada para feedback de digitação
+  const handleTypingFeedback = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserText(e.target.value);
     setIsTyping(true);
     
-    // Clear previous timeout
+    // Limpa o timeout anterior se o usuário continuar digitando
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
     
-    // Set new timeout to clear typing state after 500ms
-    typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 500);
+    // Define um novo timeout com duração otimizada
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+    }, 800); // 800ms para UX mais suave
   }, []);
 
   // Keep-alive otimizado
@@ -386,7 +387,7 @@ export default function App() {
     }
   }, [connectionStatus.status, createRequestWithTimeout]);
 
-  // Cleanup ao desmontar
+  // Cleanup ao desmontar - prevenção de vazamento de memória
   useEffect(() => {
     return () => {
       if (keepAliveIntervalRef.current) {
@@ -405,7 +406,7 @@ export default function App() {
     <div className="saphira-container">
       {/* Header */}
       <div className="saphira-header">
-        <h1 className={`saphira-title ${isTyping ? 'logo-typing' : ''}`}>💙 Saphira</h1>
+        <h1 className={`saphira-title ${isTyping ? 'logo-typing-effect' : ''}`}>💙 Saphira</h1>
         <p className="saphira-subtitle">Análise Inteligente, Técnica e Auditável</p>
       </div>
 
@@ -415,7 +416,7 @@ export default function App() {
           className={`saphira-textarea ${isTyping ? 'typing' : ''}`}
           placeholder={placeholderExamples[currentPlaceholder]}
           value={userText}
-          onChange={handleTextareaChange}
+          onChange={handleTypingFeedback}
           disabled={loading}
           rows={6}
         />

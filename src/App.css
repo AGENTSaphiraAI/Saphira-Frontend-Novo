@@ -1,8 +1,26 @@
+/* Paleta de Cores Global */
+:root {
+  --saphira-blue-deep: #0B74E5;
+  --saphira-blue-light: #64b5f6;
+  --saphira-blue-bright: #1e90ff;
+  --saphira-accent: #ffd54f;
+  --saphira-shadow-light: rgba(0, 0, 0, 0.1);
+  --saphira-shadow-medium: rgba(0, 0, 0, 0.15);
+  --saphira-shadow-dark: rgba(0, 0, 0, 0.25);
+  --saphira-glass-bg: rgba(255, 255, 255, 0.05);
+  --saphira-glass-border: rgba(255, 255, 255, 0.2);
+}
+
 /* Reset e base */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Transições otimizadas - apenas elementos interativos */
+button, a, input, textarea, .saphira-title, .analysis-card {
+  transition: all 0.2s ease-in-out;
 }
 
 body {
@@ -41,10 +59,22 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Typing glow effect */
-.saphira-title.logo-typing {
-  filter: drop-shadow(0 0 20px rgba(30, 144, 255, 0.8));
-  transform: scale(1.02);
+/* Logo typing effect - otimizado com filter */
+.saphira-title.logo-typing-effect {
+  filter: drop-shadow(0 0 15px var(--saphira-blue-deep));
+  transform: scale(1.05);
+  animation: logoGlow 0.3s ease-in-out;
+}
+
+@keyframes logoGlow {
+  0% { 
+    filter: drop-shadow(0 0 5px var(--saphira-blue-deep));
+    transform: scale(1);
+  }
+  100% { 
+    filter: drop-shadow(0 0 15px var(--saphira-blue-deep));
+    transform: scale(1.05);
+  }
 }
 
 .saphira-subtitle {
@@ -85,7 +115,8 @@ body {
 .saphira-input:focus {
   outline: none;
   background: rgba(255, 255, 255, 1);
-  box-shadow: 0 6px 25px rgba(30, 144, 255, 0.3);
+  border: 2px solid var(--saphira-blue-deep);
+  box-shadow: 0 0 0 3px rgba(11, 116, 229, 0.25), 0 6px 25px rgba(30, 144, 255, 0.3);
   transform: translateY(-2px);
 }
 
@@ -108,10 +139,23 @@ body {
   cursor: not-allowed;
 }
 
-/* Typing border glow effect */
+/* Typing border glow effect - otimizado */
 .saphira-textarea.typing {
-  border: 2px solid rgba(30, 144, 255, 0.6);
+  border: 2px solid var(--saphira-blue-bright);
   box-shadow: 0 0 15px rgba(30, 144, 255, 0.4);
+  background: rgba(255, 255, 255, 0.98);
+}
+
+/* Performance: usar transform em vez de modificar layout */
+.saphira-response-card:hover,
+.saphira-technical-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 40px var(--saphira-shadow-dark);
+}
+
+/* Otimização para cards de análise */
+.analysis-card {
+  will-change: transform, opacity;
 }
 
 /* Buttons */
@@ -160,7 +204,13 @@ body {
 }
 
 .saphira-button:active:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(0);
+  box-shadow: 0 2px 8px var(--saphira-shadow-light);
+}
+
+.saphira-button:focus:not(:disabled) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(11, 116, 229, 0.25);
 }
 
 .saphira-button:disabled {
