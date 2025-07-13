@@ -71,7 +71,7 @@ const RadarAnalysisCard: React.FC<RadarAnalysisCardProps> = ({ technicalData }) 
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .metric-card {
           background: white;
           border: 1px solid #e2e8f0;

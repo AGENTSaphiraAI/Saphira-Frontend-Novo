@@ -73,7 +73,7 @@ const ToneAnalysisCard: React.FC<ToneAnalysisCardProps> = ({ technicalData }) =>
         </ResponsiveContainer>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .tone-card .card-content {
           gap: 1.5rem;
         }

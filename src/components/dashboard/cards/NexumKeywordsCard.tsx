@@ -27,7 +27,7 @@ const NexumKeywordsCard: React.FC<NexumKeywordsCardProps> = ({ technicalData }) 
   };
 
   const keywords = getKeywords();
-  const totalRelevance = keywords.reduce((sum, kw) => sum + kw.relevance, 0);
+  const totalRelevance = keywords.reduce((sum: number, kw: any) => sum + kw.relevance, 0);
   const avgRelevance = totalRelevance / keywords.length;
 
   return (
@@ -49,7 +49,7 @@ const NexumKeywordsCard: React.FC<NexumKeywordsCardProps> = ({ technicalData }) 
         </div>
 
         <div className="keywords-list">
-          {keywords.map((keyword, index) => (
+          {keywords.map((keyword: any, index: number) => (
             <div key={index} className="keyword-item">
               <span className="keyword-text">{keyword.word}</span>
               <div className="keyword-bar">
@@ -64,7 +64,7 @@ const NexumKeywordsCard: React.FC<NexumKeywordsCardProps> = ({ technicalData }) 
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .keywords-card .card-content {
           gap: 1.5rem;
         }

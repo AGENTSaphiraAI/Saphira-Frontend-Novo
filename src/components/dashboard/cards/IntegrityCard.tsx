@@ -70,7 +70,7 @@ const IntegrityCard: React.FC<IntegrityCardProps> = ({ technicalData }) => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .integrity-card .card-content {
           gap: 1.5rem;
         }

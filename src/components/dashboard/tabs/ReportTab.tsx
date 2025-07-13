@@ -71,7 +71,7 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .report-tab {
           display: flex;
           flex-direction: column;

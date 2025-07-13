@@ -61,7 +61,7 @@ const MetricsTab: React.FC<MetricsTabProps> = ({ technicalData }) => {
         </motion.div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .metrics-tab {
           display: flex;
           flex-direction: column;
