@@ -541,6 +541,10 @@ export default function App() {
       <TechnicalModal
         isOpen={isTechnicalModalOpen}
         onClose={() => setIsTechnicalModalOpen(false)}
+        technicalData={result?.technicalData || null}
+      />hnicalModal
+        isOpen={isTechnicalModalOpen}
+        onClose={() => setIsTechnicalModalOpen(false)}
         technicalData={result?.technicalData}
       />
     </div>
