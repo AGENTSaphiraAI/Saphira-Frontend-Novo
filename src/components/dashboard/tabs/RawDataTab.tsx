@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactJson from 'react18-json-view';
+import JsonView from 'react18-json-view';
 import 'react18-json-view/src/style.css';
 
 function RawDataTab() {
@@ -10,7 +10,7 @@ function RawDataTab() {
 
   return (
     <div>
-      <ReactJson src={data} />
+      <JsonView src={data} />
     </div>
   );
 }
