@@ -100,14 +100,21 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Refs para controle de timeouts
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Typing detection for micro-interactions
   const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setUserText(e.target.value);
     setIsTyping(true);
     
-    // Clear typing state after 500ms of no activity
-    const timeoutId = setTimeout(() => setIsTyping(false), 500);
-    return () => clearTimeout(timeoutId);
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Set new timeout to clear typing state after 500ms
+    typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 500);
   }, []);
 
   // Keep-alive otimizado
@@ -387,6 +394,9 @@ export default function App() {
       }
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
+      }
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
       }
     };
   }, []);
