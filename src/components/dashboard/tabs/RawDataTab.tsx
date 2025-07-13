@@ -97,27 +97,29 @@ const RawDataTab: React.FC<RawDataTabProps> = ({ technicalData }) => {
         <div className="json-viewer-wrapper">
           {/* Fallback para JsonViewer nativo */}
           {technicalData ? (
-            try {
-              JSON.stringify(formatJsonForDisplay(technicalData));
-              return (
-                <JsonView
-                  src={formatJsonForDisplay(technicalData)}
-                  theme="vscode"
-                  collapsed={2}
-                  displaySize={true}
-                  enableClipboard={true}
-                  style={{
-                    backgroundColor: '#f8fafc',
-                    borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
-                    fontSize: '14px'
-                  }}
-                />
-              );
-            } catch (e) {
-              console.error("Erro no react18-json-view:", e);
-              return <JsonViewer data={formatJsonForDisplay(technicalData)} />;
-            }
+            (() => {
+              try {
+                JSON.stringify(formatJsonForDisplay(technicalData));
+                return (
+                  <JsonView
+                    src={formatJsonForDisplay(technicalData)}
+                    theme="vscode"
+                    collapsed={2}
+                    displaySize={true}
+                    enableClipboard={true}
+                    style={{
+                      backgroundColor: '#f8fafc',
+                      borderRadius: '8px',
+                      border: '1px solid #e2e8f0',
+                      fontSize: '14px'
+                    }}
+                  />
+                );
+              } catch (e) {
+                console.error("Erro no react18-json-view:", e);
+                return <JsonViewer data={formatJsonForDisplay(technicalData)} />;
+              }
+            })()
           ) : (
             <p>Nenhum dado técnico disponível</p>
           )}
