@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import ReactJson from 'react-json-view';
+import ReactJson from 'react18-json-view';
 import { Database, Download } from 'lucide-react';
 import { saveAs } from 'file-saver';
 import './RawDataTab.css';
@@ -50,13 +50,8 @@ const RawDataTab: React.FC<RawDataTabProps> = ({ data }) => {
         <div className="json-viewer-wrapper">
           <ReactJson
             src={data}
-            theme="rjv-default"
             collapsed={1}
-            displayDataTypes={false}
-            displayObjectSize={false}
             enableClipboard={true}
-            indentWidth={2}
-            iconStyle="triangle"
             style={{
               backgroundColor: '#f8fafc',
               padding: '20px',
