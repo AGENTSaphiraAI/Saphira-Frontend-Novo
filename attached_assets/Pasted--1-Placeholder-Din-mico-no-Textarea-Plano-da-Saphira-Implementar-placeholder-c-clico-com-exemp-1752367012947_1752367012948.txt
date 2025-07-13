@@ -1,0 +1,42 @@
+🔹 1️⃣ Placeholder Dinâmico no Textarea
+Plano da Saphira: Implementar placeholder cíclico com exemplos de uso (fade-in / fade-out).
+⭐ Otimização de Implementação:
+Utilize um hook useEffect com setInterval para alternar o texto a cada 3-4 segundos.
+Gerencie o texto do placeholder em um array de strings para fácil manutenção: const placeholderExamples = ["Ex: Cole...", "Ex: Digite...", ...];.
+Use uma classe CSS com transição opacity para o efeito de fade, em vez de uma biblioteca, para manter o app leve.
+🔹 2️⃣ Micro-interação de Feedback Visual
+Plano da Saphira: Adicionar animação discreta (ex.: glow) enquanto o usuário digita.
+⭐ Otimização de Implementação:
+Crie um estado booleano simples no componente principal: const [isTyping, setIsTyping] = useState(false);.
+Ative setIsTyping(true) no evento onChange da textarea.
+Use um setTimeout para reverter setIsTyping(false) após um breve período sem digitação (ex: 500ms).
+A classe CSS (ex: .logo-typing) seria condicionalmente aplicada ao logo, ativando uma transição box-shadow ou filter: drop-shadow(...).
+🔹 3️⃣ Modularização da Análise em Cards
+Plano da Saphira: Renderizar resposta em múltiplos componentes React (cards separados).
+⭐ Otimização de Implementação:
+Componente Pai: Crie um componente <AnalysisDisplay results={apiResponse} />. Este componente será responsável por receber o JSON completo da API e orquestrar a exibição dos cards.
+Componentes Filhos: Cada card deve ser "burro", recebendo apenas os dados de que precisa via props. Ex: <ToneAnalysisCard tone={results.technicalData.tone} />. Isso facilita os testes e a reutilização.
+Animação: Utilize uma biblioteca leve como framer-motion (staggerChildren prop) ou CSS puro (animation-delay em cada card) para o surgimento escalonado, que é mais performático.
+🔹 4️⃣ Gráfico de Radar & Janela de Auditoria (Fusão de Itens 4 e 5)
+Plano da Saphira: Implementar gráfico de radar e adicionar gráficos/cards técnicos na janela de auditoria, separando a voz técnica da humana.
+⭐ Otimização de Implementação (Estratégia "Tudo-em-Um"):
+Tela Principal: Exibe apenas a resposta da "voz humana" (interpreted_response) e os novos Cards Visuais (item 3). Simples, direto, focado no usuário final.
+Modal Técnico: Crie um único componente <TechnicalAuditModal /> que abre ao clicar em um botão "Ver Análise Detalhada".
+Conteúdo do Modal:
+Gráfico de Radar: Implementado com Recharts, recebendo os dados de technicalData e formatados no padrão da biblioteca (ex: [{ subject: 'Ambiguidade', A: 80 }]).
+Visualizador JSON: Um componente <JsonViewer /> que renderiza a estrutura completa de technicalData de forma bonita e legível (usar uma biblioteca como react-json-view economiza muito tempo).
+Esta abordagem cumpre perfeitamente a diretriz da Saphira: a tela principal é humana e empática; o modal é técnico, profundo e auditável.
+🔹 5️⃣ Refinamentos Gerais de UX (Item 6 Original)
+Plano da Saphira: Criar loading SVG animado e garantir consistência visual.
+⭐ Otimização de Implementação:
+SVG Animado: Use um SVG existente de sites como lottiefiles.com (se a licença permitir) ou crie um simples online. Animações vetoriais são leves e escalam perfeitamente.
+Consistência Visual: Crie um arquivo theme.js ou colors.css para armazenar as variáveis de cor (ex: --saphira-blue-deep: #0A192F;). Usar variáveis CSS garante consistência em todo o projeto.
+Backlog Estratégico: Manter "Exportar PDF" e "Theming" como itens de backlog é a decisão correta. Foco total na experiência principal primeiro.
+💬 Resumo Técnico Otimizado
+Estado: Utilizar useState para controlar a resposta da API, o estado de digitação e a visibilidade do modal técnico.
+Componentização: Seguir uma estrutura de componentes pai-filho clara para a exibição dos resultados.
+Implementação faseada:
+Fase 1 (Estrutura): Placeholder, Cards Visuais, Modal Técnico (vazio por enquanto).
+Fase 2 (Visualização): Loading SVG, Gráfico de Radar e Visualizador JSON dentro do Modal.
+Fase 3 (Polimento): Micro-interação de feedback e ajustes finos.
+Backend: Permanece 100% inalterado. O plano é puramente de frontend.

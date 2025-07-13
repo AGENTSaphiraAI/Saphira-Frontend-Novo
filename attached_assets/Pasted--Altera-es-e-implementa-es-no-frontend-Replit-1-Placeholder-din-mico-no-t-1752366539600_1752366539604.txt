@@ -1,0 +1,79 @@
+🟦 ✅ Alterações e implementações no frontend (Replit)
+
+---
+
+### 🔹 1️⃣ Placeholder dinâmico no textarea
+
+- Implementar placeholder cíclico com exemplos de uso (fade-in / fade-out), ex.:
+  • "Ex: Cole um contrato para revisão de riscos..."
+  • "Ex: Digite um e-mail para análise de tom..."
+  • "Ex: Pergunte algo para análise técnica..."
+
+---
+
+### 🔹 2️⃣ Micro-interação de feedback no logo ou borda
+
+- Adicionar animação discreta (ex.: glow, border-color ou shadow) enquanto o usuário digita.
+
+---
+
+### 🔹 3️⃣ Modularização da análise em cards
+
+- Renderizar resposta em múltiplos componentes React (cards separados), ex.:
+  • <ToneAnalysisCard />
+  • <BiasAnalysisCard />
+  • <ContradictionCard />
+  • <SuggestionsCard />
+
+- Usar animação CSS (opacity, translateY) para exibir os cards escalonadamente.
+
+---
+
+### 🔹 4️⃣ Implementação de gráfico de radar
+
+- Utilizar Recharts (preferencial) ou React-ChartJS-2.
+- Dados baseados no technicalData já disponível no JSON retornado pela API.
+- Eixos sugeridos: Contradição, Ambiguidade, Consistência (ou métricas customizadas).
+
+---
+
+### 🔹 5️⃣ Ajustes na janela de auditoria
+
+- Adicionar os gráficos e cards técnicos no modal de auditoria.
+- Exibir "voz técnica" no modal (resposta formal, explicativa, estruturada).
+- Manter "voz humana" apenas na tela principal.
+
+---
+
+### 🔹 6️⃣ Refinamentos gerais de UX
+
+- Criar loading SVG animado (temático: rede neural ou fluxo de dados).
+- Garantir consistência visual com a paleta azul profundo atual.
+- Preparar base para futura exportação em PDF (jsPDF + html2canvas), mas **não implementar ainda**.
+- Opção de tema escuro (theming) pode ficar planejada para a próxima fase, mas não precisa executar agora.
+
+---
+
+### 💬 Resumo técnico
+
+✅ Placeholder dinâmico para engajar.  
+✅ Feedback visual ao digitar.  
+✅ Modularização total da análise.  
+✅ Gráfico de radar integrado na auditoria.  
+✅ Dualidade de voz: humana na tela principal, técnica no modal.  
+✅ Preparação para PDF e tema futuro.  
+✅ Backend permanece inalterado.
+
+---
+
+📄 **Instruções finais para execução**
+
+- Implementar apenas frontend.
+- Backend segue intacto.
+- Garantir commits limpos e organizados.
+
+---
+
+💙 "Saphira: Análise Inteligente, Técnica e Auditável."
+
+Fim do superbloco.
