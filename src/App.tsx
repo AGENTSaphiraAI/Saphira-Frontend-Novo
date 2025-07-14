@@ -5,6 +5,7 @@ import AnalysisDisplay from "./components/analysis/AnalysisDisplay";
 import AuditModal from "./components/AuditModal";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import TechnicalModal from "./components/TechnicalModal";
+import AboutSaphira from "./components/AboutSaphira";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
@@ -46,6 +47,7 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'analise' | 'sobre'>('analise');
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -447,6 +449,22 @@ export default function App() {
         </div>
       )}
 
+      {/* Navegação de Abas */}
+      <div className="saphira-tab-navigation">
+        <button 
+          onClick={() => setActiveTab('analise')} 
+          className={`saphira-tab-button ${activeTab === 'analise' ? 'active' : ''}`}
+        >
+          📊 Análise de Dados
+        </button>
+        <button 
+          onClick={() => setActiveTab('sobre')} 
+          className={`saphira-tab-button ${activeTab === 'sobre' ? 'active' : ''}`}
+        >
+          💙 Sobre a Saphira
+        </button>
+      </div>
+
       {/* Buttons */}
       <div className="saphira-buttons">
         <button 
@@ -525,9 +543,14 @@ export default function App() {
       </div>
 
       {/* Results */}
-      {result && (
+      {(result || activeTab === 'sobre') && (
         <div className="saphira-results">
-          <AnalysisDashboard response={result} />
+          {activeTab === 'analise' && result && (
+            <AnalysisDashboard response={result} />
+          )}
+          {activeTab === 'sobre' && (
+            <AboutSaphira />
+          )}
         </div>
       )}
 

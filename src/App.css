@@ -161,6 +161,42 @@ body {
 /* Estilos para a navegação das abas */
 .tab-navigation{border-bottom:1px solid #444;margin-bottom:1rem}.tab-navigation button{padding:10px 20px;border:none;background-color:transparent;color:#a0a0a0;cursor:pointer;font-size:1rem;border-bottom:3px solid transparent;transition:all .2s ease-in-out}.tab-navigation button.active{color:#4eacff;border-bottom:3px solid #4eacff}.tab-navigation button:hover{background-color:rgba(255,255,255,.1)}
 
+/* Navegação de abas principal no App */
+.saphira-tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.saphira-tab-button {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #b3d9ff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.saphira-tab-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.saphira-tab-button.active {
+  background: linear-gradient(45deg, #1e90ff 0%, #3ea9ff 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(30, 144, 255, 0.3);
+}
+
 /* Buttons */
 .saphira-buttons {
   display: flex;

@@ -4,7 +4,6 @@ import { FileText, BarChart3, Code, Download } from 'lucide-react';
 import ReportTab from './tabs/ReportTab';
 import MetricsTab from './tabs/MetricsTab';
 import RawDataTab from './tabs/RawDataTab';
-import AboutSaphira from '../AboutSaphira';
 import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
 import './AnalysisDashboard.css';
 
@@ -18,7 +17,6 @@ interface AnalysisDashboardProps {
 }
 
 const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
-  const [activeMainTab, setActiveMainTab] = useState<'analise' | 'sobre'>('analise');
   const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'raw'>('report');
   const [isExporting, setIsExporting] = useState(false);
 
@@ -57,31 +55,12 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
 
   return (
     <div className="dashboard-container">
-      {/* Nova seção de navegação principal */}
-      <div className="tab-navigation">
-        <button 
-          onClick={() => setActiveMainTab('analise')} 
-          className={activeMainTab === 'analise' ? 'active' : ''}
-        >
-          Análise de Dados
-        </button>
-        <button 
-          onClick={() => setActiveMainTab('sobre')} 
-          className={activeMainTab === 'sobre' ? 'active' : ''}
-        >
-          Sobre a Saphira
-        </button>
-      </div>
-
-      {/* Nova seção de conteúdo das abas */}
-      <div className="tab-content">
-        {activeMainTab === 'analise' ? (
-          <motion.div 
-            className="analysis-dashboard"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+      <motion.div 
+        className="analysis-dashboard"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
             {/* Cabeçalho do Dashboard */}
             <div className="dashboard-header">
               <div className="header-info">
@@ -143,10 +122,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
               )}
             </motion.div>
           </motion.div>
-        ) : (
-          <AboutSaphira />
-        )}
-      </div>
     </div>
   );
 };
