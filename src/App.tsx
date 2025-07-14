@@ -55,7 +55,9 @@ export default function App() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Constantes
-  const BACKEND_BASE_URL = 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev';
+  const BACKEND_BASE_URL = import.meta.env.DEV 
+    ? '' // Usar proxy em desenvolvimento
+    : 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev';
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
 
@@ -146,8 +148,12 @@ export default function App() {
             setKeepAliveActive(false);
           }
         } catch (err) {
-          if (err instanceof Error && err.name !== 'AbortError') {
-            console.warn("⚠️ Keep-alive falhou:", err.message);
+          if (err instanceof Error) {
+            if (err.name === 'AbortError') {
+              console.log("ℹ️ Keep-alive cancelado (timeout)");
+            } else {
+              console.warn("⚠️ Keep-alive falhou:", err.message);
+            }
           }
           setKeepAliveActive(false);
         }
@@ -255,18 +261,21 @@ export default function App() {
       });
 
     } catch (error: unknown) {
-      console.error("❌ Erro na análise:", error);
-
       let errorMessage = "Tive dificuldades para analisar seu texto.";
 
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = "⏱️ Timeout: Análise cancelada. Tente novamente.";
+          console.error('❌ Requisição abortada por timeout (AbortController)');
+          errorMessage = "⏱️ Timeout: Análise cancelada devido ao tempo limite. Tente novamente.";
         } else if (error.message.includes("fetch")) {
+          console.error('❌ Erro de conexão com a API:', error.message);
           errorMessage = "🌐 Erro de conexão. Verifique se o backend está online.";
         } else {
+          console.error('❌ Erro na análise:', error.message);
           errorMessage = `⚠️ ${error.message}`;
         }
+      } else {
+        console.error('❌ Erro desconhecido na análise:', error);
       }
 
       setResult({ humanized_text: errorMessage, verificationCode: undefined });
