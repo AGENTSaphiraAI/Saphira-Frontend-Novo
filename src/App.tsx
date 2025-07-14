@@ -402,6 +402,17 @@ export default function App() {
     };
   }, []);
 
+  // URL do backend - dinâmico para desenvolvimento e produção
+  const getBackendUrl = () => {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // Desenvolvimento local - backend direto
+      return 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev';
+    } else {
+      // Produção - usar proxy local (Vite irá fazer proxy para o backend)
+      return '';
+    }
+  };
+
   return (
     <div className="saphira-container">
       {/* Header */}
