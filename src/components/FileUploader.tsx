@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import jsPDF from "jspdf";
-import { saveAs } from "file-saver";
-// import { Document, Packer, Paragraph, TextRun } from 'docx';
 
 interface FileUploaderProps {
   onFileContentChange?: (content: string, fileName: string) => void;
@@ -68,36 +66,13 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     }
   };
 
-  const handleExportDOC = async () => {
+  const handleExportDOC = () => {
     if (!fileContent) {
       alert("⚠️ Nenhum conteúdo para exportar.");
       return;
     }
 
-    try {
-      // const doc = new Document({
-      //   sections: [
-      //     {
-      //       properties: {},
-      //       children: [
-      //         new Paragraph({
-      //           children: [new TextRun(fileContent)],
-      //         }),
-      //       ],
-      //     },
-      //   ],
-      // });
-
-      // const blob = await Packer.toBlob(doc);
-      const docFileName = fileName ? fileName.replace(/\.[^/.]+$/, "") + ".docx" : "saphira_export.docx";
-      // saveAs(blob, docFileName);
-      alert("❌ Exportação DOC não suportada no momento.");
-
-      console.log(`📝 DOC exportado: ${docFileName}`);
-    } catch (error) {
-      console.error("❌ Erro ao exportar DOC:", error);
-      alert("❌ Erro ao exportar DOC. Tente novamente.");
-    }
+    alert("❌ Exportação DOC não suportada no momento.");
   };
 
   const handleRemoveFile = () => {

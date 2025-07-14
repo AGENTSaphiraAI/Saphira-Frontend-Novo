@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface AnalysisDisplayProps {
@@ -6,10 +7,9 @@ interface AnalysisDisplayProps {
     technicalData?: any;
     verificationCode?: string;
   };
-  onOpenTechnical?: () => void;
 }
 
-const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ results, onOpenTechnical }) => {
+const AnalysisDisplay: React.FC<AnalysisDisplayProps> = () => {
   return (
     <div className="analysis-display">
       <div className="analysis-cards">

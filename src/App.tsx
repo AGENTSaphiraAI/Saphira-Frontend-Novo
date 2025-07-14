@@ -3,7 +3,6 @@ import "./App.css";
 import FileUploader from "./components/FileUploader";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import AuditModal from "./components/AuditModal";
-import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
@@ -36,7 +35,6 @@ export default function App() {
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -563,12 +561,7 @@ export default function App() {
         onExportLogs={handleExportAuditLogs}
       />
 
-      {/* Technical Modal */}
-      <TechnicalModal
-        isOpen={isTechnicalModalOpen}
-        onClose={() => setIsTechnicalModalOpen(false)}
-        technicalData={result?.technicalData || null}
-      />
+      
     </div>
   );
 }

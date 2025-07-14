@@ -1,7 +1,5 @@
 
 import React, { useEffect } from 'react';
-
-// Interface para segurança de tipos
 interface TechnicalData {
   tone?: number;
   bias?: number;
@@ -64,13 +62,7 @@ const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose, techni
     }
   };
 
-  const radarData = [
-    { subject: 'Tom', score: getMetricValue(technicalData, 'tone'), fullMark: 100 },
-    { subject: 'Viés', score: getMetricValue(technicalData, 'bias'), fullMark: 100 },
-    { subject: 'Contradições', score: getMetricValue(technicalData, 'contradiction'), fullMark: 100 },
-    { subject: 'Clareza', score: getMetricValue(technicalData, 'clarity'), fullMark: 100 },
-    { subject: 'Consistência', score: getMetricValue(technicalData, 'consistency'), fullMark: 100 },
-  ];
+  
 
   const formatJsonForDisplay = (data: any) => {
     if (!data) return { message: "Nenhum dado técnico disponível" };
