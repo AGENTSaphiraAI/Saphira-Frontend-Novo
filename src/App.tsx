@@ -169,35 +169,37 @@ export default function App() {
         console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
       }
 
-      // Timeout de 10 segundos para cada teste
-      const timeoutPromise = (ms: number) => 
-        new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout de conexão')), ms)
-        );
-
       // Teste direto no endpoint que sabemos que funciona
       console.log("🎯 TESTE 2: POST no endpoint API:", apiEndpoint);
 
-      const testResponse = await Promise.race([
-        fetch(apiEndpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Origin": window.location.origin
-          },
-          body: JSON.stringify({
-            text: "teste básico de conexão",
-            question: "este é um teste"
-          }),
-          mode: "cors",
-          cache: "no-cache"
-        }).catch(err => {
-          console.error("❌ API fetch error:", err);
-          throw new Error(`API test failed: ${err.message}`);
+      // Criar controller para timeout manual
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        console.error("❌ Timeout: Request abortado após 10 segundos");
+      }, 10000);
+
+      const testResponse = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Origin": window.location.origin
+        },
+        body: JSON.stringify({
+          text: "teste básico de conexão",
+          question: "este é um teste"
         }),
-        timeoutPromise(8000)
-      ]) as Response;
+        mode: "cors",
+        cache: "no-cache",
+        signal: controller.signal
+      }).catch(err => {
+        clearTimeout(timeoutId);
+        console.error("❌ API fetch error:", err);
+        throw new Error(`API test failed: ${err.message || 'Unknown fetch error'}`);
+      });
+
+      clearTimeout(timeoutId);
 
       console.log("✅ API Response - Status:", testResponse.status);
       console.log("✅ Response Headers:", Object.fromEntries(testResponse.headers.entries()));
@@ -216,11 +218,17 @@ export default function App() {
 
     } catch (error: unknown) {
       console.error("❌ Erro no teste de conexão:", error);
+      console.error("❌ Tipo do erro:", typeof error);
+      console.error("❌ Stack trace:", error instanceof Error ? error.stack : 'No stack available');
       setConnectionStatus('offline');
 
-      let errorMessage = "Erro de conexão";
+      let errorMessage = "Erro de conexão desconhecido";
       if (error instanceof Error) {
         errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object') {
+        errorMessage = JSON.stringify(error);
       }
 
       alert(`❌ Erro de conexão com backend:\n\n${errorMessage}\n\nURL testada: ${apiEndpoint}`);
