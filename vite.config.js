@@ -14,6 +14,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      external: ['#minpath'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
