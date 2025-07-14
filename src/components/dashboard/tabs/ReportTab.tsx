@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Copy, Check, FileText } from 'lucide-react';
@@ -45,7 +44,7 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
             <p>Resposta humanizada e contextualizada</p>
           </div>
         </div>
-        
+
         <button 
           className="copy-button"
           onClick={handleCopy}
@@ -60,7 +59,7 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
         <div className="response-text">
           {formatText(interpretedResponse)}
         </div>
-        
+
         {verificationCode && (
           <div className="report-footer">
             <div className="verification-info">
@@ -185,7 +184,7 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
             gap: 1rem;
             align-items: stretch;
           }
-          
+
           .verification-info {
             flex-direction: column;
             gap: 0.5rem;
