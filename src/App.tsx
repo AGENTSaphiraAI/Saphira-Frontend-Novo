@@ -55,7 +55,7 @@ export default function App() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Constantes
-  const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+  const BACKEND_BASE_URL = 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev';
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
 
@@ -123,7 +123,7 @@ export default function App() {
   // Keep-alive otimizado com debounce
   useEffect(() => {
     let debounceTimeout: NodeJS.Timeout;
-    
+
     const startKeepAlive = () => {
       if (keepAliveIntervalRef.current) {
         clearInterval(keepAliveIntervalRef.current);
