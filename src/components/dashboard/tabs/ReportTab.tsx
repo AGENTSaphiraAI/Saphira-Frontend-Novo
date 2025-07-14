@@ -22,7 +22,7 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
   };
 
   const formatText = (text: string) => {
-    return text.split('\n').map((line, index) => (
+    return (text || '').split('\n').map((line, index) => (
       <p key={index} className="report-paragraph">
         {line}
       </p>
