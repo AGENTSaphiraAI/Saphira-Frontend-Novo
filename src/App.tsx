@@ -340,11 +340,28 @@ export default function App() {
     if (connectionStatus.status === 'testing') return;
 
     console.log("🔗 Testando conexão...");
+    console.log("🔗 URL do backend:", BACKEND_BASE_URL);
     const startTime = Date.now();
 
     setConnectionStatus({ status: 'testing' });
 
     try {
+      // Primeiro teste: health check
+      console.log("🔍 Testando health check...");
+      const healthResponse = await fetch(`${BACKEND_BASE_URL}/health`, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache"
+      });
+
+      if (healthResponse.ok) {
+        console.log("✅ Health check OK");
+      } else {
+        console.log("⚠️ Health check falhou:", healthResponse.status);
+      }
+
+      // Segundo teste: API analyze
+      console.log("🔍 Testando API analyze...");
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: "POST",
         headers: {
@@ -373,9 +390,10 @@ export default function App() {
           responseTime 
         });
 
-        alert(`🎉 CONEXÃO ESTABELECIDA!\n\n✅ Status: ${response.status} OK\n⚡ Tempo: ${responseTime}ms\n🔗 Backend: Online\n\nResposta: ${data.substring(0, 100)}...`);
+        console.log("✅ Conexão estabelecida com sucesso");
+        alert(`🎉 CONEXÃO ESTABELECIDA!\n\n✅ Status: ${response.status} OK\n⚡ Tempo: ${responseTime}ms\n🔗 Backend: Online\n🔗 URL: ${BACKEND_BASE_URL}\n\nResposta: ${data.substring(0, 100)}...`);
       } else {
-        throw new Error(`Status ${response.status}`);
+        throw new Error(`Status ${response.status} - ${response.statusText}`);
       }
 
     } catch (error: unknown) {
@@ -384,9 +402,18 @@ export default function App() {
         lastChecked: new Date() 
       });
 
-      const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido';
-      alert(`❌ FALHA NA CONEXÃO\n\n${errorMsg}\n\nVerifique se o backend está online.`);
+      let errorDetails = '';
+      if (error instanceof Error) {
+        errorDetails = error.message;
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          errorDetails += '\n\nProblema de rede ou CORS';
+        }
+      } else {
+        errorDetails = 'Erro desconhecido';
+      }
+
       console.error("❌ Teste de conexão falhou:", error);
+      alert(`❌ FALHA NA CONEXÃO\n\nURL: ${BACKEND_BASE_URL}\nErro: ${errorDetails}\n\nVerifique se o backend está online e acessível.`);
     }
   }, [connectionStatus.status, createRequestWithTimeout]);
 
