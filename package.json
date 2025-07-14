@@ -31,6 +31,7 @@
     "lucide-react": "^0.525.0",
     "react-markdown": "^10.1.0",
     "react18-json-view": "^0.2.9",
-    "recharts": "^3.1.0"
+    "recharts": "^3.1.0",
+    "vfile": "^5.3.7"
   }
 }
