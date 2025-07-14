@@ -18,8 +18,17 @@ export default defineConfig({
         // External Node.js subpath imports
         if (id.startsWith('#')) return true;
         return false;
+      },
+      onwarn(warning, warn) {
+        if (warning.code === 'UNRESOLVED_IMPORT' && warning.source?.includes('globalThis-config.mjs')) {
+          return;
+        }
+        warn(warning);
       }
     }
+  },
+  optimizeDeps: {
+    exclude: ['motion-utils']
   },
   define: {
     global: 'globalThis',
