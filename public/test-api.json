@@ -1,0 +1,12 @@
+
+{
+  "displayData": {
+    "humanized_text": "✅ Teste de conexão funcionando! O frontend está operacional.",
+    "technicalData": {
+      "tom": { "tipo": "positivo", "confianca": 0.95 },
+      "vies": { "detectado": false, "confianca": 0.90 },
+      "contradicoes": { "detectada": false, "confianca": 0.85 },
+      "sugestao": "Frontend está funcionando corretamente."
+    }
+  }
+}

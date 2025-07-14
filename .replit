@@ -1,5 +1,5 @@
 run = "npm run dev"
-modules = ["nodejs-22"]
+modules = ["nodejs-20"]
 hidden = [".config", "tsconfig.json", "tsconfig.node.json", "vite.config.js", ".gitignore"]
 entrypoint = "src/App.tsx"
 
@@ -11,9 +11,8 @@ language = "nodejs"
 
 [deployment]
 deploymentTarget = "static"
-build = ["sh", "-c", "npm install && npm run build"]
+build = ["npm", "run", "build"]
 publicDir = "dist"
-run = ["sh", "-c", ""]
 
 [[ports]]
 localPort = 5173
@@ -22,17 +21,10 @@ externalPort = 80
 [[ports]]
 localPort = 5174
 externalPort = 3000
-exposeLocalhost = true
 
 [[ports]]
 localPort = 5175
 externalPort = 3001
-exposeLocalhost = true
-
-[[ports]]
-localPort = 5176
-externalPort = 3002
-exposeLocalhost = true
 
 [workflows]
 runButton = "Run"

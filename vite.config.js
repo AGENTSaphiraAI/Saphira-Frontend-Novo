@@ -1,34 +1,27 @@
 
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    exclude: ['vfile'],
-  },
   server: {
     host: '0.0.0.0',
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/health': {
-        target: 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 5173,
   },
   build: {
-    commonjsOptions: {
-      transformMixedEsModules: true
-    },
     rollupOptions: {
-      external: ['vfile']
+      external: (id) => {
+        // External Node.js subpath imports
+        if (id.startsWith('#')) return true;
+        return false;
+      }
     }
+  },
+  define: {
+    global: 'globalThis',
   }
 });
