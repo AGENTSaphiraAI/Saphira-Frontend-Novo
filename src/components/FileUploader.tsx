@@ -16,7 +16,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Only allow .txt files for upload
+    
     if (!file.name.endsWith(".txt")) {
       alert("⚠️ Apenas arquivos .txt são permitidos para upload.");
       return;
@@ -31,7 +31,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
       setFileName(file.name);
       setIsUploading(false);
 
-      // Notificar componente pai se callback fornecido
+      
       if (onFileContentChange) {
         onFileContentChange(content, file.name);
       }

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
 import FileUploader from "./components/FileUploader";
-import AnalysisDisplay from "./components/analysis/AnalysisDisplay";
-import AuditModal from "./components/AuditModal";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
+import AuditModal from "./components/AuditModal";
 import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
 
@@ -13,15 +12,7 @@ interface ConnectionStatus {
   responseTime?: number;
 }
 
-interface ApiResponse {
-  humanized_text: string;
-  technicalData?: {
-    tom?: { tipo: string; confianca: number };
-    vies?: { detectado: boolean; confianca: number };
-    contradicoes?: { detectada: boolean; confianca: number };
-    sugestao?: string;
-  };
-}
+
 
 interface AuditEntry {
   id: string;
@@ -57,7 +48,7 @@ export default function App() {
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
 
-  // Placeholder examples - prontos para modularização futura
+  
   const placeholderExamples = [
     "Cole aqui um texto para análise de sentimento e tom...",
     "Digite um artigo para verificar contradições e viés...",
@@ -438,16 +429,7 @@ export default function App() {
     };
   }, []);
 
-  // URL do backend - dinâmico para desenvolvimento e produção
-  const getBackendUrl = () => {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      // Desenvolvimento local - backend direto
-      return 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev';
-    } else {
-      // Produção - usar proxy local (Vite irá fazer proxy para o backend)
-      return '';
-    }
-  };
+  
 
   return (
     <div className="saphira-container">
