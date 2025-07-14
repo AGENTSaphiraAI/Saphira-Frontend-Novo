@@ -59,7 +59,7 @@ export default function App() {
     ? '' // Usar proxy em desenvolvimento
     : 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev';
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
-  const REQUEST_TIMEOUT = 12000; // 12 segundos
+  const REQUEST_TIMEOUT = 30000; // 30 segundos
 
   // Placeholder examples - otimizado com useMemo
   const placeholderExamples = useMemo(() => [
@@ -137,7 +137,7 @@ export default function App() {
             method: "GET",
             mode: "cors",
             cache: "no-cache"
-          }, 6000); // Reduzido timeout para melhor UX
+          }, 15000); // Timeout ajustado para evitar AbortError
 
           const response = await request;
           cleanup();
@@ -150,7 +150,7 @@ export default function App() {
         } catch (err) {
           if (err instanceof Error) {
             if (err.name === 'AbortError') {
-              console.log("ℹ️ Keep-alive cancelado (timeout)");
+              console.log("ℹ️ Keep-alive cancelado (timeout - normal)");
             } else {
               console.warn("⚠️ Keep-alive falhou:", err.message);
             }
@@ -265,8 +265,8 @@ export default function App() {
 
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          console.error('❌ Requisição abortada por timeout (AbortController)');
-          errorMessage = "⏱️ Timeout: Análise cancelada devido ao tempo limite. Tente novamente.";
+          console.error('❌ Requisição abortada por timeout (30s) - Backend pode estar sobrecarregado');
+          errorMessage = "⏱️ Timeout: Análise cancelada (30s). O backend pode estar sobrecarregado, tente novamente.";
         } else if (error.message.includes("fetch")) {
           console.error('❌ Erro de conexão com a API:', error.message);
           errorMessage = "🌐 Erro de conexão. Verifique se o backend está online.";
