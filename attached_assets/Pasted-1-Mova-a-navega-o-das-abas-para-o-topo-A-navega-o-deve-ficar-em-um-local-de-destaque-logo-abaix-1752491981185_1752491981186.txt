@@ -1,0 +1,82 @@
+1. Mova a navegação das abas para o topo: A navegação deve ficar em um local de destaque, logo abaixo do título principal da Saphira.
+2. Melhore o estilo dos botões das abas: Vamos deixá-los mais parecidos com abas de navegação profissionais.
+Ação 1: Refatore o AnalysisDashboard.tsx
+Modifique a estrutura do JSX para que o .tab-navigation venha ANTES do conteúdo das abas.
+Generated typescript
+// No seu arquivo de Dashboard Principal (ex: AnalysisDashboard.tsx)
+import React, { useState } from 'react';
+import AboutSaphira from './components/AboutSaphira';
+// ...outras importações
+
+const AnalysisDashboard: React.FC = () => {
+    const [activeTab, setActiveTab] = useState<'analise' | 'sobre'>('analise');
+    // ...seus outros hooks
+    
+    return (
+        <div className="dashboard-container">
+            
+            {/* O CONTEÚDO ORIGINAL PRINCIPAL DEVE FICAR AQUI, MAS ENVELOPADO PELA LÓGICA DAS ABAS */}
+            
+            <header>
+                {/* O seu título "Saphira" e o subtítulo devem ficar aqui, fora das abas */}
+                <h1>💙 Saphira</h1>
+                <p>Análise Inteligente, Técnica e Auditável</p>
+            </header>
+
+            {/* A NAVEGAÇÃO DAS ABAS FOI MOVIDA PARA CÁ */}
+            <div className="tab-navigation-top">
+                <button onClick={() => setActiveTab('analise')} className={activeTab === 'analise' ? 'active' : ''}>Análise de Dados</button>
+                <button onClick={() => setActiveTab('sobre')} className={activeTab === 'sobre' ? 'active' : ''}>Sobre a Saphira</button>
+            </div>
+
+            <main className="tab-content">
+                {activeTab === 'analise' ? (
+                    <>
+                        {/* Apenas o conteúdo INTERNO da aba de análise vai aqui (formulários, botões) */}
+                    </>
+                ) : (
+                    <AboutSaphira />
+                )}
+            </main>
+        </div>
+    );
+};
+
+export default AnalysisDashboard;
+Use code with caution.
+TypeScript
+Ação 2: Substitua o CSS das abas
+Vá para o seu arquivo CSS global (App.css ou index.css) e SUBSTITUA as regras antigas de .tab-navigation por estas novas regras para .tab-navigation-top.
+Generated css
+/* Estilos para a navegação de abas no topo - SUBSTITUA O ESTILO ANTIGO */
+.tab-navigation-top {
+    display: flex;
+    border-bottom: 1px solid #333; /* Linha separadora mais sutil */
+    margin: 1rem 0; /* Espaçamento acima e abaixo */
+}
+
+.tab-navigation-top button {
+    padding: 1rem 1.5rem; /* Mais espaçamento interno para um clique mais fácil */
+    border: none;
+    background-color: transparent;
+    color: #a0a0a0;
+    cursor: pointer;
+    font-size: 1.1rem; /* Fonte maior */
+    font-weight: 500;
+    border-bottom: 3px solid transparent; /* Borda invisível para manter o alinhamento */
+    transition: all 0.2s ease-in-out;
+    margin-bottom: -1px; /* Alinha a borda de baixo com a borda do container */
+}
+
+.tab-navigation-top button:hover {
+    background-color: rgba(78, 172, 255, 0.1);
+    color: #fff;
+}
+
+.tab-navigation-top button.active {
+    color: #4eacff; /* Cor azul brilhante */
+    border-bottom: 3px solid #4eacff;
+}
+Use code with caution.
+Css
+Por favor, implemente estas melhorias de UI/UX.
