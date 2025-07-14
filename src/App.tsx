@@ -507,10 +507,17 @@ export default function App() {
             border: 'none',
             borderRadius: '6px',
             cursor: 'pointer',
-            transition: 'background-color 0.3s'
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 14px rgba(59, 130, 246, 0.39)'
           }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#1D4ED8')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#1D4ED8';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = '#2563EB';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
         >
           🟦 Sobre a Saphira
         </button>

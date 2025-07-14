@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 
 interface TechnicalModalProps {
@@ -26,15 +27,17 @@ const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose }) => {
     <div
       style={{
         position: 'fixed',
-        top: 0, left: 0,
-        width: '100%', height: '100%',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 9999,
         opacity: isOpen ? 1 : 0,
-        transition: 'opacity 0.3s ease'
+        transition: 'opacity 0.4s ease'
       }}
       onClick={onClose}
     >
@@ -47,23 +50,29 @@ const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose }) => {
           borderRadius: '12px',
           maxWidth: '600px',
           width: '90%',
+          maxHeight: '80vh',
+          overflowY: 'auto',
           boxShadow: '0 0 20px rgba(0,0,0,0.5)',
           transform: isOpen ? 'translateY(0)' : 'translateY(-20px)',
-          transition: 'transform 0.3s ease'
+          transition: 'transform 0.4s ease'
         }}
       >
-        <h2>🟦 Sobre a Saphira</h2>
-        <h3 style={{ marginTop: '1rem', color: '#3B82F6' }}>Nossa Missão: Trazer Clareza em um Mundo Complexo</h3>
-        <p>Bem-vindo ao Projeto Saphira. Em uma era de sobrecarga de informações e narrativas confusas, nossa missão é simples e poderosa: fornecer uma análise técnica, neutra e auditável para qualquer conteúdo que você nos apresentar.</p>
-        <h4>O que fazemos?</h4>
-        <ul>
+        <h2 style={{ fontSize: 'clamp(1.4rem, 2vw, 2rem)', marginBottom: '1rem' }}>🟦 Sobre a Saphira</h2>
+        <h3 style={{ color: '#3B82F6', marginBottom: '1rem' }}>Nossa Missão: Trazer Clareza em um Mundo Complexo</h3>
+        <p style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', lineHeight: '1.6' }}>
+          Bem-vindo ao Projeto Saphira. Em uma era de sobrecarga de informações e narrativas confusas, nossa missão é simples e poderosa: fornecer uma análise técnica, neutra e auditável para qualquer conteúdo que você nos apresentar.
+        </p>
+        <h4 style={{ marginTop: '1rem' }}>O que fazemos?</h4>
+        <ul style={{ paddingLeft: '1.2rem' }}>
           <li><strong>Privacidade Absoluta:</strong> Os dados que você analisa são processados e esquecidos. Não armazenamos o conteúdo original.</li>
           <li><strong>Transparência Radical:</strong> A Saphira sempre mostrará os fatos e os dados brutos que a levaram à conclusão.</li>
           <li><strong>Verificabilidade Incontestável:</strong> Cada análise é feita para ser justa e baseada em evidências lógicas.</li>
         </ul>
-        <h4>Como usar?</h4>
-        <p>Basta colar ou enviar um texto para análise. A Saphira irá processá-lo e revelar insights objetivos, ajudando você a ver além do ruído.</p>
-        <p>Este projeto está em constante evolução. Sua curiosidade e feedback nos move para frente.</p>
+        <h4 style={{ marginTop: '1rem' }}>Como usar?</h4>
+        <p style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', lineHeight: '1.6' }}>
+          Basta colar ou enviar um texto para análise. A Saphira irá processá-lo e revelar insights objetivos, ajudando você a ver além do ruído.
+        </p>
+        <p>Este projeto está em constante evolução. Sua curiosidade e feedback nos movem para frente.</p>
         <button
           style={{
             marginTop: '1.5rem',
@@ -72,8 +81,11 @@ const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose }) => {
             color: '#fff',
             border: 'none',
             borderRadius: '6px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            transition: 'background-color 0.3s'
           }}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3B82F6')}
           onClick={onClose}
         >
           Fechar
