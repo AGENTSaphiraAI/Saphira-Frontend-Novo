@@ -1,227 +1,87 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
-import FileUploader from "./components/FileUploader";
-import AnalysisDisplay from "./components/analysis/AnalysisDisplay";
-import AuditModal from "./components/AuditModal";
-import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
-import TechnicalModal from "./components/TechnicalModal";
-import AboutSaphira from "./components/AboutSaphira";
-import { saveAs } from "file-saver";
-
-interface ConnectionStatus {
-  status: 'unknown' | 'testing' | 'online' | 'offline';
-  lastChecked?: Date;
-  responseTime?: number;
-}
-
-interface ApiResponse {
-  humanized_text: string;
-  technicalData?: {
-    tom?: { tipo: string; confianca: number };
-    vies?: { detectado: boolean; confianca: number };
-    contradicoes?: { detectada: boolean; confianca: number };
-    sugestao?: string;
-  };
-}
-
-interface AuditEntry {
-  id: string;
-  timestamp: Date;
-  originalText: string;
-  fileName?: string;
-  response: string;
-  verificationCode: string;
-}
 
 export default function App() {
-  // Estados principais
   const [userText, setUserText] = useState("");
   const [specificQuestion, setSpecificQuestion] = useState("");
-  const [result, setResult] = useState<{ humanized_text: string; technicalData?: any; verificationCode?: string } | null>(null);
+  const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'unknown' });
+  const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'testing' | 'online' | 'offline'>('unknown');
   const [keepAliveActive, setKeepAliveActive] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<{ content: string; name: string } | null>(null);
-  const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);
-  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'analise' | 'sobre'>('analise');
 
-  // Refs para controle de state
-  const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Constantes
-  const BACKEND_BASE_URL = import.meta.env.DEV 
-    ? '' // Usar proxy em desenvolvimento
-    : 'https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev';
-  const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
-  const REQUEST_TIMEOUT = 30000; // 30 segundos
-
-  // Placeholder examples - otimizado com useMemo
-  const placeholderExamples = useMemo(() => [
-    "Cole aqui um texto para análise de sentimento e tom...",
-    "Digite um artigo para verificar contradições e viés...",
-    "Analise este conteúdo para detectar padrões linguísticos...",
-    "Avalie a coerência e objetividade deste documento...",
-    "Verifique a estrutura argumentativa desta mensagem...",
-    "Examine este texto para análise técnica completa..."
-  ], []);
-
-  // Utilitário para criar requests com timeout
-  const createRequestWithTimeout = useCallback((url: string, options: RequestInit, timeout = REQUEST_TIMEOUT) => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    return {
-      request: fetch(url, { ...options, signal: controller.signal }),
-      cleanup: () => clearTimeout(timeoutId)
-    };
-  }, []);
-
-  // Handler global para promises rejeitadas
+  // Keep-alive ping para manter backend ativo
   useEffect(() => {
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      if (event.reason?.name === 'AbortError' || 
-          event.reason?.message?.includes('fetch')) {
-        return;
-      }
-      console.warn('Unhandled promise rejection:', event.reason);
-      event.preventDefault();
-    };
+    const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
 
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    return () => window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-  }, []);
+    setKeepAliveActive(true);
 
-  // Placeholder dinâmico
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPlaceholder(prev => (prev + 1) % placeholderExamples.length);
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Função otimizada para feedback de digitação
-  const handleTypingFeedback = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUserText(e.target.value);
-    setIsTyping(true);
-
-    // Limpa o timeout anterior se o usuário continuar digitando
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-
-    // Define um novo timeout com duração otimizada
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-    }, 800); // 800ms para UX mais suave
-  }, []);
-
-  // Keep-alive otimizado com debounce
-  useEffect(() => {
-    let debounceTimeout: NodeJS.Timeout;
-
-    const startKeepAlive = () => {
-      if (keepAliveIntervalRef.current) {
-        clearInterval(keepAliveIntervalRef.current);
-      }
-
-      const pingBackend = async () => {
-        try {
-          const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/health`, {
-            method: "GET",
-            mode: "cors",
-            cache: "no-cache"
-          }, 15000); // Timeout ajustado para evitar AbortError
-
-          const response = await request;
-          cleanup();
-
+    const ping = setInterval(() => {
+      fetch(`${BACKEND_BASE_URL}/health`, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache"
+      })
+        .then(response => {
           if (response.ok) {
+            console.log("✅ Backend ping OK (keep-alive)");
             setKeepAliveActive(true);
           } else {
+            console.warn("⚠️ Backend ping com status:", response.status);
             setKeepAliveActive(false);
           }
-        } catch (err) {
-          if (err instanceof Error) {
-            if (err.name === 'AbortError') {
-              console.log("ℹ️ Keep-alive cancelado (timeout - normal)");
-            } else {
-              console.warn("⚠️ Keep-alive falhou:", err.message);
-            }
-          }
+        })
+        .catch((err) => {
+          console.error("⚠️ Erro no ping (keep-alive):", err);
           setKeepAliveActive(false);
-        }
-      };
+        });
+    }, 300000); // a cada 5 minutos (menos agressivo)
 
-      // Debounce inicial para evitar múltiplas chamadas
-      debounceTimeout = setTimeout(() => {
-        pingBackend();
-        keepAliveIntervalRef.current = setInterval(pingBackend, KEEP_ALIVE_INTERVAL);
-      }, 2000);
+    // Ping inicial após 5 segundos (mais rápido e silencioso)
+    const initialPing = setTimeout(() => {
+      fetch(`${BACKEND_BASE_URL}/health`, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache"
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log("✅ Keep-alive ativado - Backend online");
+            setKeepAliveActive(true);
+          }
+        })
+        .catch(() => {
+          // Silencioso - não precisa logar erro no ping inicial
+          setKeepAliveActive(false);
+        });
+    }, 5000);
 
-      return () => {
-        clearTimeout(debounceTimeout);
-        if (keepAliveIntervalRef.current) {
-          clearInterval(keepAliveIntervalRef.current);
-        }
-      };
+    return () => {
+      clearInterval(ping);
+      clearTimeout(initialPing);
     };
-
-    return startKeepAlive();
-  }, [createRequestWithTimeout]);
-
-  // Utilitário para gerar código de verificação
-  const generateVerificationCode = useCallback(() => {
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(2, 8);
-    return `SAP-${timestamp.toString(36).toUpperCase()}-${random.toUpperCase()}`;
   }, []);
 
-  // Utilitário para adicionar entrada de auditoria
-  const addAuditEntry = useCallback((originalText: string, response: string, fileName?: string) => {
-    const entry: AuditEntry = {
-      id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-      timestamp: new Date(),
-      originalText,
-      fileName,
-      response,
-      verificationCode: generateVerificationCode()
-    };
-
-    setAuditLogs(prev => [entry, ...prev]);
-    console.log(`🛡️ Auditoria registrada: ${entry.verificationCode}`);
-    return entry.verificationCode;
-  }, [generateVerificationCode]);
-
-  // Handler para arquivo carregado
-  const handleFileContentChange = useCallback((content: string, fileName: string) => {
-    setUploadedFile({ content, name: fileName });
-    console.log(`📁 Arquivo integrado: ${fileName}`);
-  }, []);
-
-  // Função de análise otimizada
-  const handleAnalyze = useCallback(async () => {
-    const textToAnalyze = uploadedFile?.content || userText.trim();
-
-    if (loading || !textToAnalyze) return;
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
+  const handleAnalyze = async () => {
     setLoading(true);
     setResult(null);
 
     console.log("🔍 Iniciando análise...");
+    console.log("📤 Dados enviados:", { user_text: userText, question: specificQuestion });
 
     try {
-      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
+      // URL DEFINITIVA do backend (confirmada pelo diagnóstico)
+      const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+      const backendUrl = `${BACKEND_BASE_URL}/api/analyze`;
+
+      console.log("✅ URL OFICIAL do backend:", BACKEND_BASE_URL);
+      console.log("✅ Endpoint completo:", backendUrl);
+
+      // Timeout manual para evitar requests infinitos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
+
+      // Requisição direta para o backend confirmado
+      const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -229,381 +89,206 @@ export default function App() {
           "Origin": window.location.origin,
         },
         body: JSON.stringify({
-          text: textToAnalyze,
-          question: specificQuestion.trim() || ""
+          text: userText,
+          question: specificQuestion || ""
         }),
         credentials: "omit",
         mode: "cors",
-        cache: "no-cache"
-      }, 30000);
+        cache: "no-cache",
+        signal: controller.signal
+      });
 
-      const response = await request;
-      cleanup();
+      clearTimeout(timeoutId);
+
+      console.log("📡 Status da resposta:", response.status);
+      console.log("📡 Headers da resposta:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Erro HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+        console.error("❌ Erro HTTP:", response.status, response.statusText);
+        console.error("❌ Corpo da resposta de erro:", errorText);
+        throw new Error(`Erro HTTP ${response.status}: ${response.statusText}. Detalhes: ${errorText}`);
       }
 
       const data = await response.json();
-      console.log("✅ Análise concluída");
-
-      // Registrar na auditoria
-      const verificationCode = addAuditEntry(
-        textToAnalyze,
-        data.displayData?.humanized_text || "Resposta não disponível",
-        uploadedFile?.name
-      );
-
-      setResult({
-        ...data.displayData,
-        verificationCode
-      });
-
+      console.log("✅ Resposta recebida:", data);
+      setResult(data.displayData);
     } catch (error: unknown) {
-      let errorMessage = "Tive dificuldades para analisar seu texto.";
+      console.error("💥 Erro completo na análise:", error);
+      console.error("💥 Tipo do erro:", typeof error);
+      console.error("💥 Nome do erro:", error instanceof Error ? error.constructor.name : 'unknown');
 
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          console.error('❌ Requisição abortada por timeout (30s) - Backend pode estar sobrecarregado');
-          errorMessage = "⏱️ Timeout: Análise cancelada (30s). O backend pode estar sobrecarregado, tente novamente.";
-        } else if (error.message.includes("fetch")) {
-          console.error('❌ Erro de conexão com a API:', error.message);
-          errorMessage = "🌐 Erro de conexão. Verifique se o backend está online.";
-        } else {
-          console.error('❌ Erro na análise:', error.message);
-          errorMessage = `⚠️ ${error.message}`;
-        }
+      let errorMessage = "Tive dificuldades para refletir sobre seu texto.";
+
+      if (error instanceof Error && error.name === 'AbortError') {
+        errorMessage = "⏱️ Timeout: Servidor demorou muito para responder. Tente novamente.";
+      } else if (error instanceof TypeError && error.message.includes("fetch")) {
+        errorMessage = "🌐 Erro de conexão: Não foi possível conectar ao servidor. Backend pode estar offline.";
+      } else if (error instanceof Error) {
+        errorMessage = `⚠️ Erro: ${error.message}`;
       } else {
-        console.error('❌ Erro desconhecido na análise:', error);
+        errorMessage = "❓ Erro desconhecido. Verifique o console para mais detalhes.";
       }
 
-      setResult({ humanized_text: errorMessage, verificationCode: undefined });
+      setResult({
+        humanized_text: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
-  }, [userText, specificQuestion, loading, createRequestWithTimeout, uploadedFile]);
+  };
 
-  // Função de limpeza
-  const handleClear = useCallback(() => {
-    if (loading) return;
-
+  const handleClear = () => {
     setUserText("");
     setSpecificQuestion("");
     setResult(null);
-    setUploadedFile(null);
-    console.log("🧹 Interface limpa");
-  }, [loading]);
+  };
 
-  // Função para exportar resposta em JSON
-  const handleExportResponseJSON = useCallback(() => {
-    if (!result) {
-      alert("⚠️ Nenhuma resposta para exportar.");
-      return;
-    }
+  const handleTestConnection = async () => {
+    console.log("🔗 Testando conexão com backend...");
+    setConnectionStatus('testing');
 
-    const exportData = {
-      response: result.humanized_text,
-      technicalData: result.technicalData,
-      verificationCode: result.verificationCode,
-      timestamp: new Date().toISOString(),
-      metadata: {
-        originalText: uploadedFile?.content || userText,
-        fileName: uploadedFile?.name,
-        question: specificQuestion
-      }
-    };
+    // URL OFICIAL do backend (do diagnóstico)
+    const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+    const healthEndpoint = `${BACKEND_BASE_URL}/health`;
+    const apiEndpoint = `${BACKEND_BASE_URL}/api/analyze`;
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-    const fileName = `saphira_response_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
-    saveAs(blob, fileName);
-
-    console.log(`📥 Resposta JSON exportada: ${fileName}`);
-  }, [result, uploadedFile, userText, specificQuestion]);
-
-  // Função para exportar logs de auditoria
-  const handleExportAuditLogs = useCallback(() => {
-    if (auditLogs.length === 0) {
-      alert("⚠️ Nenhum log de auditoria para exportar.");
-      return;
-    }
-
-    const exportData = {
-      exportTimestamp: new Date().toISOString(),
-      totalEntries: auditLogs.length,
-      auditLogs: auditLogs.map(log => ({
-        ...log,
-        timestamp: log.timestamp.toISOString()
-      }))
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-    const fileName = `saphira_audit_logs_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
-    saveAs(blob, fileName);
-
-    console.log(`🛡️ Logs de auditoria exportados: ${fileName}`);
-  }, [auditLogs]);
-
-  // Teste de conexão
-  const handleTestConnection = useCallback(async () => {
-    if (connectionStatus.status === 'testing') return;
-
-    console.log("🔗 Testando conexão...");
-    console.log("🔗 URL do backend:", BACKEND_BASE_URL);
-    const startTime = Date.now();
-
-    setConnectionStatus({ status: 'testing' });
+    console.log("🎯 [TESTE] Backend oficial:", BACKEND_BASE_URL);
+    console.log("🎯 [TESTE] Health check:", healthEndpoint);
+    console.log("🎯 [TESTE] API endpoint:", apiEndpoint);
 
     try {
-      // Primeiro teste: health check
-      console.log("🔍 Testando health check...");
-      const healthResponse = await fetch(`${BACKEND_BASE_URL}/health`, {
+      // PRIMEIRO: Teste GET simples na raiz
+      console.log("🎯 TESTE 1: GET simples na raiz do backend");
+      const getRootTest = await fetch(BACKEND_BASE_URL, {
         method: "GET",
-        mode: "cors",
-        cache: "no-cache"
-      });
+        mode: "cors"
+      }).catch(e => console.error("❌ GET raiz falhou:", e));
 
-      if (healthResponse.ok) {
-        console.log("✅ Health check OK");
-      } else {
-        console.log("⚠️ Health check falhou:", healthResponse.status);
+      if (getRootTest && getRootTest.ok) {
+        console.log("✅ GET raiz funcionou! Status:", getRootTest.status);
       }
 
-      // Segundo teste: API analyze
-      console.log("🔍 Testando API analyze...");
-      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Origin": window.location.origin
-        },
-        body: JSON.stringify({
-          text: "teste de conexão",
-          question: "verificar funcionamento"
+      // Timeout de 10 segundos para cada teste
+      const timeoutPromise = (ms: number) => 
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout de conexão')), ms)
+        );
+
+      // Teste direto no endpoint que sabemos que funciona
+      console.log("🎯 TESTE 2: POST no endpoint API:", apiEndpoint);
+
+      const testResponse = await Promise.race([
+        fetch(apiEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Origin": window.location.origin
+          },
+          body: JSON.stringify({
+            text: "teste básico de conexão",
+            question: "este é um teste"
+          }),
+          mode: "cors",
+          cache: "no-cache"
+        }).catch(err => {
+          console.error("❌ API fetch error:", err);
+          throw new Error(`API test failed: ${err.message}`);
         }),
-        mode: "cors",
-        cache: "no-cache"
-      }, 10000);
+        timeoutPromise(8000)
+      ]) as Response;
 
-      const response = await request;
-      cleanup();
+      console.log("✅ API Response - Status:", testResponse.status);
+      console.log("✅ Response Headers:", Object.fromEntries(testResponse.headers.entries()));
 
-      const responseTime = Date.now() - startTime;
-
-      if (response.ok) {
-        const data = await response.text();
-        setConnectionStatus({ 
-          status: 'online', 
-          lastChecked: new Date(), 
-          responseTime 
-        });
-
-        console.log("✅ Conexão estabelecida com sucesso");
-        alert(`🎉 CONEXÃO ESTABELECIDA!\n\n✅ Status: ${response.status} OK\n⚡ Tempo: ${responseTime}ms\n🔗 Backend: Online\n🔗 URL: ${BACKEND_BASE_URL}\n\nResposta: ${data.substring(0, 100)}...`);
+      if (testResponse.ok) {
+        const responseData = await testResponse.text();
+        console.log("✅ API Response Preview:", responseData.substring(0, 200));
+        setConnectionStatus('online');
+        alert(`🎉 SAPHIRA ENGINE CONECTADA!\n\nStatus: ${testResponse.status} OK\n\n✅ Backend funcionando perfeitamente!\n\nURL: ${BACKEND_BASE_URL}\n\nResposta da Saphira:\n${responseData.substring(0, 150)}...`);
       } else {
-        throw new Error(`Status ${response.status} - ${response.statusText}`);
+        setConnectionStatus('offline');
+        const errorText = await testResponse.text();
+        console.error("❌ Error Response:", errorText);
+        alert(`⚠️ Backend Respondeu com Erro\n\nStatus: ${testResponse.status}\nErro: ${errorText.substring(0, 150)}...`);
       }
 
     } catch (error: unknown) {
-      setConnectionStatus({ 
-        status: 'offline', 
-        lastChecked: new Date() 
-      });
+      console.error("❌ Erro no teste de conexão:", error);
+      setConnectionStatus('offline');
 
-      let errorDetails = '';
+      let errorMessage = "Erro de conexão";
       if (error instanceof Error) {
-        errorDetails = error.message;
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-          errorDetails += '\n\nProblema de rede ou CORS';
-        }
-      } else {
-        errorDetails = 'Erro desconhecido';
+        errorMessage = error.message;
       }
 
-      console.error("❌ Teste de conexão falhou:", error);
-      alert(`❌ FALHA NA CONEXÃO\n\nURL: ${BACKEND_BASE_URL}\nErro: ${errorDetails}\n\nVerifique se o backend está online e acessível.`);
+      alert(`❌ Erro de conexão com backend:\n\n${errorMessage}\n\nURL testada: ${apiEndpoint}`);
     }
-  }, [connectionStatus.status, createRequestWithTimeout]);
-
-  // Cleanup ao desmontar - prevenção de vazamento de memória
-  useEffect(() => {
-    return () => {
-      // Cleanup mais robusto
-      if (keepAliveIntervalRef.current) {
-        clearInterval(keepAliveIntervalRef.current);
-        keepAliveIntervalRef.current = null;
-      }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-      }
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = null;
-      }
-    };
-  }, []);
+  };
 
   return (
-    <div className="saphira-container">
-      {/* Header */}
-      <div className="saphira-header">
-        <h1 className={`saphira-title ${isTyping ? 'logo-typing-effect' : ''}`}>💙 Saphira</h1>
-        <p className="saphira-subtitle">Análise Inteligente, Técnica e Auditável</p>
+    <div className="container">
+      <h1>💙 Saphira</h1>
+      <p className="subtitle">Análise Inteligente e Empática</p>
+
+      <textarea
+        placeholder="Digite seu texto ou pergunta para análise..."
+        value={userText}
+        onChange={(e) => setUserText(e.target.value)}
+      />
+
+      <input
+        type="text"
+        placeholder="Pergunta Específica (Opcional)"
+        value={specificQuestion}
+        onChange={(e) => setSpecificQuestion(e.target.value)}
+      />
+
+      <div className="button-group">
+        <button onClick={handleAnalyze} disabled={loading}>
+          {loading ? "Saphira está refletindo..." : "🔎 Analisar"}
+        </button>
+        <button onClick={handleClear}>🧹 Limpar</button>
+        <button onClick={handleTestConnection} disabled={connectionStatus === 'testing'}>
+          {connectionStatus === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
+        </button>
       </div>
 
-      {/* Input Section */}
-      <div className="saphira-input-section">
-        <textarea
-          className={`saphira-textarea ${isTyping ? 'typing' : ''}`}
-          placeholder={placeholderExamples[currentPlaceholder]}
-          value={userText}
-          onChange={handleTypingFeedback}
-          disabled={loading}
-          rows={6}
-        />
-
-        <input
-          className="saphira-input"
-          type="text"
-          placeholder="Pergunta Específica (Opcional)"
-          value={specificQuestion}
-          onChange={(e) => setSpecificQuestion(e.target.value)}
-          disabled={loading}
-        />
-      </div>
-
-      {/* File Uploader */}
-      <FileUploader onFileContentChange={handleFileContentChange} />
-
-      {/* Upload Status */}
-      {uploadedFile && (
-        <div className="saphira-upload-info">
-          📁 <strong>Arquivo ativo:</strong> {uploadedFile.name} 
-          <span className="priority-note">(Será usado em vez do texto manual)</span>
+      {connectionStatus !== 'unknown' && (
+        <div className={`connection-status ${connectionStatus}`}>
+          {connectionStatus === 'testing' && "🔄 Testando conexão..."}
+          {connectionStatus === 'online' && "✅ Backend Online"}
+          {connectionStatus === 'offline' && "❌ Backend Offline"}
         </div>
       )}
 
-      {/* Navegação de Abas */}
-      <div className="saphira-tab-navigation">
-        <button 
-          onClick={() => setActiveTab('analise')} 
-          className={`saphira-tab-button ${activeTab === 'analise' ? 'active' : ''}`}
-        >
-          📊 Análise de Dados
-        </button>
-        <button 
-          onClick={() => setActiveTab('sobre')} 
-          className={`saphira-tab-button ${activeTab === 'sobre' ? 'active' : ''}`}
-        >
-          💙 Sobre a Saphira
-        </button>
-      </div>
-
-      {/* Buttons */}
-      <div className="saphira-buttons">
-        <button 
-          className={`saphira-button ${loading ? 'loading' : ''}`}
-          onClick={handleAnalyze} 
-          disabled={loading || (!userText.trim() && !uploadedFile?.content)}
-        >
-          {loading ? "🔄 Analisando..." : "🔎 Analisar"}
-        </button>
-
-        <button 
-          className="saphira-button"
-          onClick={handleClear} 
-          disabled={loading}
-        >
-          🧹 Limpar
-        </button>
-
-        <button 
-          className={`saphira-button ${connectionStatus.status === 'testing' ? 'loading' : ''}`}
-          onClick={handleTestConnection} 
-          disabled={connectionStatus.status === 'testing'}
-        >
-          {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
-        </button>
-      </div>
-
-      {/* Export and Audit Section */}
-      <div className="saphira-export-section">
-        <div className="export-buttons">
-          <button 
-            className="saphira-button export-button"
-            onClick={handleExportResponseJSON}
-            disabled={!result}
-            title="Exportar resposta em formato JSON"
-          >
-            📥 Exportar JSON
-          </button>
-
-          <button 
-            className="saphira-button audit-button"
-            onClick={() => setIsAuditModalOpen(true)}
-            title="Ver histórico de análises"
-          >
-            🛡️ Ver Auditoria ({auditLogs.length})
-          </button>
-        </div>
-
-        <div className="future-exports">
-          <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
-        </div>
-      </div>
-
-      {/* Status Bar */}
-      <div className="saphira-status-bar">
-        {connectionStatus.status !== 'unknown' && (
-          <div className={`saphira-status ${connectionStatus.status}`}>
-            {connectionStatus.status === 'testing' && "🔄 Testando conexão..."}
-            {connectionStatus.status === 'online' && (
-              <>
-                ✅ Backend Online
-                {connectionStatus.responseTime && (
-                  <span className="response-time"> ({connectionStatus.responseTime}ms)</span>
-                )}
-              </>
-            )}
-            {connectionStatus.status === 'offline' && "❌ Backend Offline"}
-          </div>
-        )}
-
-        {keepAliveActive && (
-          <div className="saphira-keep-alive">
-            🔄 Keep-alive ativo
-          </div>
-        )}
-      </div>
-
-      {/* Results */}
-      {(result || activeTab === 'sobre') && (
-        <div className="saphira-results">
-          {activeTab === 'analise' && result && (
-            <AnalysisDashboard response={result} />
-          )}
-          {activeTab === 'sobre' && (
-            <AboutSaphira />
-          )}
+      {keepAliveActive && (
+        <div className="keep-alive-indicator">
+          🔄 Keep-alive ativo (Backend protegido de idle)
         </div>
       )}
 
-      {/* Audit Modal */}
-      <AuditModal
-        isOpen={isAuditModalOpen}
-        onClose={() => setIsAuditModalOpen(false)}
-        auditLogs={auditLogs}
-        onExportLogs={handleExportAuditLogs}
-      />
+      {result && (
+        <>
+          <div className="response-card">
+            <h3>💬 Saphira diz:</h3>
+            <p>{result.humanized_text}</p>
+          </div>
 
-      {/* Technical Modal */}
-      <TechnicalModal
-        isOpen={isTechnicalModalOpen}
-        onClose={() => setIsTechnicalModalOpen(false)}
-        technicalData={result?.technicalData || null}
-      />
+          {result.technicalData && (
+            <div className="technical-card">
+              <h4>🧾 Dados Técnicos</h4>
+              <ul>
+                <li>Tom: {result.technicalData.tom?.tipo || "Indefinido"} ({Math.round((result.technicalData.tom?.confianca || 0) * 100)}%)</li>
+                <li>Viés: {result.technicalData.vies?.detectado ? "Detectado" : "Nenhum"}</li>
+                <li>Contradições: {result.technicalData.contradicoes?.detectada ? "Sim" : "Nenhuma"}</li>
+                <li>Sugestão: {result.technicalData.sugestao || "Nenhuma"}</li>
+              </ul>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
