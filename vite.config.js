@@ -14,20 +14,21 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: (id) => {
-        // External Node.js subpath imports
-        if (id.startsWith('#')) return true;
-        return false;
-      },
-      onwarn(warning, warn) {
-        if (warning.code === 'UNRESOLVED_IMPORT' && warning.source?.includes('globalThis-config.mjs')) {
-          return;
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          motion: ['framer-motion'],
+          charts: ['recharts'],
+          markdown: ['react-markdown'],
+          json: ['react18-json-view'],
+          pdf: ['jspdf', 'html2canvas'],
+          docx: ['docx', 'file-saver']
         }
-        warn(warning);
       }
     }
   },
   optimizeDeps: {
+    include: ['react', 'react-dom', 'framer-motion', 'recharts', 'react-markdown', 'react18-json-view'],
     exclude: ['motion-utils']
   },
   define: {
