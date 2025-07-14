@@ -1,0 +1,66 @@
+🚨 AGENTE — EXECUTAR EM ORDEM EXATAMENTE COMO ESPECIFICADO 🚨
+
+1️⃣ EXCLUSÃO TOTAL
+- Apagar todos os arquivos e diretórios existentes no workspace atual do frontend, incluindo:
+  - src/
+  - public/
+  - node_modules/
+  - dist/
+  - .git/
+  - .vscode/
+  - Todos os arquivos ocultos e remanescentes de builds ou configurações antigas.
+
+2️⃣ EXTRAÇÃO DO BACKUP
+- Receber e extrair o arquivo ZIP fornecido.
+- Garantir que **todo o conteúdo** seja restaurado exatamente como está no backup, incluindo estrutura de diretórios e arquivos de configuração (package.json, vite.config.js, tsconfig.json, etc.).
+
+3️⃣ LIMPEZA E INSTALAÇÃO DE DEPENDÊNCIAS
+- Executar:
+rm -rf node_modules package-lock.json
+npm install
+
+diff
+Copiar
+Editar
+- Garantir que todas as dependências sejam instaladas sem erros.
+
+4️⃣ VALIDAÇÃO LOCAL (DESENVOLVIMENTO)
+- Executar:
+npm run dev
+
+perl
+Copiar
+Editar
+- Confirmar no log: `VITE vX.X.X ready in ... ms`, verificar funcionamento em `localhost:5173` ou URL local gerada.
+- Se houver erros ou logs suspeitos, interromper e emitir relatório técnico detalhado.
+
+5️⃣ BUILD DE PRODUÇÃO
+- Se o build local for bem-sucedido, executar:
+npm run build
+
+yaml
+Copiar
+Editar
+- Verificar se a pasta `/dist` é gerada corretamente sem erros.
+
+6️⃣ DEPLOYMENT FINAL
+- Efetuar o redeploy ou publicação no ambiente de produção.
+- Validar funcionamento correto na URL pública.
+
+---
+
+## 📄 **RELATÓRIOS OBRIGATÓRIOS**
+
+Após cada etapa, gerar e fornecer um relatório técnico real com as seguintes informações:
+
+- Status da etapa (SUCESSO ou FALHA).
+- Logs completos do terminal (sem omissões ou simulações).
+- Informações de versões (Node, npm, Vite).
+- Lista de dependências restauradas (extraída do `package-lock.json` ou `npm list`).
+- Confirmação de arquivos restaurados (listar principais arquivos ou usar `tree`).
+
+---
+
+## ⚠️ **INSTRUÇÃO FINAL PARA O AGENTE**
+
+> Executar todas as etapas exatamente conforme descrito, sem etapas manuais ou improvisações. Fornecer apenas relatórios reais e completos, baseados nos resultados obtidos no ambiente. Não simular nem resumir. Confirmar cada etapa antes de avançar para a próxima.
