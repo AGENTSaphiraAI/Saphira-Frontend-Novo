@@ -10,9 +10,8 @@ channel = "stable-24_05"
 language = "nodejs"
 
 [deployment]
-deploymentTarget = "static"
+deploymentTarget = "cloudrun"
 build = ["sh", "-c", "npm install && npm run build"]
-publicDir = "dist"
 run = ["sh", "-c", "npm run preview"]
 
 [[ports]]
