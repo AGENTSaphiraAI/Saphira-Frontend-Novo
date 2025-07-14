@@ -3,6 +3,7 @@ import "./App.css";
 import FileUploader from "./components/FileUploader";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import AuditModal from "./components/AuditModal";
+import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
@@ -33,6 +34,7 @@ export default function App() {
   const [uploadedFile, setUploadedFile] = useState<{ content: string; name: string } | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
+  const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
@@ -494,6 +496,24 @@ export default function App() {
         >
           {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
         </button>
+
+        <button
+          onClick={() => setIsTechnicalModalOpen(true)}
+          style={{
+            marginLeft: '0.5rem',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#2563EB',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s'
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#1D4ED8')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+        >
+          🟦 Sobre a Saphira
+        </button>
       </div>
 
       {/* Export and Audit Section */}
@@ -559,6 +579,12 @@ export default function App() {
         onClose={() => setIsAuditModalOpen(false)}
         auditLogs={auditLogs}
         onExportLogs={handleExportAuditLogs}
+      />
+
+      {/* Technical Modal - Sobre a Saphira */}
+      <TechnicalModal
+        isOpen={isTechnicalModalOpen}
+        onClose={() => setIsTechnicalModalOpen(false)}
       />
 
       

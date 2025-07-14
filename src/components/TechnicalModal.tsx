@@ -1,38 +1,19 @@
-
 import React, { useEffect } from 'react';
-interface TechnicalData {
-  tone?: number;
-  bias?: number;
-  clarity?: number;
-  consistency?: number;
-  contradiction?: number;
-  tom?: { tipo: string; confianca: number };
-  vies?: { detectado: boolean; confianca: number };
-  contradicoes?: { detectada: boolean; confianca: number };
-  sugestao?: string;
-  [key: string]: any;
-}
 
 interface TechnicalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  technicalData: TechnicalData | null;
 }
 
-const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose, technicalData }) => {
-  // Hook para fechar o modal com ESC
+const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
+      if (event.key === 'Escape') onClose();
     };
-
     if (isOpen) {
       window.addEventListener('keydown', handleEsc);
       document.body.style.overflow = 'hidden';
     }
-
     return () => {
       window.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = 'unset';
@@ -41,112 +22,62 @@ const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose, techni
 
   if (!isOpen) return null;
 
-  // Mapeamento dos dados para métricas visuais
-  const getMetricValue = (data: TechnicalData | null, key: string): number => {
-    if (!data) return 0;
-    
-    // Conversão inteligente dos dados Saphira para percentuais
-    switch (key) {
-      case 'tone':
-        return data.tom?.confianca || data.tone || 0;
-      case 'bias':
-        return data.vies?.confianca || data.bias || 0;
-      case 'contradiction':
-        return data.contradicoes?.confianca || data.contradiction || 0;
-      case 'clarity':
-        return data.clarity || Math.random() * 100; // Mock para demonstração
-      case 'consistency':
-        return data.consistency || Math.random() * 100; // Mock para demonstração
-      default:
-        return 0;
-    }
-  };
-
-  
-
-  const formatJsonForDisplay = (data: any) => {
-    if (!data) return { message: "Nenhum dado técnico disponível" };
-    
-    return {
-      timestamp: new Date().toISOString(),
-      analysis: {
-        tom: data.tom || { tipo: "neutro", confianca: 0 },
-        vies: data.vies || { detectado: false, confianca: 0 },
-        contradicoes: data.contradicoes || { detectada: false, confianca: 0 },
-        sugestao: data.sugestao || "Análise em processamento"
-      },
-      metrics: {
-        tone_score: getMetricValue(data, 'tone'),
-        bias_score: getMetricValue(data, 'bias'),
-        contradiction_score: getMetricValue(data, 'contradiction'),
-        clarity_score: getMetricValue(data, 'clarity'),
-        consistency_score: getMetricValue(data, 'consistency')
-      },
-      raw_data: data
-    };
-  };
-
   return (
-    <div className="audit-modal-overlay" onClick={onClose}>
-      <div className="audit-modal technical-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="audit-modal-header">
-          <h2>🔬 Análise Técnica Detalhada</h2>
-          <button className="modal-close-button" onClick={onClose}>×</button>
-        </div>
-        
-        <div className="modal-body">
-          {/* Seção do Gráfico Radar */}
-          <div className="radar-chart-section">
-            <h3>📊 Mapa de Performance</h3>
-            <div className="chart-placeholder">
-              <div className="mock-radar">
-                <div className="radar-center">Saphira</div>
-              </div>
-              <div className="radar-axes">
-                <span>Tom: {getMetricValue(technicalData, 'tone').toFixed(1)}%</span>
-                <span>Viés: {getMetricValue(technicalData, 'bias').toFixed(1)}%</span>
-                <span>Contradições: {getMetricValue(technicalData, 'contradiction').toFixed(1)}%</span>
-                <span>Clareza: {getMetricValue(technicalData, 'clarity').toFixed(1)}%</span>
-              </div>
-              <p style={{ color: 'var(--saphira-accent)', marginTop: '1rem' }}>
-                📈 Gráfico interativo será implementado na próxima atualização
-              </p>
-            </div>
-          </div>
-
-          {/* Métricas Resumidas */}
-          <div className="technical-summary">
-            <h3>📋 Resumo Executivo</h3>
-            <div className="tech-metrics">
-              <div className="metric-card">
-                <h4>Tom Detectado</h4>
-                <p>{technicalData?.tom?.tipo || 'Neutro'}</p>
-              </div>
-              <div className="metric-card">
-                <h4>Viés Presente</h4>
-                <p>{technicalData?.vies?.detectado ? 'Sim' : 'Não'}</p>
-              </div>
-              <div className="metric-card">
-                <h4>Contradições</h4>
-                <p>{technicalData?.contradicoes?.detectada ? 'Detectadas' : 'Não detectadas'}</p>
-              </div>
-              <div className="metric-card">
-                <h4>Confiança Média</h4>
-                <p>{((getMetricValue(technicalData, 'tone') + getMetricValue(technicalData, 'bias') + getMetricValue(technicalData, 'contradiction')) / 3).toFixed(1)}%</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Visualizador JSON */}
-          <div className="json-viewer-section">
-            <h3>🔍 Dados Técnicos Completos</h3>
-            <div className="json-viewer">
-              <pre className="json-content">
-                {JSON.stringify(formatJsonForDisplay(technicalData), null, 2)}
-              </pre>
-            </div>
-          </div>
-        </div>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0, left: 0,
+        width: '100%', height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 9999,
+        opacity: isOpen ? 1 : 0,
+        transition: 'opacity 0.3s ease'
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: '#111827',
+          color: '#F9FAFB',
+          padding: '2rem',
+          borderRadius: '12px',
+          maxWidth: '600px',
+          width: '90%',
+          boxShadow: '0 0 20px rgba(0,0,0,0.5)',
+          transform: isOpen ? 'translateY(0)' : 'translateY(-20px)',
+          transition: 'transform 0.3s ease'
+        }}
+      >
+        <h2>🟦 Sobre a Saphira</h2>
+        <h3 style={{ marginTop: '1rem', color: '#3B82F6' }}>Nossa Missão: Trazer Clareza em um Mundo Complexo</h3>
+        <p>Bem-vindo ao Projeto Saphira. Em uma era de sobrecarga de informações e narrativas confusas, nossa missão é simples e poderosa: fornecer uma análise técnica, neutra e auditável para qualquer conteúdo que você nos apresentar.</p>
+        <h4>O que fazemos?</h4>
+        <ul>
+          <li><strong>Privacidade Absoluta:</strong> Os dados que você analisa são processados e esquecidos. Não armazenamos o conteúdo original.</li>
+          <li><strong>Transparência Radical:</strong> A Saphira sempre mostrará os fatos e os dados brutos que a levaram à conclusão.</li>
+          <li><strong>Verificabilidade Incontestável:</strong> Cada análise é feita para ser justa e baseada em evidências lógicas.</li>
+        </ul>
+        <h4>Como usar?</h4>
+        <p>Basta colar ou enviar um texto para análise. A Saphira irá processá-lo e revelar insights objetivos, ajudando você a ver além do ruído.</p>
+        <p>Este projeto está em constante evolução. Sua curiosidade e feedback nos move para frente.</p>
+        <button
+          style={{
+            marginTop: '1.5rem',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#3B82F6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer'
+          }}
+          onClick={onClose}
+        >
+          Fechar
+        </button>
       </div>
     </div>
   );
