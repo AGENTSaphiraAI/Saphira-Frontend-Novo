@@ -332,16 +332,36 @@ export default function App() {
     console.log(`🛡️ Logs de auditoria exportados: ${fileName}`);
   }, [auditLogs]);
 
-  // Teste de conexão
+  // Teste de conexão aprimorado
   const handleTestConnection = useCallback(async () => {
     if (connectionStatus.status === 'testing') return;
 
-    console.log("🔗 Testando conexão...");
-    const startTime = Date.now();
+    console.log("🔗 Testando conexão com backend...");
+    console.log("🎯 [TESTE] Backend oficial:", BACKEND_BASE_URL);
+    console.log("🎯 [TESTE] Health check:", `${BACKEND_BASE_URL}/health`);
+    console.log("🎯 [TESTE] API endpoint:", `${BACKEND_BASE_URL}/api/analyze`);
 
     setConnectionStatus({ status: 'testing' });
 
     try {
+      // TESTE 1: Verificar se backend responde (GET simples)
+      console.log("🎯 TESTE 1: GET simples na raiz do backend");
+      const healthResponse = await fetch(BACKEND_BASE_URL, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache"
+      });
+
+      if (healthResponse.ok) {
+        console.log("✅ GET raiz funcionou! Status:", healthResponse.status);
+      } else {
+        console.warn("⚠️ GET raiz retornou:", healthResponse.status);
+      }
+
+      // TESTE 2: Testar endpoint API específico
+      console.log("🎯 TESTE 2: POST no endpoint API:", `${BACKEND_BASE_URL}/api/analyze`);
+      const startTime = Date.now();
+
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: "POST",
         headers: {
@@ -350,12 +370,12 @@ export default function App() {
           "Origin": window.location.origin
         },
         body: JSON.stringify({
-          text: "teste de conexão",
-          question: "verificar funcionamento"
+          text: "teste de conexão automática",
+          question: "verificar funcionamento do sistema"
         }),
         mode: "cors",
         cache: "no-cache"
-      }, 10000);
+      }, 15000); // 15 segundos timeout
 
       const response = await request;
       cleanup();
@@ -363,16 +383,21 @@ export default function App() {
       const responseTime = Date.now() - startTime;
 
       if (response.ok) {
-        const data = await response.text();
+        const data = await response.json();
         setConnectionStatus({ 
           status: 'online', 
           lastChecked: new Date(), 
           responseTime 
         });
 
-        alert(`🎉 CONEXÃO ESTABELECIDA!\n\n✅ Status: ${response.status} OK\n⚡ Tempo: ${responseTime}ms\n🔗 Backend: Online\n\nResposta: ${data.substring(0, 100)}...`);
+        const displayText = data.displayData?.humanized_text || data.humanized_text || "Resposta não disponível";
+        
+        alert(`🎉 CONEXÃO ESTABELECIDA COM SUCESSO!\n\n✅ Status: ${response.status} OK\n⚡ Tempo de resposta: ${responseTime}ms\n🔗 Backend: Totalmente operacional\n🧠 Módulos Saphira: Ativos\n\n📋 Resposta de teste:\n"${displayText.substring(0, 200)}${displayText.length > 200 ? '...' : ''}"`);
+        
+        console.log("✅ Teste de conexão completo - Sistema operacional!");
       } else {
-        throw new Error(`Status ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
     } catch (error: unknown) {
@@ -381,9 +406,20 @@ export default function App() {
         lastChecked: new Date() 
       });
 
-      const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido';
-      alert(`❌ FALHA NA CONEXÃO\n\n${errorMsg}\n\nVerifique se o backend está online.`);
-      console.error("❌ Teste de conexão falhou:", error);
+      console.error("❌ Erro no teste de conexão:", error);
+
+      let errorMessage = "Erro desconhecido";
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = "Timeout: Conexão demorou mais de 15 segundos";
+        } else if (error.message.includes('fetch')) {
+          errorMessage = "Erro de rede - Backend inacessível";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      alert(`❌ FALHA NA CONEXÃO COM BACKEND\n\n🔴 Erro: ${errorMessage}\n\n💡 Possíveis causas:\n• Backend em hibernação (aguarde 30s)\n• Problema de rede temporário\n• URL do backend incorreta\n• Timeout na requisição\n\n🔄 Tente novamente em alguns segundos.`);
     }
   }, [connectionStatus.status, createRequestWithTimeout]);
 
