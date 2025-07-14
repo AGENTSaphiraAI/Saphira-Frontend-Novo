@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
 import FileUploader from "./components/FileUploader";
 import AnalysisDisplay from "./components/analysis/AnalysisDisplay";
 import AuditModal from "./components/AuditModal";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import TechnicalModal from "./components/TechnicalModal";
-import AboutSaphira from "./components/AboutSaphira";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
@@ -47,7 +46,6 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'analise' | 'sobre'>('analise');
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -59,15 +57,15 @@ export default function App() {
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
 
-  // Placeholder examples - otimizado com useMemo
-  const placeholderExamples = useMemo(() => [
+  // Placeholder examples - prontos para modularização futura
+  const placeholderExamples = [
     "Cole aqui um texto para análise de sentimento e tom...",
     "Digite um artigo para verificar contradições e viés...",
     "Analise este conteúdo para detectar padrões linguísticos...",
     "Avalie a coerência e objetividade deste documento...",
     "Verifique a estrutura argumentativa desta mensagem...",
     "Examine este texto para análise técnica completa..."
-  ], []);
+  ];
 
   // Utilitário para criar requests com timeout
   const createRequestWithTimeout = useCallback((url: string, options: RequestInit, timeout = REQUEST_TIMEOUT) => {
@@ -120,14 +118,14 @@ export default function App() {
     }, 800); // 800ms para UX mais suave
   }, []);
 
-  // Keep-alive otimizado com debounce
+  // Keep-alive otimizado
   useEffect(() => {
-    let debounceTimeout: NodeJS.Timeout;
-    
     const startKeepAlive = () => {
       if (keepAliveIntervalRef.current) {
         clearInterval(keepAliveIntervalRef.current);
       }
+
+      setKeepAliveActive(true);
 
       const pingBackend = async () => {
         try {
@@ -135,14 +133,16 @@ export default function App() {
             method: "GET",
             mode: "cors",
             cache: "no-cache"
-          }, 6000); // Reduzido timeout para melhor UX
+          }, 8000);
 
           const response = await request;
           cleanup();
 
           if (response.ok) {
+            console.log("✅ Keep-alive OK");
             setKeepAliveActive(true);
           } else {
+            console.warn("⚠️ Keep-alive warning:", response.status);
             setKeepAliveActive(false);
           }
         } catch (err) {
@@ -153,14 +153,11 @@ export default function App() {
         }
       };
 
-      // Debounce inicial para evitar múltiplas chamadas
-      debounceTimeout = setTimeout(() => {
-        pingBackend();
-        keepAliveIntervalRef.current = setInterval(pingBackend, KEEP_ALIVE_INTERVAL);
-      }, 2000);
+      const initialTimeout = setTimeout(pingBackend, 30000);
+      keepAliveIntervalRef.current = setInterval(pingBackend, KEEP_ALIVE_INTERVAL);
 
       return () => {
-        clearTimeout(debounceTimeout);
+        clearTimeout(initialTimeout);
         if (keepAliveIntervalRef.current) {
           clearInterval(keepAliveIntervalRef.current);
         }
@@ -393,18 +390,14 @@ export default function App() {
   // Cleanup ao desmontar - prevenção de vazamento de memória
   useEffect(() => {
     return () => {
-      // Cleanup mais robusto
       if (keepAliveIntervalRef.current) {
         clearInterval(keepAliveIntervalRef.current);
-        keepAliveIntervalRef.current = null;
       }
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
-        abortControllerRef.current = null;
       }
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = null;
       }
     };
   }, []);
@@ -448,22 +441,6 @@ export default function App() {
           <span className="priority-note">(Será usado em vez do texto manual)</span>
         </div>
       )}
-
-      {/* Navegação de Abas */}
-      <div className="saphira-tab-navigation">
-        <button 
-          onClick={() => setActiveTab('analise')} 
-          className={`saphira-tab-button ${activeTab === 'analise' ? 'active' : ''}`}
-        >
-          📊 Análise de Dados
-        </button>
-        <button 
-          onClick={() => setActiveTab('sobre')} 
-          className={`saphira-tab-button ${activeTab === 'sobre' ? 'active' : ''}`}
-        >
-          💙 Sobre a Saphira
-        </button>
-      </div>
 
       {/* Buttons */}
       <div className="saphira-buttons">
@@ -543,14 +520,9 @@ export default function App() {
       </div>
 
       {/* Results */}
-      {(result || activeTab === 'sobre') && (
+      {result && (
         <div className="saphira-results">
-          {activeTab === 'analise' && result && (
-            <AnalysisDashboard response={result} />
-          )}
-          {activeTab === 'sobre' && (
-            <AboutSaphira />
-          )}
+          <AnalysisDashboard response={result} />
         </div>
       )}
 

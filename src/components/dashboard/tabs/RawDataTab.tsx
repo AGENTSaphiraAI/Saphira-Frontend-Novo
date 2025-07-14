@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code, Download } from 'lucide-react';
@@ -7,25 +8,6 @@ import 'react18-json-view/src/style.css';
 interface RawDataTabProps {
   technicalData: any;
 }
-
-// Componente JSON nativo mais performático
-const JsonViewer: React.FC<{ data: any }> = ({ data }) => {
-  const jsonString = JSON.stringify(data, null, 2);
-
-  return (
-    <pre style={{
-      background: '#f8f9fa',
-      padding: '1rem',
-      borderRadius: '8px',
-      overflow: 'auto',
-      fontSize: '14px',
-      lineHeight: '1.4',
-      border: '1px solid #e9ecef'
-    }}>
-      <code>{jsonString}</code>
-    </pre>
-  );
-};
 
 const RawDataTab: React.FC<RawDataTabProps> = ({ technicalData }) => {
   const [isExporting, setIsExporting] = useState(false);
@@ -53,7 +35,7 @@ const RawDataTab: React.FC<RawDataTabProps> = ({ technicalData }) => {
 
   const formatJsonForDisplay = (data: any) => {
     if (!data) return { message: "Nenhum dado técnico disponível" };
-
+    
     return {
       timestamp: new Date().toISOString(),
       saphira_analysis: {
@@ -82,7 +64,7 @@ const RawDataTab: React.FC<RawDataTabProps> = ({ technicalData }) => {
             <p>JSON estruturado da análise Saphira</p>
           </div>
         </div>
-
+        
         <button 
           className="export-button"
           onClick={handleExportJson}
@@ -95,34 +77,19 @@ const RawDataTab: React.FC<RawDataTabProps> = ({ technicalData }) => {
 
       <div className="data-content">
         <div className="json-viewer-wrapper">
-          {/* Fallback para JsonViewer nativo */}
-          {technicalData ? (
-            (() => {
-              try {
-                JSON.stringify(formatJsonForDisplay(technicalData));
-                return (
-                  <JsonView
-                    src={formatJsonForDisplay(technicalData)}
-                    theme="vscode"
-                    collapsed={2}
-                    displaySize={true}
-                    enableClipboard={true}
-                    style={{
-                      backgroundColor: '#f8fafc',
-                      borderRadius: '8px',
-                      border: '1px solid #e2e8f0',
-                      fontSize: '14px'
-                    }}
-                  />
-                );
-              } catch (e) {
-                console.error("Erro no react18-json-view:", e);
-                return <JsonViewer data={formatJsonForDisplay(technicalData)} />;
-              }
-            })()
-          ) : (
-            <p>Nenhum dado técnico disponível</p>
-          )}
+          <JsonView 
+            src={formatJsonForDisplay(technicalData)}
+            theme="vscode"
+            collapsed={2}
+            displaySize={true}
+            enableClipboard={true}
+            style={{
+              backgroundColor: '#f8fafc',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+              fontSize: '14px'
+            }}
+          />
         </div>
       </div>
     </motion.div>

@@ -1,27 +1,9 @@
-
-# Dependências do Node.js
-node_modules/
-
-# Arquivos de log e debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Arquivos de ambiente (segredos)
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Arquivos de build de produção
-build/
-dist/
-.next/
-
 # Logs
 logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
@@ -57,6 +39,7 @@ bower_components
 build/Release
 
 # Dependency directories
+node_modules/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -89,13 +72,24 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
 
+# Next.js build output
+.next
+out
+
 # Nuxt.js build / generate output
 .nuxt
-out
+dist
 
 # Gatsby files
 .cache/
@@ -108,6 +102,7 @@ out
 
 # vuepress v2.x temp and cache directory
 .temp
+.cache
 
 # Docusaurus cache and generated files
 .docusaurus
