@@ -1,86 +1,95 @@
 
-import React, { useState } from 'react';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import Modal from "./components/TechnicalModal";
 
 function App() {
-  const [inputText, setInputText] = useState('');
-  const [question, setQuestion] = useState('');
+  const [inputText, setInputText] = useState("");
+  const [question, setQuestion] = useState("");
+  const [showAbout, setShowAbout] = useState(false);
   const [showExport, setShowExport] = useState(false);
-  const [showAboutModal, setShowAboutModal] = useState(false);
 
   const handleAnalyze = () => {
-    console.log("🔍 Função Analisar simulada (frontend local)");
+    console.log("🔍 Iniciando análise local (placeholder)");
     setShowExport(true);
-    alert("Análise simulada concluída! (Frontend local)");
   };
 
   const handleClear = () => {
-    setInputText('');
-    setQuestion('');
+    setInputText("");
+    setQuestion("");
     setShowExport(false);
-    console.log("🧹 Campos limpos");
   };
 
   const handleTestConnection = () => {
-    console.log("🔗 Função Testar Conexão simulada (frontend local)");
-    alert("Testar Conexão clicado! (Frontend local)");
+    alert("Testar Conexão clicado (Frontend local)");
   };
 
   const handleAbout = () => {
-    setShowAboutModal(true);
+    setShowAbout(true);
   };
 
   return (
     <div className="App">
       <h1>💙 Saphira</h1>
-      <p>Análise Inteligente, Técnica e Auditável</p>
+      <h2>Análise Inteligente, Técnica e Auditável</h2>
 
       <textarea
         placeholder="Digite um artigo para verificar contradições e viés..."
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
-      ></textarea>
-
+      />
       <input
+        type="text"
         placeholder="Pergunta Específica (Opcional)"
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
       />
+      <button className="file-button">Selecionar Arquivo (.txt, em breve .doc)</button>
 
-      <button className="file-btn">Selecionar Arquivo (.txt, em breve .doc)</button>
-
-      <div className="btn-group">
-        <button className="primary-btn" onClick={handleAnalyze}>Analisar</button>
-        <button className="danger-btn" onClick={handleClear}>Limpar</button>
-        <button className="primary-btn" onClick={handleTestConnection}>Testar Conexão</button>
-        <button className="secondary-btn" onClick={handleAbout}>Sobre a Saphira</button>
+      <div className="button-group">
+        <button className="primary" onClick={handleAnalyze}>
+          Analisar
+        </button>
+        <button className="danger" onClick={handleClear}>
+          Limpar
+        </button>
+        <button className="secondary" onClick={handleTestConnection}>
+          Testar Conexão
+        </button>
+        <button className="dark" onClick={handleAbout}>
+          Sobre a Saphira
+        </button>
       </div>
 
       {showExport && (
-        <div className="export-group">
-          <button className="secondary-btn">Exportar JSON</button>
-          <button className="file-btn">Ver Auditoria (0)</button>
-        </div>
+        <button className="export-button">Exportar JSON</button>
       )}
 
-      <footer className="footer-note">
-        🚀 Saphira • Plataforma de Análise Premium • Auditável • Transparente <br />
+      <Modal show={showAbout} onClose={() => setShowAbout(false)}>
+        <h2>💙 Sobre a Saphira</h2>
+        <p><strong>Nossa Missão: Trazer Clareza em um Mundo Complexo</strong></p>
+        <p>
+          Bem-vindo ao Projeto Saphira. Em uma era de sobrecarga de informações e ruídos constantes,
+          nossa missão é simples: fornecer uma análise técnica, neutra e auditável para qualquer
+          conteúdo que você nos apresentar.
+        </p>
+        <p><strong>O que fazemos?</strong></p>
+        <ul>
+          <li><strong>Privacidade Absoluta:</strong> Seus dados são processados e descartados, nunca armazenados.</li>
+          <li><strong>Transparência Radical:</strong> Apresentamos os fatos, sem filtros ou distorções.</li>
+          <li><strong>Verificabilidade Incontestável:</strong> Cada análise é fundamentada em lógica e evidências claras.</li>
+        </ul>
+        <p><strong>Como usar?</strong></p>
+        <p>
+          Cole ou envie um arquivo, faça sua pergunta, e a Saphira retornará insights precisos, ajudando a enxergar além do óbvio.
+        </p>
+        <p>Esta é a interface premium, preparada para futuras integrações avançadas.</p>
+      </Modal>
+
+      <footer>
+        🔒 Saphira • Plataforma de Análise Premium • Auditável • Transparente <br />
         🔍 Privacidade Total • Análise Técnica • Resultados Verificáveis
       </footer>
-
-      {showAboutModal && (
-        <div className="modal-overlay" onClick={() => setShowAboutModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>💙 Sobre a Saphira</h2>
-            <p>
-              Saphira é uma plataforma de análise premium, projetada para oferecer precisão técnica,
-              transparência total e rastreabilidade auditável. Esta versão demonstra a interface premium 
-              pronta para futuras integrações avançadas.
-            </p>
-            <button onClick={() => setShowAboutModal(false)}>Fechar</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
