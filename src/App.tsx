@@ -6,25 +6,29 @@ function App() {
   const [inputText, setInputText] = useState('');
   const [question, setQuestion] = useState('');
 
+  // Função local para "analisar"
   const handleAnalyze = () => {
-    console.log("Analisar clicado");
-    // Coloque aqui a lógica real de análise
+    console.log("🔍 Função Analisar simulada (frontend local)");
+    alert("Analisar clicado! (Funcionalidade local)");
   };
 
+  // Função local para limpar campos
   const handleClear = () => {
-    console.log("Limpar clicado");
     setInputText('');
     setQuestion('');
+    console.log("🧹 Campos limpos");
   };
 
+  // Função local para "testar conexão"
   const handleTestConnection = () => {
-    console.log("Testar Conexão clicado");
-    // Lógica de teste de conexão
+    console.log("🔗 Função Testar Conexão simulada (frontend local)");
+    alert("Testar Conexão clicado! (Frontend local)");
   };
 
+  // Função local para "sobre a Saphira"
   const handleAbout = () => {
-    console.log("Sobre a Saphira clicado");
-    // Abrir modal ou mostrar informações
+    console.log("💙 Sobre a Saphira (frontend local)");
+    alert("Sobre a Saphira clicado! (Frontend local)");
   };
 
   return (
