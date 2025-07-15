@@ -1,0 +1,107 @@
+ Instruções ao agente
+mathematica
+Copiar
+Editar
+✅ Atualizar apenas src/App.tsx.
+✅ Não alterar CSS, animações ou estrutura geral.
+✅ Não modificar o modal "Sobre a Saphira".
+✅ Não mexer nos handlers ou backend.
+✅ Apenas trocar cores dos botões e retirar o botão Exportar JSON da tela principal (ficar só no dashboard).
+💻 Bloco de código (src/App.tsx)
+tsx
+Copiar
+Editar
+import React, { useState } from "react";
+import ModalSobre from "./components/ModalSobre";
+
+export default function App() {
+  const [inputText, setInputText] = useState("");
+  const [question, setQuestion] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+
+  const handleAnalyze = () => {
+    setShowDashboard(true);
+    console.log("Analisar clicado");
+  };
+
+  const handleClear = () => {
+    setInputText("");
+    setQuestion("");
+    setShowDashboard(false);
+    console.log("Limpar clicado");
+  };
+
+  const handleTestConnection = () => {
+    alert("Conexão testada com sucesso! (Simulação)");
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-blue-700 flex flex-col items-center justify-start py-6 px-2">
+      <h1 className="text-3xl font-bold text-white mb-1">💙 Saphira</h1>
+      <p className="text-white mb-4">Análise Inteligente, Técnica e Auditável</p>
+
+      <textarea
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
+        placeholder="Digite um artigo para verificar contradições e viés..."
+        className="w-full max-w-2xl h-28 p-3 rounded-md border focus:outline-none focus:ring mb-2"
+      />
+
+      <input
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+        placeholder="Pergunta Específica (Opcional)"
+        className="w-full max-w-2xl p-3 rounded-md border focus:outline-none focus:ring mb-4"
+      />
+
+      <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-4 py-2 rounded mb-4">
+        📁 Selecionar Arquivo (.txt, em breve .doc)
+      </button>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button
+          onClick={handleAnalyze}
+          className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded"
+        >
+          🔎 Analisar
+        </button>
+        <button
+          onClick={handleClear}
+          className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded"
+        >
+          🧹 Limpar
+        </button>
+        <button
+          onClick={handleTestConnection}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
+        >
+          🌐 Testar Conexão
+        </button>
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 rounded"
+        >
+          ℹ️ Sobre a Saphira
+        </button>
+      </div>
+
+      <p className="text-white text-center mb-4">
+        🔒 Saphira • Plataforma de Análise Premium • Auditável • Transparente<br/>
+        🔎 Privacidade Total • Análise Técnica • Resultados Verificáveis
+      </p>
+
+      {showDashboard && (
+        <div className="w-full max-w-2xl bg-white rounded shadow p-4 mt-4">
+          <h2 className="text-lg font-bold mb-2">📊 Dashboard de Análise Saphira</h2>
+          <p>Visualização das análises e exportações aqui.</p>
+          <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded mt-4">
+            🟢 Exportar JSON
+          </button>
+        </div>
+      )}
+
+      {showModal && <ModalSobre onClose={() => setShowModal(false)} />}
+    </div>
+  );
+}
