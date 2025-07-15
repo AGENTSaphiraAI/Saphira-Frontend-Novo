@@ -4,6 +4,7 @@ import FileUploader from "./components/FileUploader";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import AuditModal from "./components/AuditModal";
 import TechnicalModal from "./components/TechnicalModal";
+import AnimatedButton from "./components/AnimatedButton";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
@@ -50,12 +51,12 @@ export default function App() {
 
   
   const placeholderExamples = [
-    "Cole aqui um texto para análise de sentimento e tom...",
-    "Digite um artigo para verificar contradições e viés...",
-    "Analise este conteúdo para detectar padrões linguísticos...",
-    "Avalie a coerência e objetividade deste documento...",
-    "Verifique a estrutura argumentativa desta mensagem...",
-    "Examine este texto para análise técnica completa..."
+    "Cole ou digite aqui seu conteúdo para análise técnica, linguística ou estrutural...",
+    "Insira um documento para verificação de contradições, viés e coerência argumentativa...",
+    "Analise este texto para detectar padrões semânticos, tom e estrutura narrativa...",
+    "Avalie a consistência, objetividade e qualidade técnica deste material...",
+    "Examine este conteúdo para análise de sentimento, polaridade e integridade informacional...",
+    "Processe este documento para auditoria completa: linguística, estrutural e semântica..."
   ];
 
   // Utilitário para criar requests com timeout
@@ -453,7 +454,7 @@ export default function App() {
         <input
           className="saphira-input"
           type="text"
-          placeholder="Pergunta Específica (Opcional)"
+          placeholder="Se desejar, escreva uma pergunta específica (opcional)..."
           value={specificQuestion}
           onChange={(e) => setSpecificQuestion(e.target.value)}
           disabled={loading}
@@ -473,79 +474,62 @@ export default function App() {
 
       {/* Buttons */}
       <div className="saphira-buttons">
-        <button 
-          className={`saphira-button ${loading ? 'loading' : ''}`}
-          onClick={handleAnalyze} 
+        <AnimatedButton
+          variant="primary"
+          onClick={handleAnalyze}
           disabled={loading || (!userText.trim() && !uploadedFile?.content)}
         >
           {loading ? "🔄 Analisando..." : "🔎 Analisar"}
-        </button>
+        </AnimatedButton>
 
-        <button 
-          className="saphira-button"
-          onClick={handleClear} 
+        <AnimatedButton
+          variant="secondary"
+          onClick={handleClear}
           disabled={loading}
         >
           🧹 Limpar
-        </button>
+        </AnimatedButton>
 
-        <button 
-          className={`saphira-button ${connectionStatus.status === 'testing' ? 'loading' : ''}`}
-          onClick={handleTestConnection} 
+        <AnimatedButton
+          variant="secondary"
+          onClick={handleTestConnection}
           disabled={connectionStatus.status === 'testing'}
         >
           {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
-        </button>
+        </AnimatedButton>
 
-        <button
+        <AnimatedButton
+          variant="primary"
           onClick={() => setIsTechnicalModalOpen(true)}
-          style={{
-            marginLeft: '0.5rem',
-            padding: '0.5rem 1rem',
-            backgroundColor: '#2563EB',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 4px 14px rgba(59, 130, 246, 0.39)'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#1D4ED8';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#2563EB';
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}
         >
           🟦 Sobre a Saphira
-        </button>
+        </AnimatedButton>
       </div>
 
       {/* Export and Audit Section */}
       <div className="saphira-export-section">
         <div className="export-buttons">
-          <button 
-            className="saphira-button export-button"
+          <AnimatedButton
+            variant="export"
             onClick={handleExportResponseJSON}
             disabled={!result}
             title="Exportar resposta em formato JSON"
           >
             📥 Exportar JSON
-          </button>
+          </AnimatedButton>
 
-          <button 
-            className="saphira-button audit-button"
+          <AnimatedButton
+            variant="audit"
             onClick={() => setIsAuditModalOpen(true)}
             title="Ver histórico de análises"
+            badge={auditLogs.length}
           >
-            🛡️ Ver Auditoria ({auditLogs.length})
-          </button>
+            🛡️ Ver Auditoria
+          </AnimatedButton>
         </div>
 
         <div className="future-exports">
-          <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
+          <span className="future-note">🔜 Em breve: suporte completo a PDF e DOC • Exportações auditáveis • Integração NEXUM 🔗</span>
         </div>
       </div>
 
@@ -594,7 +578,15 @@ export default function App() {
         onClose={() => setIsTechnicalModalOpen(false)}
       />
 
+      {/* Separador Visual Premium */}
+      <div className="separator"></div>
       
+      {/* Footer Premium */}
+      <p className="footer-note">
+        💎 Saphira • Plataforma de Análise Premium • Auditável e Transparente
+        <br />
+        🔒 Privacidade Total • 🔍 Análise Técnica • 📊 Resultados Verificáveis
+      </p>
     </div>
   );
 }
