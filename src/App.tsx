@@ -477,10 +477,6 @@ export default function App() {
           className={`saphira-button ${loading ? 'loading' : ''}`}
           onClick={handleAnalyze} 
           disabled={loading || (!userText.trim() && !uploadedFile?.content)}
-          style={{
-            backgroundColor: loading ? '#6b7280' : '#22c55e',
-            borderColor: loading ? '#6b7280' : '#16a34a'
-          }}
         >
           {loading ? "🔄 Analisando..." : "🔎 Analisar"}
         </button>
@@ -489,10 +485,6 @@ export default function App() {
           className="saphira-button"
           onClick={handleClear} 
           disabled={loading}
-          style={{
-            backgroundColor: loading ? '#6b7280' : '#ef4444',
-            borderColor: loading ? '#6b7280' : '#dc2626'
-          }}
         >
           🧹 Limpar
         </button>
@@ -534,6 +526,15 @@ export default function App() {
       {/* Export and Audit Section */}
       <div className="saphira-export-section">
         <div className="export-buttons">
+          <button 
+            className="saphira-button export-button"
+            onClick={handleExportResponseJSON}
+            disabled={!result}
+            title="Exportar resposta em formato JSON"
+          >
+            📥 Exportar JSON
+          </button>
+
           <button 
             className="saphira-button audit-button"
             onClick={() => setIsAuditModalOpen(true)}
