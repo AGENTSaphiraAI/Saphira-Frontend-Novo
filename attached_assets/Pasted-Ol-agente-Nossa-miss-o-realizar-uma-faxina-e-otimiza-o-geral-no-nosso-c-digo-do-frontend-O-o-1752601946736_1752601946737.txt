@@ -1,0 +1,36 @@
+Olá, agente.
+Nossa missão é realizar uma faxina e otimização geral no nosso código do frontend. O objetivo é remover qualquer "lixo" ou inconsistência que possa ter sobrado dos nossos últimos processos de rollback e garantir que o projeto esteja limpo e preparado para a futura integração com novas funcionalidades do backend.
+Por favor, execute as seguintes tarefas de refatoração:
+1. Verificação de Dependências Órfãs:
+Analise o package.json contra os arquivos import no nosso código. Se encontrar alguma dependência instalada que não está sendo usada em nenhum lugar (como framer-motion, se ainda existir), por favor, remova-a com npm uninstall [nome-do-pacote].
+2. Otimização dos Scripts:
+Garanta que nosso arquivo package.json contenha os três scripts essenciais e otimizados para um projeto Vite:
+"dev": "vite"
+"build": "tsc && vite build"
+"preview": "vite preview"
+Se algum deles estiver faltando ou diferente, por favor, corrija.
+3. Limpeza do Cache:
+Execute um comando para limpar qualquer cache de build antigo ou corrompido que possa existir.
+Generated bash
+# Limpa o cache da pasta node_modules
+rm -rf node_modules/.cache
+Use code with caution.
+Bash
+Este comando é mais seguro do que limpar o cache geral do npm neste momento.
+4. Formatação e "Linting" do Código:
+Execute o Prettier ou ESLint (se estiverem configurados) em toda a base de código (principalmente nos arquivos .tsx e .css) para garantir que a formatação, o espaçamento e os padrões de código estejam consistentes. Isso é crucial para a manutenibilidade.
+5. Preparação da Estrutura para o Backend:
+Dentro do App.tsx, localize a função handleAnalyze. Adicione um comentário claro indicando onde a chamada real para a API do backend será inserida no futuro. Exemplo:
+Generated typescript
+const handleAnalyze = () => {
+  console.log("Análise iniciada...");
+  setShowExport(true); 
+
+  // TODO: Inserir aqui a chamada real para o endpoint /api/analyze do backend.
+  // A lógica irá pegar o 'inputText' e 'question' do estado,
+  // enviar para a API via fetch, e receber a resposta.
+};
+Use code with caution.
+TypeScript
+Isso não muda a funcionalidade, mas prepara o terreno para o próximo passo.
+Por favor, execute esta "faxina", gere um checkpoint no final e me confirme quando o ambiente estiver 100% limpo e consolidado.
