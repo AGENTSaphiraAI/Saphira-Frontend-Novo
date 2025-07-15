@@ -3,10 +3,11 @@ import React from 'react';
 
 type AnimatedButtonProps = React.ComponentPropsWithoutRef<typeof motion.button>;
 
-const AnimatedButton = ({ children, ...props }: AnimatedButtonProps) => (
+const AnimatedButton = ({ children, className, ...props }: AnimatedButtonProps) => (
   <motion.button
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.97 }}
+    className={className}
     {...props}
   >
     {children}
