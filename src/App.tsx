@@ -538,15 +538,6 @@ export default function App() {
         <div className="saphira-export-section">
           <div className="export-buttons">
             <button 
-              className="saphira-button export-button"
-              onClick={handleExportResponseJSON}
-              disabled={!result}
-              title="Exportar resposta em formato JSON"
-            >
-              📥 Exportar JSON
-            </button>
-
-            <button 
               className="saphira-button audit-button"
               onClick={() => setIsAuditModalOpen(true)}
               title="Ver histórico de análises"
