@@ -548,6 +548,23 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* Novas cores para botões de ação */
+.btn-success {
+    background-color: #28a745; /* Verde para sucesso/ação principal */
+    color: white;
+}
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Vermelho para ações destrutivas */
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .saphira-container {

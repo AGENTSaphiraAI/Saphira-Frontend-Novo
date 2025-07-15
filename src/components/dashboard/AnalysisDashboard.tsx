@@ -15,9 +15,10 @@ interface AnalysisDashboardProps {
     verificationCode?: string;
     [key: string]: any;
   };
+  handleExportResponseJSON?: () => void;
 }
 
-const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON }) => {
   const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'raw'>('report');
   const [isExporting, setIsExporting] = useState(false);
 
@@ -73,14 +74,29 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
           )}
         </div>
         
-        <button 
-          className="export-pdf-button"
-          onClick={handleExportPdf}
-          disabled={isExporting}
-        >
-          <Download size={20} />
-          {isExporting ? 'Exportando...' : 'Exportar PDF'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {handleExportResponseJSON && (
+            <button 
+              className="export-pdf-button"
+              onClick={handleExportResponseJSON}
+              style={{
+                background: 'linear-gradient(45deg, #4caf50 0%, #66bb6a 100%)',
+                boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)'
+              }}
+            >
+              <Download size={20} />
+              Exportar JSON
+            </button>
+          )}
+          <button 
+            className="export-pdf-button"
+            onClick={handleExportPdf}
+            disabled={isExporting}
+          >
+            <Download size={20} />
+            {isExporting ? 'Exportando...' : 'Exportar PDF'}
+          </button>
+        </div>
       </div>
 
       {/* Navegação das Abas */}

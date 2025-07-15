@@ -48,7 +48,7 @@ export default function App() {
   const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
 
-  
+
   const placeholderExamples = [
     "Cole aqui um texto para análise de sentimento e tom...",
     "Digite um artigo para verificar contradições e viés...",
@@ -382,9 +382,9 @@ export default function App() {
         });
 
         const displayText = data.displayData?.humanized_text || data.humanized_text || "Resposta não disponível";
-        
+
         alert(`🎉 CONEXÃO ESTABELECIDA COM SUCESSO!\n\n✅ Status: ${response.status} OK\n⚡ Tempo de resposta: ${responseTime}ms\n🔗 Backend: Totalmente operacional\n🧠 Módulos Saphira: Ativos\n\n📋 Resposta de teste:\n"${displayText.substring(0, 200)}${displayText.length > 200 ? '...' : ''}"`);
-        
+
         console.log("✅ Teste de conexão completo - Sistema operacional!");
       } else {
         const errorText = await response.text();
@@ -429,7 +429,7 @@ export default function App() {
     };
   }, []);
 
-  
+
 
   return (
     <div className="saphira-container">
@@ -474,7 +474,7 @@ export default function App() {
       {/* Buttons */}
       <div className="saphira-buttons">
         <button 
-          className={`saphira-button ${loading ? 'loading' : ''}`}
+          className={`saphira-button btn-success ${loading ? 'loading' : ''}`}
           onClick={handleAnalyze} 
           disabled={loading || (!userText.trim() && !uploadedFile?.content)}
         >
@@ -482,7 +482,7 @@ export default function App() {
         </button>
 
         <button 
-          className="saphira-button"
+          className="saphira-button btn-danger"
           onClick={handleClear} 
           disabled={loading}
         >
@@ -594,7 +594,7 @@ export default function App() {
         onClose={() => setIsTechnicalModalOpen(false)}
       />
 
-      
+
     </div>
   );
 }
