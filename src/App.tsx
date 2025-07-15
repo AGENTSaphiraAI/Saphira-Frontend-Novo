@@ -37,6 +37,7 @@ export default function App() {
   const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [showExport, setShowExport] = useState(false);
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -50,8 +51,8 @@ export default function App() {
 
 
   const placeholderExamples = [
+    "Digite um artigo para verificar contradições, viés e estrutura lógica...",
     "Cole aqui um texto para análise de sentimento e tom...",
-    "Digite um artigo para verificar contradições e viés...",
     "Analise este conteúdo para detectar padrões linguísticos...",
     "Avalie a coerência e objetividade deste documento...",
     "Verifique a estrutura argumentativa desta mensagem...",
@@ -242,6 +243,9 @@ export default function App() {
         verificationCode
       });
 
+      // Linha CRÍTICA: Faz o botão de exportar aparecer.
+      setShowExport(true);
+
     } catch (error: unknown) {
       console.error("❌ Erro na análise:", error);
 
@@ -271,6 +275,8 @@ export default function App() {
     setSpecificQuestion("");
     setResult(null);
     setUploadedFile(null);
+    // Linha CRÍTICA: Esconde o botão de exportar novamente.
+    setShowExport(false);
     console.log("🧹 Interface limpa");
   }, [loading]);
 
@@ -524,30 +530,32 @@ export default function App() {
       </div>
 
       {/* Export and Audit Section */}
-      <div className="saphira-export-section">
-        <div className="export-buttons">
-          <button 
-            className="saphira-button export-button"
-            onClick={handleExportResponseJSON}
-            disabled={!result}
-            title="Exportar resposta em formato JSON"
-          >
-            📥 Exportar JSON
-          </button>
+      {showExport && (
+        <div className="saphira-export-section">
+          <div className="export-buttons">
+            <button 
+              className="saphira-button export-button"
+              onClick={handleExportResponseJSON}
+              disabled={!result}
+              title="Exportar resposta em formato JSON"
+            >
+              📥 Exportar JSON
+            </button>
 
-          <button 
-            className="saphira-button audit-button"
-            onClick={() => setIsAuditModalOpen(true)}
-            title="Ver histórico de análises"
-          >
-            🛡️ Ver Auditoria ({auditLogs.length})
-          </button>
-        </div>
+            <button 
+              className="saphira-button audit-button"
+              onClick={() => setIsAuditModalOpen(true)}
+              title="Ver histórico de análises"
+            >
+              🛡️ Ver Auditoria ({auditLogs.length})
+            </button>
+          </div>
 
-        <div className="future-exports">
-          <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
+          <div className="future-exports">
+            <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Status Bar */}
       <div className="saphira-status-bar">
