@@ -1,0 +1,77 @@
+Olá, agente. Temos uma missão final e completa de polimento e documentação do frontend. Execute os passos abaixo na ordem descrita para garantir a consistência total.
+Passo 1: Ajuste Fino de Estilos nos Botões (src/App.tsx)
+1A - Padronize o Botão "Sobre a Saphira": Encontre o botão "Sobre a Saphira" e altere a className dele para se igualar ao botão "Testar Conexão". Queremos consistência.
+1B - Embeleze o Botão de Upload de Arquivo: Encontre o botão "Selecionar Arquivo" e adicione um ícone e um texto mais chamativo. Ele é uma ação importante.
+Modificação Sugerida no JSX do App.tsx:
+Generated typescript
+// Exemplo de como o grupo de botões de ação deve ficar
+<div className="saphira-buttons">
+    <button /* ... className do botão Analisar ... */ >🔎 Analisar</button>
+    <button /* ... className do botão Limpar ... */ >🧹 Limpar</button>
+    <button /* ... className do botão Testar Conexão ... */ >🔗 Testar Conexão</button>
+    <button 
+        className="saphira-button" // ATENÇÃO: Use a mesma classe do "Testar Conexão"
+        onClick={() => setIsTechnicalModalOpen(true)}
+    >
+        ℹ️ Sobre a Saphira
+    </button>
+</div>
+
+// Exemplo de como o botão de upload de arquivo deve ficar (procure por FileUploader)
+// Esta mudança provavelmente será dentro do componente `src/components/FileUploader.tsx`
+<label className="saphira-button file-upload-button">
+  <UploadCloud size={20} />  {/* Use o ícone de nuvem */}
+  <span>Selecionar Arquivo (.txt, .pdf, .docx)</span>
+  <input type="file" style={{ display: 'none' }} /* ... etc */ />
+</label>
+Use code with caution.
+TypeScript
+Passo 2: Atualização da Documentação (Arquivo README.md)
+Substitua todo o conteúdo do arquivo README.md na raiz do projeto por este novo texto, que reflete o estado atual da aplicação.
+Generated markdown
+# 💙 Saphira: Frontend de Análise Inteligente
+
+Bem-vindo ao repositório oficial do frontend do Projeto Saphira. Esta aplicação é a interface de usuário para um poderoso ecossistema de IA projetado para ser auditável, transparente e focado na privacidade.
+
+**[✨ Veja a Saphira em ação AQUI! ✨](https://saphira-frontend-novo-guilhermegnarci.replit.app/)**
+
+---
+
+## 🚀 Funcionalidades Atuais
+
+- **Análise de Texto e Arquivos**: Capacidade de analisar textos inseridos diretamente ou via upload de arquivos.
+- **Suporte Multi-Formato**: Aceita arquivos `.txt`, `.pdf`, e `.docx` para máxima flexibilidade.
+- **Dashboard Interativo**: Apresenta os resultados da análise em múltiplas abas:
+    - **Relatório Principal**: Resposta humanizada e interpretada pela Saphira.
+    - **Métricas Visuais**: Gráficos interativos (Radar, Tom, Integridade) para uma visão técnica e rápida.
+    - **Dados Técnicos**: Acesso ao JSON completo retornado pela API para auditoria e análise profunda.
+- **Exportação de Resultados**: Gere relatórios em formato `.pdf` e `.json` com um clique.
+- **Sistema de Auditoria**: Cada análise gera um código de verificação e é registrada em um log de auditoria rastreável.
+- **Design Responsivo**: Interface totalmente funcional e esteticamente agradável em desktops, tablets e celulares.
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Framework**: React com TypeScript
+- **Build Tool**: Vite
+- **Estilização**: CSS puro com Media Queries para responsividade
+- **Comunicação API**: Fetch API nativa
+- **Gráficos**: Recharts
+- **Animações**: Framer Motion
+- **Ícones**: Lucide-React
+
+## 📄 Contexto do Projeto
+
+Este projeto (`saphira-frontend-novo`) é o **cliente (frontend)** de um sistema maior. Ele se comunica exclusivamente com um projeto separado chamado `Saphira-Engine-Backend`, que é responsável por toda a lógica de análise e processamento. Manter essa separação clara é crucial para a integridade e a escalabilidade do ecossistema Saphira.
+
+---
+
+Agradecemos o seu interesse e contribuições futuras para tornar a análise de dados mais transparente e confiável para todos.
+Use code with caution.
+Markdown
+Passo 3: Faça uma Varredura Final de Qualidade
+Por favor, analise a base de código do frontend em busca de:
+Variáveis não utilizadas.
+Dependências obsoletas ou não usadas.
+Pequenas otimizações de performance que você possa sugerir no CSS ou na renderização dos componentes.
+Atenção: Nesta etapa, apenas gere um relatório do que você encontrou. Não aplique nenhuma mudança automaticamente.
+Por favor, confirme a execução de cada passo.
