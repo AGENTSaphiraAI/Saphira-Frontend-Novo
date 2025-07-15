@@ -75,20 +75,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
         </div>
         
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {handleExportResponseJSON && (
-            <button 
-              className="export-pdf-button"
-              onClick={handleExportResponseJSON}
-              style={{
-                background: 'linear-gradient(45deg, #4caf50 0%, #66bb6a 100%)',
-                boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)'
-              }}
-            >
-              <Download size={20} />
-              Exportar JSON
-            </button>
-          )}
-
           <button 
             className="export-pdf-button"
             // onClick={handleExportDoc} // Deixe comentado por enquanto
