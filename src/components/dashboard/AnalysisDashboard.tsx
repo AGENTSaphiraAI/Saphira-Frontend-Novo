@@ -88,6 +88,16 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
               Exportar JSON
             </button>
           )}
+
+          <button 
+            className="export-pdf-button"
+            // onClick={handleExportDoc} // Deixe comentado por enquanto
+            disabled={true} // Desabilitado até implementarmos a lógica
+          >
+            <Download size={20} />
+            Exportar DOC
+          </button>
+          
           <button 
             className="export-pdf-button"
             onClick={handleExportPdf}
