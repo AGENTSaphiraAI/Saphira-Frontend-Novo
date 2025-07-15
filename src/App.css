@@ -872,14 +872,6 @@ body {
   }
 }
 
-/* Adicione este código ao final do seu App.css */
-
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
 /* Efeito de "glow" nos botões de ação */
 .btn-success:hover, .btn-danger:hover {
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);

@@ -204,6 +204,10 @@ export default function App() {
     console.log("🔍 Iniciando análise...");
 
     try {
+      // TODO: BACKEND INTEGRATION POINT
+      // Esta é a chamada principal para o endpoint /api/analyze do backend
+      // Dados enviados: { text: textToAnalyze, question: specificQuestion }
+      // Resposta esperada: { displayData: { humanized_text, technicalData }, verificationCode }
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: "POST",
         headers: {
