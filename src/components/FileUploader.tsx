@@ -92,7 +92,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     <div className="file-uploader">
       <div className="upload-section">
         <label htmlFor="file-upload" className="upload-label">
-          📁 Selecionar Arquivo (.txt)
+          📁 Selecionar Arquivo (.txt, em breve .doc)
         </label>
         <input
           id="file-upload"

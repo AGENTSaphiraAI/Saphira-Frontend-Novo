@@ -483,7 +483,7 @@ export default function App() {
         </AnimatedButton>
 
         <AnimatedButton
-          variant="secondary"
+          className="danger-btn"
           onClick={handleClear}
           disabled={loading}
         >
@@ -491,7 +491,7 @@ export default function App() {
         </AnimatedButton>
 
         <AnimatedButton
-          variant="secondary"
+          variant="primary"
           onClick={handleTestConnection}
           disabled={connectionStatus.status === 'testing'}
         >
@@ -582,11 +582,13 @@ export default function App() {
       <div className="separator"></div>
       
       {/* Footer Premium */}
-      <p className="footer-note">
-        💎 Saphira • Plataforma de Análise Premium • Auditável e Transparente
+      <footer className="footer-note">
+        🚀 Saphira • Plataforma de Análise Premium • Auditável • Transparente
         <br />
-        🔒 Privacidade Total • 🔍 Análise Técnica • 📊 Resultados Verificáveis
-      </p>
+        🔍 Privacidade Total • Análise Técnica • Resultados Verificáveis
+        <br />
+        💡 Em breve: suporte a arquivos DOC (Word) • Integração NEXUM 🔗
+      </footer>
     </div>
   );
 }

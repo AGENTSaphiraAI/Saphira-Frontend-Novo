@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'file' | 'export' | 'audit';
+  variant?: 'primary' | 'secondary' | 'file' | 'export' | 'audit' | 'danger';
   badge?: number;
 }
 
@@ -22,6 +22,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       case 'file': return 'file-btn';
       case 'export': return 'export-btn';
       case 'audit': return 'audit-btn';
+      case 'danger': return 'danger-btn';
       default: return 'primary-btn';
     }
   };
@@ -39,7 +40,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       {children}
       {badge !== undefined && badge > 0 && (
         <motion.span 
-          className="badge"
+          className="badge animate-pulse"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
