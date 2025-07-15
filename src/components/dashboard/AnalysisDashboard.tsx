@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, BarChart3, Code, Download } from 'lucide-react';
@@ -16,9 +15,10 @@ interface AnalysisDashboardProps {
     [key: string]: any;
   };
   handleExportResponseJSON?: () => void;
+  handleExportDocx?: () => void;
 }
 
-const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON }) => {
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
   const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'raw'>('report');
   const [isExporting, setIsExporting] = useState(false);
 
@@ -73,7 +73,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
             </span>
           )}
         </div>
-        
+
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           {handleExportResponseJSON && (
             <button 
@@ -90,14 +90,14 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
           )}
 
           <button 
-            className="export-pdf-button"
-            // onClick={handleExportDoc} // Deixe comentado por enquanto
-            disabled={true} // Desabilitado até implementarmos a lógica
-          >
-            <Download size={20} />
-            Exportar DOC
-          </button>
-          
+              className="export-pdf-button"
+              onClick={handleExportDocx}
+              disabled={!handleExportDocx}
+            >
+              <Download size={20} />
+              Exportar DOC
+            </button>
+
           <button 
             className="export-pdf-button"
             onClick={handleExportPdf}

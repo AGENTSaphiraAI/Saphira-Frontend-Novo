@@ -310,6 +310,41 @@ export default function App() {
     console.log(`📥 Resposta JSON exportada: ${fileName}`);
   }, [result, uploadedFile, userText, specificQuestion]);
 
+  // Função para exportar resposta em DOCX
+  const handleExportDocx = useCallback(async () => {
+    if (!result) {
+      alert("⚠️ Nenhuma resposta para exportar.");
+      return;
+    }
+    console.log("📥 Iniciando exportação para DOCX...");
+    
+    try {
+      const response = await fetch(`${BACKEND_BASE_URL}/api/export/docx`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          humanized_text: result.humanized_text,
+          verificationCode: result.verificationCode
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro no servidor: ${response.statusText}`);
+      }
+      
+      const blob = await response.blob();
+      const fileName = `saphira_relatorio_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.docx`;
+      saveAs(blob, fileName);
+      console.log(`✅ Relatório DOCX exportado: ${fileName}`);
+
+    } catch (err) {
+      console.error("❌ Erro ao exportar DOCX:", err);
+      alert("Falha ao gerar o relatório DOCX. Verifique o console.");
+    }
+  }, [result]);
+
   // Função para exportar logs de auditoria
   const handleExportAuditLogs = useCallback(() => {
     if (auditLogs.length === 0) {
@@ -561,7 +596,11 @@ export default function App() {
       {/* Results */}
       {result && (
         <div className="saphira-results">
-          <AnalysisDashboard response={result} />
+          <AnalysisDashboard 
+            response={result} 
+            handleExportResponseJSON={handleExportResponseJSON}
+            handleExportDocx={handleExportDocx}
+          />
         </div>
       )}
 
