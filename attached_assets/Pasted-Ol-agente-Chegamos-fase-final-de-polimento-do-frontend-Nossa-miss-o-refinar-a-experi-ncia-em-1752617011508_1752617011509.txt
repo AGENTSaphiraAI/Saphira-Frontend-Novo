@@ -1,0 +1,60 @@
+Olá, agente. Chegamos à fase final de polimento do frontend. Nossa missão é refinar a experiência em dispositivos móveis.
+Sua Tarefa:
+Adicione o seguinte bloco de código CSS ao final do seu arquivo de estilos principal (provavelmente src/App.css). Este bloco contém "media queries" que aplicam estilos específicos apenas em telas com largura máxima de 768px (tablets e celulares).
+Generated css
+/* Adicionar ao final do seu arquivo de CSS principal */
+
+/* --- OTIMIZAÇÕES PARA DISPOSITIVOS MÓVEIS (Screensize S22 e similares) --- */
+
+@media (max-width: 768px) {
+
+  /* Ajusta o container principal para usar mais espaço da tela */
+  .saphira-container {
+    padding: 1rem;
+  }
+
+  /* Diminui um pouco o tamanho do título */
+  .saphira-title {
+    font-size: 2rem; 
+  }
+
+  /* Garante que o grupo de botões principal se organize bem */
+  .saphira-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem; /* Espaçamento menor entre os botões */
+  }
+
+  /* Ajustes no dashboard de resultados */
+  .analysis-dashboard {
+    padding: 1rem;
+  }
+  
+  .dashboard-header {
+    flex-direction: column; /* Coloca o título e os botões um sobre o outro */
+    align-items: flex-start; /* Alinha tudo à esquerda */
+    gap: 1rem;
+  }
+
+  .dashboard-tabs {
+    flex-wrap: nowrap;      /* Evita quebra de linha das abas */
+    overflow-x: auto;       /* Permite rolagem horizontal SÓ das abas */
+    -webkit-overflow-scrolling: touch; /* Melhora a rolagem em iOS */
+    padding-bottom: 0.5rem;   /* Espaço para a barra de rolagem não ficar colada */
+    scrollbar-width: thin;    /* Deixa a barra de rolagem mais fina */
+  }
+  
+  .tab-button {
+    flex-shrink: 0; /* Impede que os botões encolham */
+  }
+
+}```
+
+**Resumo das Melhorias:**
+
+1.  **Layout Mais Justo:** Reduz o espaçamento nas laterais em telas pequenas.
+2.  **Botões Organizados:** Força o grupo de botões principal (Analisar, Limpar, etc.) a se organizar em um grid 2x2, aproveitando melhor o espaço.
+3.  **Dashboard Otimizado:** O cabeçalho do dashboard se torna vertical, economizando espaço horizontal.
+4.  **Abas Navegáveis:** A mudança mais importante. Se as abas ("Relatório Principal", "Métricas", etc.) não couberem na tela, elas não vão mais "quebrar" o layout. Em vez disso, o usuário poderá rolar horizontalmente apenas as abas, mantendo o resto da interface intacta.
+
+Por favor, aplique estes estilos ao final do seu arquivo CSS principal. Nenhuma outra alteração é necessária.
