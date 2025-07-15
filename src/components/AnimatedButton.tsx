@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 
-interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
+interface AnimatedButtonProps extends DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'file' | 'export' | 'audit' | 'danger';
   badge?: number;
 }
