@@ -4,7 +4,6 @@ import FileUploader from "./components/FileUploader";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import AuditModal from "./components/AuditModal";
 import TechnicalModal from "./components/TechnicalModal";
-import AnimatedButton from "./components/AnimatedButton";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
@@ -474,57 +473,75 @@ export default function App() {
 
       {/* Buttons */}
       <div className="saphira-buttons">
-        <AnimatedButton 
+        <button 
           className={`saphira-button ${loading ? 'loading' : ''}`}
           onClick={handleAnalyze} 
           disabled={loading || (!userText.trim() && !uploadedFile?.content)}
         >
           {loading ? "🔄 Analisando..." : "🔎 Analisar"}
-        </AnimatedButton>
+        </button>
 
-        <AnimatedButton 
+        <button 
           className="saphira-button"
           onClick={handleClear} 
           disabled={loading}
         >
           🧹 Limpar
-        </AnimatedButton>
+        </button>
 
-        <AnimatedButton 
+        <button 
           className={`saphira-button ${connectionStatus.status === 'testing' ? 'loading' : ''}`}
           onClick={handleTestConnection} 
           disabled={connectionStatus.status === 'testing'}
         >
           {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
-        </AnimatedButton>
+        </button>
 
-        <AnimatedButton
-          className="saphira-button"
+        <button
           onClick={() => setIsTechnicalModalOpen(true)}
+          style={{
+            marginLeft: '0.5rem',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#2563EB',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 14px rgba(59, 130, 246, 0.39)'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#1D4ED8';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = '#2563EB';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
         >
           🟦 Sobre a Saphira
-        </AnimatedButton>
+        </button>
       </div>
 
       {/* Export and Audit Section */}
       <div className="saphira-export-section">
         <div className="export-buttons">
-          <AnimatedButton 
+          <button 
             className="saphira-button export-button"
             onClick={handleExportResponseJSON}
             disabled={!result}
             title="Exportar resposta em formato JSON"
           >
             📥 Exportar JSON
-          </AnimatedButton>
+          </button>
 
-          <AnimatedButton 
+          <button 
             className="saphira-button audit-button"
             onClick={() => setIsAuditModalOpen(true)}
             title="Ver histórico de análises"
           >
             🛡️ Ver Auditoria ({auditLogs.length})
-          </AnimatedButton>
+          </button>
         </div>
 
         <div className="future-exports">
