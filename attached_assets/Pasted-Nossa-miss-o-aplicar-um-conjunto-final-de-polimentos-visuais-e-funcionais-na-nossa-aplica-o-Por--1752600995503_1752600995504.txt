@@ -1,0 +1,92 @@
+Nossa missão é aplicar um conjunto final de polimentos visuais e funcionais na nossa aplicação. Por favor, siga as instruções exatamente como descritas, focando apenas nos arquivos App.css e App.tsx.
+1. Tarefa de Estilo: Atualizando o App.css
+Adicione estas novas regras de estilo e animação. Elas irão criar o efeito de gradiente de fundo animado e o "glow" nos botões, sem quebrar as cores atuais.
+Generated css
+/* Adicione este código ao final do seu App.css */
+
+body {
+    /* ... mantenha o background-color ou background-image que já existe ... */
+    background: linear-gradient(135deg, #0f172a, #1e3a8a, #0f172a);
+    background-size: 400% 400%;
+    animation: gradientMove 15s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Efeito de "glow" nos botões de ação */
+.btn-success:hover, .btn-danger:hover {
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+Use code with caution.
+Css
+2. Tarefa Funcional e de Conteúdo: Atualizando o App.tsx
+Modifique o App.tsx para implementar a lógica do botão de exportação e melhorar o texto do placeholder.
+Generated typescript
+// Substitua o conteúdo inteiro do seu App.tsx por este.
+
+import React, { useState } from 'react';
+import './App.css';
+// Seus outros imports (modal, etc) se houver
+
+function App() {
+  // Mantém os estados que você já tem. Adicionamos apenas o 'showExport'.
+  const [showExport, setShowExport] = useState(false);
+  // Adicione aqui seus outros useStates (inputText, question, etc.)
+
+  const handleAnalyze = () => {
+    // A sua lógica de análise aqui...
+    console.log("Análise iniciada...");
+    // Linha CRÍTICA: Faz o botão de exportar aparecer.
+    setShowExport(true); 
+  };
+  
+  const handleClear = () => {
+    // A sua lógica de limpar aqui...
+    console.log("Campos limpos.");
+     // Linha CRÍTICA: Esconde o botão de exportar novamente.
+    setShowExport(false);
+  };
+
+  // Mantenha todas as suas outras funções (handleTestConnection, handleAbout, etc)
+
+  return (
+    <div className="App"> {/* Ou o nome da sua classe principal */}
+      {/* ... Mantenha o cabeçalho H1 e P ... */}
+      
+      {/* Mude apenas o placeholder do textarea */}
+      <textarea 
+        placeholder="Digite um artigo para verificar contradições, viés e estrutura lógica..." 
+        // ... mantenha o resto das suas props (value, onChange)
+      />
+      
+      {/* ... Mantenha o input de pergunta específica ... */}
+
+      <div className="btn-group"> {/* ou a sua div de botões */}
+        {/* ... Seus botões Analisar, Limpar, etc. estão aqui. Mantenha os onClick neles! ... */}
+        <button onClick={handleAnalyze} className="btn-success">Analisar</button>
+        <button onClick={handleClear} className="btn-danger">Limpar</button>
+        {/* ... resto dos botões */}
+      </div>
+
+      {/* --- LÓGICA DO EXPORT --- */}
+      {/* Esta div agora SÓ aparece se 'showExport' for verdadeiro */}
+      {showExport && (
+        <div className="export-group">
+          <button className="secondary-btn">Exportar JSON</button>
+          <button className="file-btn">Ver Auditoria (0)</button>
+        </div>
+      )}
+      
+      {/* ... Mantenha o resto da sua estrutura, como o footer e o modal ... */}
+    </div>
+  );
+}
+
+export default App;
+Use code with caution.
+TypeScript
+Por favor, aplique estas duas modificações. Elas irão implementar as melhorias visuais que queremos, de forma segura e sem afetar a lógica principal ou as conexões com o backend.
