@@ -509,6 +509,53 @@ body {
   color: white;
 }
 
+/* --- OTIMIZAÇÕES PARA DISPOSITIVOS MÓVEIS (Screensize S22 e similares) --- */
+
+@media (max-width: 768px) {
+
+  /* Ajusta o container principal para usar mais espaço da tela */
+  .saphira-container {
+    padding: 1rem;
+  }
+
+  /* Diminui um pouco o tamanho do título */
+  .saphira-title {
+    font-size: 2rem; 
+  }
+
+  /* Garante que o grupo de botões principal se organize bem */
+  .saphira-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem; /* Espaçamento menor entre os botões */
+  }
+
+  /* Ajustes no dashboard de resultados */
+  .analysis-dashboard {
+    padding: 1rem;
+  }
+  
+  .dashboard-header {
+    flex-direction: column; /* Coloca o título e os botões um sobre o outro */
+    align-items: flex-start; /* Alinha tudo à esquerda */
+    gap: 1rem;
+  }
+
+  .dashboard-tabs {
+    flex-wrap: nowrap;      /* Evita quebra de linha das abas */
+    overflow-x: auto;       /* Permite rolagem horizontal SÓ das abas */
+    -webkit-overflow-scrolling: touch; /* Melhora a rolagem em iOS */
+    padding-bottom: 0.5rem;   /* Espaço para a barra de rolagem não ficar colada */
+    scrollbar-width: thin;    /* Deixa a barra de rolagem mais fina */
+  }
+  
+  .tab-button {
+    flex-shrink: 0; /* Impede que os botões encolham */
+  }
+
+}hite;
+}
+
 .pdf-button:hover {
   background: #c82333;
   transform: translateY(-2px);
