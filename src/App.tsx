@@ -1,22 +1,55 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
+  const [inputText, setInputText] = useState('');
+  const [question, setQuestion] = useState('');
+
+  const handleAnalyze = () => {
+    console.log("Analisar clicado");
+    // Coloque aqui a lógica real de análise
+  };
+
+  const handleClear = () => {
+    console.log("Limpar clicado");
+    setInputText('');
+    setQuestion('');
+  };
+
+  const handleTestConnection = () => {
+    console.log("Testar Conexão clicado");
+    // Lógica de teste de conexão
+  };
+
+  const handleAbout = () => {
+    console.log("Sobre a Saphira clicado");
+    // Abrir modal ou mostrar informações
+  };
+
   return (
     <div className="App">
       <h1>💙 Saphira</h1>
       <p>Análise Inteligente, Técnica e Auditável</p>
 
-      <textarea placeholder="Digite um artigo para verificar contradições e viés..."></textarea>
-      <input placeholder="Pergunta Específica (Opcional)" />
+      <textarea
+        placeholder="Digite um artigo para verificar contradições e viés..."
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
+      ></textarea>
+      <input
+        placeholder="Pergunta Específica (Opcional)"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+      />
 
       <button className="file-btn">Selecionar Arquivo (.txt, em breve .doc)</button>
 
       <div className="btn-group">
-        <button className="primary-btn">Analisar</button>
-        <button className="danger-btn">Limpar</button>
-        <button className="primary-btn">Testar Conexão</button>
-        <button className="secondary-btn">Sobre a Saphira</button>
+        <button className="primary-btn" onClick={handleAnalyze}>Analisar</button>
+        <button className="danger-btn" onClick={handleClear}>Limpar</button>
+        <button className="primary-btn" onClick={handleTestConnection}>Testar Conexão</button>
+        <button className="secondary-btn" onClick={handleAbout}>Sobre a Saphira</button>
       </div>
 
       <div className="export-group">
