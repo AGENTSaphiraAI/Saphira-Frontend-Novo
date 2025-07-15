@@ -1,0 +1,85 @@
+Olá, agente. O backend está pronto. Nossa missão final é conectar a funcionalidade de exportação DOCX no frontend. Faremos isso em dois arquivos para manter a organização do código.
+Passo 1: Adicionar a Lógica de Exportação em src/App.tsx
+Modifique o arquivo App.tsx. Vamos criar uma nova função handleExportDocx e passá-la para o componente <AnalysisDashboard />.
+Crie a função handleExportDocx dentro do componente App. Ela fará a chamada para o novo endpoint:
+Generated typescript
+// Adicione esta nova função dentro do componente App, perto dos outros handlers
+const handleExportDocx = useCallback(async () => {
+  if (!result) {
+    alert("⚠️ Nenhuma resposta para exportar.");
+    return;
+  }
+  console.log("📥 Iniciando exportação para DOCX...");
+  
+  const backendUrl = getBackendUrl(); // Esta função já existe no arquivo
+  
+  try {
+    const response = await fetch(`${backendUrl}/api/export/docx`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        humanized_text: result.humanized_text,
+        verificationCode: result.verificationCode
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro no servidor: ${response.statusText}`);
+    }
+    
+    const blob = await response.blob();
+    const fileName = `saphira_relatorio_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.docx`;
+    saveAs(blob, fileName); // A função saveAs já foi importada
+    console.log(`✅ Relatório DOCX exportado: ${fileName}`);
+
+  } catch (err) {
+    console.error("❌ Erro ao exportar DOCX:", err);
+    alert("Falha ao gerar o relatório DOCX. Verifique o console.");
+  }
+}, [result]); // Depende do 'result'
+Use code with caution.
+TypeScript
+Passe a nova função como prop para o <AnalysisDashboard />. Encontre a linha onde o dashboard é renderizado e adicione a nova propriedade:
+Generated typescript
+// A renderização do seu dashboard deve ficar assim:
+<AnalysisDashboard 
+  response={result} 
+  handleExportResponseJSON={handleExportResponseJSON}
+  handleExportDocx={handleExportDocx} // Adicione esta linha
+/>
+Use code with caution.
+TypeScript
+Passo 2: Ativar o Botão em src/components/dashboard/AnalysisDashboard.tsx
+Agora, vamos dizer ao botão para usar a nova função que acabamos de passar.
+Atualize a interface no topo do arquivo para aceitar a nova prop:
+Generated typescript
+interface AnalysisDashboardProps {
+  response: { /* ... */ };
+  handleExportResponseJSON?: () => void;
+  handleExportDocx?: () => Promise<void>; // Adicione esta linha
+}
+Use code with caution.
+TypeScript
+Receba a prop na declaração do componente:
+Generated typescript
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
+  // ...
+};
+Use code with caution.
+TypeScript
+Conecte o botão. Encontre o botão "Exportar DOC" e modifique-o para que ele chame a função e não fique mais desabilitado:
+Generated typescript
+// Encontre este botão e o modifique
+<button 
+  className="export-pdf-button"
+  onClick={handleExportDocx} // Ativa o onClick
+  disabled={!handleExportDocx}  // Habilitado se a função existir
+>
+  <Download size={20} />
+  Exportar DOC
+</button>
+Use code with caution.
+TypeScript
+Após estas modificações, o ciclo estará completo. O botão "Exportar DOC" estará vivo e funcional.
