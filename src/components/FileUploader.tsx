@@ -15,8 +15,11 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     if (!file) return;
 
     
-    if (!file.name.endsWith(".txt")) {
-      alert("⚠️ Apenas arquivos .txt são permitidos para upload.");
+    const allowedExtensions = ['.txt', '.pdf', '.doc', '.docx'];
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    
+    if (!allowedExtensions.includes(fileExtension)) {
+      alert("⚠️ Apenas arquivos .txt, .pdf, .doc e .docx são permitidos para upload.");
       return;
     }
 
@@ -92,18 +95,18 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     <div className="file-uploader">
       <div className="upload-section">
         <label htmlFor="file-upload" className="upload-label">
-          📁 Selecionar Arquivo (.txt)
+          📁 Selecionar Arquivo (.txt, .pdf, .doc, .docx)
         </label>
         <input
           id="file-upload"
           type="file"
-          accept=".txt"
+          accept=".txt,.pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           onChange={handleFileChange}
           disabled={isUploading}
           className="file-input"
         />
         <div className="upload-info">
-          <p className="upload-note">📝 Suporte futuro: PDF e DOC</p>
+          <p className="upload-note">📝 Suporte ativo: TXT, PDF, DOC e DOCX</p>
         </div>
       </div>
 
