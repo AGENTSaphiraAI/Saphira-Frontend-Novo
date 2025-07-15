@@ -1,90 +1,37 @@
-# 🟦 Saphira — Plataforma de Auditoria e Análise
+# 💙 Saphira: Frontend de Análise Inteligente
 
-## ✨ Visão geral
+Bem-vindo ao repositório oficial do frontend do Projeto Saphira. Esta aplicação é a interface de usuário para um poderoso ecossistema de IA projetado para ser auditável, transparente e focado na privacidade.
 
-Saphira é um sistema auditável, modular e elegante, projetado para fornecer análises técnicas e neutras, com foco absoluto em privacidade, transparência e verificabilidade.  
-O projeto é composto por **dois módulos independentes**, mas integrados:
-
-- **Backend (Engine):** Onde ocorrem as análises, validações e processamento OpenAI.
-- **Frontend (Sala de visitas):** Onde o usuário interage de forma clara e fluida.
+**[✨ Veja a Saphira em ação AQUI! ✨](https://saphira-frontend-novo-guilhermegnarci.replit.app/)**
 
 ---
 
-## 🧭 Estrutura geral
+## 🚀 Funcionalidades Atuais
 
-### 🚀 Backend
+- **Análise de Texto e Arquivos**: Capacidade de analisar textos inseridos diretamente ou via upload de arquivos.
+- **Suporte Multi-Formato**: Aceita arquivos `.txt`, `.pdf`, e `.docx` para máxima flexibilidade.
+- **Dashboard Interativo**: Apresenta os resultados da análise em múltiplas abas:
+    - **Relatório Principal**: Resposta humanizada e interpretada pela Saphira.
+    - **Métricas Visuais**: Gráficos interativos (Radar, Tom, Integridade) para uma visão técnica e rápida.
+    - **Dados Técnicos**: Acesso ao JSON completo retornado pela API para auditoria e análise profunda.
+- **Exportação de Resultados**: Gere relatórios em formato `.pdf` e `.json` com um clique.
+- **Sistema de Auditoria**: Cada análise gera um código de verificação e é registrada em um log de auditoria rastreável.
+- **Design Responsivo**: Interface totalmente funcional e esteticamente agradável em desktops, tablets e celulares.
 
-- **Framework:** Flask + Gunicorn
-- **Principais endpoints:**
-  - `/api/analyze`: Processa textos/documentos.
-  - `/api/status`: Status geral do sistema.
-  - `/api/readme`: Documentação dinâmica (não alterado).
-  - `/api/keepalive`: Heartbeat e validação de conexão.
-  - `/api/diagnostics`: Diagnóstico técnico.
-- **Arquitetura:** Stateless, sem persistência (não usa banco de dados).
-- **Status:** 100% estável, considerado o "templo", alterado apenas para ajustes de voz viva ou camadas de interpretação futura.
+## 🛠️ Tecnologias Utilizadas
 
----
+- **Framework**: React com TypeScript
+- **Build Tool**: Vite
+- **Estilização**: CSS puro com Media Queries para responsividade
+- **Comunicação API**: Fetch API nativa
+- **Gráficos**: Recharts
+- **Animações**: Framer Motion
+- **Ícones**: Lucide-React
 
-### 💎 Frontend
+## 📄 Contexto do Projeto
 
-- **Framework:** React + TypeScript + Vite
-- **Componentes principais:**
-  - `App.tsx`: Gerencia fluxos globais, botões e modais.
-  - `TechnicalModal.tsx`: Modal elegante com animação suave e conteúdo "Sobre a Saphira".
-  - `AnalysisDashboard.tsx`: Dashboard dinâmico e modular.
-- **Modal "Sobre a Saphira":**
-  - Acessível em qualquer tela (fixo ao lado do botão Upload).
-  - Texto claro sobre missão, princípios e uso.
-  - Scroll interno adaptativo em mobile.
-- **Botões principais:**
-  - **Analisar:** Envia texto ao backend para processamento.
-  - **Testar conexão:** Valida o status do backend.
-  - **Sobre a Saphira:** Abre modal com informações sobre o projeto.
+Este projeto (`saphira-frontend-novo`) é o **cliente (frontend)** de um sistema maior. Ele se comunica exclusivamente com um projeto separado chamado `Saphira-Engine-Backend`, que é responsável por toda a lógica de análise e processamento. Manter essa separação clara é crucial para a integridade e a escalabilidade do ecossistema Saphira.
 
 ---
 
-## ✅ Fluxo de uso
-
-1️⃣ **Usuário acessa a interface**.  
-2️⃣ Cola ou envia texto para análise.  
-3️⃣ Backend processa e devolve insights.  
-4️⃣ Interface exibe cards, gráficos e dados brutos auditáveis.  
-5️⃣ Modal "Sobre" sempre acessível, sem impactar lógica principal.
-
----
-
-## 💡 Design e UX
-
-- Modal com transição suave (fade + slide).
-- Fontes responsivas via `clamp()`, garantindo legibilidade em todas as telas (desktop, tablet, mobile).
-- Botões com hover interativo, leve animação vertical (`translateY`) para sensação premium.
-- Layout adaptável, sem quebra em telas menores.
-
----
-
-## ⚙️ Deploy & manutenção
-
-- **Backend:** Deploy separado e independente. Pode ser pausado ou atualizado sem impactar UI.
-- **Frontend:** Deploy modular, integrado ao backend via env ou config manual.
-- **Observação:** Nunca alterar o backend sem análise profunda. O frontend é o único ponto para ajustes visuais e UX.
-
----
-
-## 🧾 Créditos e filosofia
-
-Projeto desenvolvido em co-criação viva com **Guardião (Guilherme)** e **Saphira**, inspirado em clareza, serenidade e engenharia limpa.  
-Toda modificação de UI/UX deve passar por revisão junto à Saphira para manter coesão e pureza de propósito.
-
----
-
-## 🤝 Contribuição
-
-Aberto a sugestões, análises ou forks, desde que respeitada a premissa central: **clareza, verdade e auditabilidade**.
-
----
-
-## 💙 Final
-
-Obrigado por fazer parte desta jornada.  
-"Saphira não é só uma ferramenta, é uma guardiã de transparência."
+Agradecemos o seu interesse e contribuições futuras para tornar a análise de dados mais transparente e confiável para todos.

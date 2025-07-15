@@ -14,10 +14,10 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    
+
     const allowedExtensions = ['.txt', '.pdf', '.doc', '.docx'];
     const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
-    
+
     if (!allowedExtensions.includes(fileExtension)) {
       alert("⚠️ Apenas arquivos .txt, .pdf, .doc e .docx são permitidos para upload.");
       return;
@@ -32,7 +32,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
       setFileName(file.name);
       setIsUploading(false);
 
-      
+
       if (onFileContentChange) {
         onFileContentChange(content, file.name);
       }
@@ -91,11 +91,13 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     console.log("🗑️ Arquivo removido");
   };
 
+  const [uploading, setUploading] = useState(false);
+
   return (
     <div className="file-uploader">
       <div className="upload-section">
         <label htmlFor="file-upload" className="upload-label">
-          📁 Selecionar Arquivo (.txt, .pdf, .doc, .docx)
+          ☁️ Selecionar Arquivo (.txt, .pdf, .docx)
         </label>
         <input
           id="file-upload"
