@@ -12,8 +12,6 @@ interface ConnectionStatus {
   responseTime?: number;
 }
 
-
-
 interface AuditEntry {
   id: string;
   timestamp: Date;
@@ -429,7 +427,7 @@ export default function App() {
     };
   }, []);
 
-  
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="saphira-container">
@@ -496,9 +494,8 @@ export default function App() {
         >
           {connectionStatus.status === 'testing' ? "🔄 Testando..." : "🔗 Testar Conexão"}
         </button>
-
         <button
-          onClick={() => setIsTechnicalModalOpen(true)}
+          onClick={() => setShowModal(true)}
           style={{
             marginLeft: '0.5rem',
             padding: '0.5rem 1rem',
@@ -519,22 +516,13 @@ export default function App() {
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
-          🟦 Sobre a Saphira
+          ℹ️ Sobre a Saphira
         </button>
       </div>
 
       {/* Export and Audit Section */}
       <div className="saphira-export-section">
         <div className="export-buttons">
-          <button 
-            className="saphira-button export-button"
-            onClick={handleExportResponseJSON}
-            disabled={!result}
-            title="Exportar resposta em formato JSON"
-          >
-            📥 Exportar JSON
-          </button>
-
           <button 
             className="saphira-button audit-button"
             onClick={() => setIsAuditModalOpen(true)}
@@ -576,7 +564,7 @@ export default function App() {
       {/* Results */}
       {result && (
         <div className="saphira-results">
-          <AnalysisDashboard response={result} />
+          <AnalysisDashboard response={result} handleExportResponseJSON={handleExportResponseJSON}/>
         </div>
       )}
 
@@ -593,8 +581,6 @@ export default function App() {
         isOpen={isTechnicalModalOpen}
         onClose={() => setIsTechnicalModalOpen(false)}
       />
-
-      
     </div>
   );
 }
