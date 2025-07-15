@@ -48,35 +48,6 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     reader.readAsText(file);
   };
 
-  const handleExportPDF = () => {
-    if (!fileContent) {
-      alert("⚠️ Nenhum conteúdo para exportar.");
-      return;
-    }
-
-    try {
-      const doc = new jsPDF();
-      const lines = doc.splitTextToSize(fileContent, 180);
-      doc.text(lines, 10, 10);
-
-      const pdfFileName = fileName ? fileName.replace(/\.[^/.]+$/, "") + ".pdf" : "saphira_export.pdf";
-      doc.save(pdfFileName);
-
-      console.log(`📄 PDF exportado: ${pdfFileName}`);
-    } catch (error) {
-      console.error("❌ Erro ao exportar PDF:", error);
-      alert("❌ Erro ao exportar PDF. Tente novamente.");
-    }
-  };
-
-  const handleExportDOC = () => {
-    if (!fileContent) {
-      alert("⚠️ Nenhum conteúdo para exportar.");
-      return;
-    }
-
-    alert("❌ Exportação DOC não suportada no momento.");
-  };
 
   const handleRemoveFile = () => {
     setFileContent(null);
@@ -143,22 +114,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
             </pre>
           </div>
 
-          <div className="export-buttons">
-            <button 
-              onClick={handleExportPDF} 
-              className="export-button pdf-button"
-              title="Exportar como PDF"
-            >
-              📄 Exportar PDF
-            </button>
-            <button 
-              onClick={handleExportDOC}
-              className="export-button doc-button"
-              title="Exportar como DOC"
-            >
-              📝 Exportar DOC
-            </button>
-          </div>
+
         </div>
       )}
     </div>
