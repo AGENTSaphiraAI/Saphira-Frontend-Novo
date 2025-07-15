@@ -1,0 +1,147 @@
+ ✅ Objetivo
+✅ Deixar o frontend premium, elegante, 100% funcional e livre de conflitos.
+✅ Sem animações problemáticas.
+✅ Manter gradiente fluido no fundo.
+✅ Botões premium, com classes CSS refinadas.
+✅ Gancho visual para export PDF/DOC (sem backend).
+
+✨ Bloco App.tsx revisado
+tsx
+Copiar
+Editar
+import React from 'react';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <h1>💙 Saphira</h1>
+      <p>Análise Inteligente, Técnica e Auditável</p>
+
+      <textarea placeholder="Digite um artigo para verificar contradições e viés..."></textarea>
+      <input placeholder="Pergunta Específica (Opcional)" />
+
+      <button className="file-btn">Selecionar Arquivo (.txt, em breve .doc)</button>
+
+      <div className="btn-group">
+        <button className="primary-btn">Analisar</button>
+        <button className="danger-btn">Limpar</button>
+        <button className="primary-btn">Testar Conexão</button>
+        <button className="secondary-btn">Sobre a Saphira</button>
+      </div>
+
+      <div className="export-group">
+        <button className="secondary-btn">Exportar JSON</button>
+        <button className="file-btn">Ver Auditoria (0)</button>
+        <p className="footer-note">💡 Em breve: suporte completo a PDF e DOC • Exportações auditáveis • Integração NEXUM</p>
+      </div>
+
+      <footer className="footer-note">
+        🚀 Saphira • Plataforma de Análise Premium • Auditável • Transparente <br />
+        🔍 Privacidade Total • Análise Técnica • Resultados Verificáveis
+      </footer>
+    </div>
+  );
+}
+
+export default App;
+🎨 Bloco CSS refinado (App.css)
+css
+Copiar
+Editar
+body {
+  background: linear-gradient(135deg, #0f172a, #1e3a8a, #0f172a);
+  background-size: 400% 400%;
+  animation: gradientMove 10s ease infinite;
+  font-family: 'Inter', sans-serif;
+}
+
+@keyframes gradientMove {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+.App {
+  text-align: center;
+  padding: 2rem;
+}
+
+textarea, input {
+  width: 80%;
+  padding: 0.8rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  border: none;
+}
+
+.btn-group, .export-group {
+  margin-top: 1rem;
+}
+
+button {
+  margin: 0.5rem;
+  cursor: pointer;
+}
+
+.primary-btn {
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 8px;
+  padding: 0.7rem 1.5rem;
+  transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
+}
+
+.primary-btn:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.danger-btn {
+  background-color: #dc2626;
+  color: white;
+  border-radius: 8px;
+  padding: 0.7rem 1.5rem;
+  transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
+}
+
+.danger-btn:hover {
+  background-color: #b91c1c;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.secondary-btn {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border-radius: 8px;
+  padding: 0.7rem 1.5rem;
+  transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
+}
+
+.secondary-btn:hover {
+  background-color: #374151;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(107, 114, 128, 0.5);
+}
+
+.file-btn {
+  background-color: #facc15;
+  color: #111827;
+  border-radius: 8px;
+  padding: 0.7rem 1.5rem;
+  transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
+}
+
+.file-btn:hover {
+  background-color: #eab308;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+}
+
+.footer-note {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
