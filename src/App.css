@@ -556,6 +556,73 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #1e3a8a, #0f172a);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideInUp 0.3s ease-out;
+}
+
+.modal-content h2 {
+  color: #64b5f6;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.modal-content p {
+  color: #e2e8f0;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.modal-content button {
+  background: #0B74E5;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.modal-content button:hover {
+  background: #1e90ff;
+  transform: translateY(-2px);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .saphira-container {

@@ -5,30 +5,29 @@ import './App.css';
 function App() {
   const [inputText, setInputText] = useState('');
   const [question, setQuestion] = useState('');
+  const [showExport, setShowExport] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
-  // Função local para "analisar"
   const handleAnalyze = () => {
     console.log("🔍 Função Analisar simulada (frontend local)");
-    alert("Analisar clicado! (Funcionalidade local)");
+    setShowExport(true);
+    alert("Análise simulada concluída! (Frontend local)");
   };
 
-  // Função local para limpar campos
   const handleClear = () => {
     setInputText('');
     setQuestion('');
+    setShowExport(false);
     console.log("🧹 Campos limpos");
   };
 
-  // Função local para "testar conexão"
   const handleTestConnection = () => {
     console.log("🔗 Função Testar Conexão simulada (frontend local)");
     alert("Testar Conexão clicado! (Frontend local)");
   };
 
-  // Função local para "sobre a Saphira"
   const handleAbout = () => {
-    console.log("💙 Sobre a Saphira (frontend local)");
-    alert("Sobre a Saphira clicado! (Frontend local)");
+    setShowAboutModal(true);
   };
 
   return (
@@ -41,6 +40,7 @@ function App() {
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
       ></textarea>
+
       <input
         placeholder="Pergunta Específica (Opcional)"
         value={question}
@@ -56,16 +56,31 @@ function App() {
         <button className="secondary-btn" onClick={handleAbout}>Sobre a Saphira</button>
       </div>
 
-      <div className="export-group">
-        <button className="secondary-btn">Exportar JSON</button>
-        <button className="file-btn">Ver Auditoria (0)</button>
-        <p className="footer-note">💡 Em breve: suporte completo a PDF e DOC • Exportações auditáveis • Integração NEXUM</p>
-      </div>
+      {showExport && (
+        <div className="export-group">
+          <button className="secondary-btn">Exportar JSON</button>
+          <button className="file-btn">Ver Auditoria (0)</button>
+        </div>
+      )}
 
       <footer className="footer-note">
         🚀 Saphira • Plataforma de Análise Premium • Auditável • Transparente <br />
         🔍 Privacidade Total • Análise Técnica • Resultados Verificáveis
       </footer>
+
+      {showAboutModal && (
+        <div className="modal-overlay" onClick={() => setShowAboutModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>💙 Sobre a Saphira</h2>
+            <p>
+              Saphira é uma plataforma de análise premium, projetada para oferecer precisão técnica,
+              transparência total e rastreabilidade auditável. Esta versão demonstra a interface premium 
+              pronta para futuras integrações avançadas.
+            </p>
+            <button onClick={() => setShowAboutModal(false)}>Fechar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
