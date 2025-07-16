@@ -1,0 +1,41 @@
+Olá, agente. As tentativas de deploy estão falhando devido a um problema crônico na resolução de dependências no ambiente de build. Chegou a hora de uma solução de arquitetura definitiva.
+Sua Missão: Reconfigurar o processo de build do Vite para eliminar qualquer ambiguidade de caminho e, em seguida, reconstruir o projeto sobre esta nova fundação.
+Execute os seguintes passos em ordem:
+Passo 1: Reconfigure o "Mapa" do Vite (vite.config.ts)
+Nossa meta é criar um "atalho" absoluto e inconfundível para que o Vite sempre saiba onde encontrar nossos arquivos.
+Abra o arquivo vite.config.ts.
+Importe o módulo path do Node.js, adicionando import path from 'path'; no topo do arquivo.
+Dentro do objeto defineConfig, adicione uma seção resolve para criar um "alias". O objetivo é que toda vez que um import começar com @/, o Vite saiba que deve começar a procurar a partir da pasta src/.
+A configuração final deve se parecer com isto:
+Generated typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path' // Adicionar esta linha
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  resolve: { // Adicionar ou modificar esta seção
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  }
+})
+Use code with caution.
+TypeScript
+Passo 2: Padronize Todos os Imports da Aplicação
+Agora que temos um "mapa" novo e à prova de falhas, sua tarefa é varrer TODA a aplicação (todos os arquivos .tsx dentro de src/) e atualizar os caminhos de importação.
+Substitua todos os imports relativos (que usam ../ ou ./) por imports absolutos usando o novo atalho @/.
+Exemplos:
+Um import que era import AnalysisDashboard from '../../components/dashboard/AnalysisDashboard'
+Deve se tornar: import AnalysisDashboard from '@/components/dashboard/AnalysisDashboard'
+Um import que era import './App.css'
+Deve se tornar: import '@/App.css'
+Passo 3: A Reconstrução Final ("Operação Fênix")
+Com a configuração e os imports agora padronizados e robustos, execute a reconstrução limpa do ambiente, como já fizemos antes. O ambiente antigo deve ser completamente destruído para dar lugar ao novo.
+rm -rf node_modules package-lock.json && npm cache clean --force && npm install
+Resumo da Missão:
+Estamos consertando a fundação do "build", não apenas o código.
+Estamos eliminando a fragilidade dos caminhos relativos (../) e os substituindo por um caminho absoluto e profissional.
+Estamos forçando a reconstrução completa sobre a nova fundação.
+Esta é a abordagem sistêmica para resolver o problema de uma vez por todas. Execute com precisão.
