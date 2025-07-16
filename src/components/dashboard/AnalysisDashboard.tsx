@@ -11,7 +11,7 @@ interface AnalysisDashboardProps {
     technicalData?: any;
     verificationCode?: string;
   };
-  handleExportDocx: () => Promise<void>;
+  handleExportDocx?: () => Promise<void>;
 }
 
 const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportDocx }) => {
