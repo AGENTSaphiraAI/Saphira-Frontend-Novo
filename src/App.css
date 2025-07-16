@@ -519,48 +519,118 @@ body {
   color: white;
 }
 
-/* --- OTIMIZAÇÕES PARA DISPOSITIVOS MÓVEIS (Screensize S22 e similares) --- */
+/* --- OTIMIZAÇÕES PARA iPhone SE (375px) E DISPOSITIVOS COMPACTOS --- */
 
-@media (max-width: 768px) {
-
-  /* Ajusta o container principal para usar mais espaço da tela */
+@media (max-width: 480px) {
   .saphira-container {
-    padding: 1rem;
+    padding: 0.75rem;
+    max-width: 100%;
   }
 
-  /* Diminui um pouco o tamanho do título */
   .saphira-title {
-    font-size: 2rem; 
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
   }
 
-  /* Garante que o grupo de botões principal se organize bem */
+  .saphira-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
   .saphira-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem; /* Espaçamento menor entre os botões */
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
-  /* Ajustes no dashboard de resultados */
-  .analysis-dashboard {
+  .btn-primary, .btn-secondary {
+    padding: 0.7rem 0.5rem;
+    font-size: 13px;
+    min-height: 44px;
+    border-radius: 8px;
+  }
+
+  .saphira-textarea {
+    min-height: 120px;
+    font-size: 14px;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .file-upload-area {
     padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
   }
 
-  .dashboard-header {
-    flex-direction: column; /* Coloca o título e os botões um sobre o outro */
-    align-items: flex-start; /* Alinha tudo à esquerda */
-    gap: 1rem;
+  .upload-label {
+    font-size: 14px;
   }
 
-  .dashboard-tabs {
-    flex-wrap: nowrap;      /* Evita quebra de linha das abas */
-    overflow-x: auto;       /* Permite rolagem horizontal SÓ das abas */
-    -webkit-overflow-scrolling: touch; /* Melhora a rolagem em iOS */
-    padding-bottom: 0.5rem;   /* Espaço para a barra de rolagem não ficar colada */
-    scrollbar-width: thin;    /* Deixa a barra de rolagem mais fina */
+  .upload-hint {
+    font-size: 12px;
+  }
+}
+
+/* iPhone SE específico (375px) */
+@media (max-width: 375px) {
+  .saphira-container {
+    padding: 0.5rem;
   }
 
-  .tab-button {
-    flex-shrink: 0; /* Impede que os botões encolham */
+  .saphira-title {
+    font-size: 1.6rem;
+  }
+
+  .saphira-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .saphira-buttons {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 0.6rem 0.4rem;
+    font-size: 12px;
+    min-height: 42px;
+  }
+
+  .saphira-textarea {
+    min-height: 100px;
+    font-size: 13px;
+    padding: 0.6rem;
+  }
+
+  .file-upload-area {
+    padding: 0.75rem;
+  }
+}
+
+/* Tablets e telas médias */
+@media (min-width: 481px) and (max-width: 768px) {
+  .saphira-container {
+    padding: 1.5rem;
+  }
+
+  .saphira-title {
+    font-size: 2.2rem;
+  }
+
+  .saphira-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 0.8rem 1rem;
+    font-size: 14px;
+    min-height: 46px;
+  }olham */
   }
 
 }hite;
