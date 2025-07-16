@@ -11,6 +11,13 @@ interface MetricsTabProps {
 }
 
 const MetricsTab: React.FC<MetricsTabProps> = ({ technicalData }) => {
+  // Helper function para props de animação
+  const divAnimationProps = (delay: number) => ({
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { delay, duration: 0.5 }
+  });
+
   return (
     <motion.div 
       className="metrics-tab"
@@ -26,54 +33,32 @@ const MetricsTab: React.FC<MetricsTabProps> = ({ technicalData }) => {
         </div>
       </div>
 
+      {/* Grid de Métricas Corrigido */}
       <div className="metrics-grid">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-        >
-          <RadarAnalysisCard data={
-            technicalData?.radar_analysis ? {
-              categories: technicalData.radar_analysis.categories || ['Clareza', 'Coerência', 'Completude', 'Precisão', 'Relevância'],
-              scores: technicalData.radar_analysis.scores || [85, 92, 78, 88, 95]
-            } : {
-              categories: ['Clareza', 'Coerência', 'Completude', 'Precisão', 'Relevância'],
-              scores: [85, 92, 78, 88, 95]
-            }
-          } />
+
+        {/* --- Card 1: Radar (Exemplo, pode precisar de ajuste fino se os dados existirem) --- */}
+        <motion.div {...divAnimationProps(0.1)}>
+          <RadarAnalysisCard technicalData={technicalData} />
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
+        {/* --- Card 2: Análise de Tom (Corrigido) --- */}
+        <motion.div {...divAnimationProps(0.2)}>
           <ToneAnalysisCard 
-            tone={technicalData?.tone_analysis?.tone || "Profissional"} 
-            confidence={technicalData?.tone_analysis?.confidence || 92}
+            tone={technicalData.tom || 'N/A'}
+            confidence={76.2} // Valor de exemplo, ajuste se o backend fornecer
           />
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          <IntegrityCard score={technicalData?.integrity?.score || 94} />
+        {/* --- Card 3: Integridade (Exemplo, ajuste se o backend fornecer score) --- */}
+        <motion.div {...divAnimationProps(0.3)}>
+          <IntegrityCard score={100} /> 
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          <NexumKeywordsCard keywords={
-            technicalData?.nexum?.keywords || [
-              'análise', 'documento', 'estrutura', 'conteúdo', 
-              'qualidade', 'verificação', 'relatório'
-            ]
-          } />
+        {/* --- Card 4: Palavras-Chave (Corrigido) --- */}
+        <motion.div {...divAnimationProps(0.4)}>
+          <NexumKeywordsCard keywords={technicalData.palavras_chave || []} />
         </motion.div>
+
       </div>
 
       <style>{`
