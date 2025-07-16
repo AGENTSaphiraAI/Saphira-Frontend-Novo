@@ -33,32 +33,27 @@ const MetricsTab: React.FC<MetricsTabProps> = ({ technicalData }) => {
         </div>
       </div>
 
-      {/* Grid de Métricas Corrigido */}
+      {/* Grid de Métricas Corrigido e Simplificado */}
       <div className="metrics-grid">
-
-        {/* --- Card 1: Radar (Exemplo, pode precisar de ajuste fino se os dados existirem) --- */}
+      
+        {/* Passando o technicalData inteiro para cada card */}
+        
         <motion.div {...divAnimationProps(0.1)}>
           <RadarAnalysisCard technicalData={technicalData} />
         </motion.div>
 
-        {/* --- Card 2: Análise de Tom (Corrigido) --- */}
         <motion.div {...divAnimationProps(0.2)}>
-          <ToneAnalysisCard 
-            tone={technicalData.tom || 'N/A'}
-            confidence={76.2} // Valor de exemplo, ajuste se o backend fornecer
-          />
+          <ToneAnalysisCard technicalData={technicalData} />
         </motion.div>
 
-        {/* --- Card 3: Integridade (Exemplo, ajuste se o backend fornecer score) --- */}
         <motion.div {...divAnimationProps(0.3)}>
-          <IntegrityCard score={100} /> 
+          <IntegrityCard technicalData={technicalData} />
         </motion.div>
-
-        {/* --- Card 4: Palavras-Chave (Corrigido) --- */}
+        
         <motion.div {...divAnimationProps(0.4)}>
-          <NexumKeywordsCard keywords={technicalData.palavras_chave || []} />
+          <NexumKeywordsCard technicalData={technicalData} />
         </motion.div>
-
+        
       </div>
 
       <style>{`
