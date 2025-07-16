@@ -51,11 +51,15 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
 
       <div className="report-container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h4 style={{ margin: 0 }}>Análise Interpretada da Saphira</h4>
-            <button onClick={handleCopy}><Copy size={16} /> Copiar</button>
+          <h4 style={{ margin: 0 }}>Análise Interpretada da Saphira</h4>
+          <button onClick={handleCopy} className="copy-button">
+            <Copy size={16} /> Copiar
+          </button>
         </div>
         <div className="markdown-body">
-          <ReactMarkdown>{response.humanized_text || "..."}</ReactMarkdown>
+          <ReactMarkdown>
+            {response.humanized_text || "Aguardando análise..."}
+          </ReactMarkdown>
         </div>
       </div>
     </motion.div>
