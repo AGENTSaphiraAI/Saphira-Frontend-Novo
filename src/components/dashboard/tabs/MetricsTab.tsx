@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3 } from 'lucide-react';
@@ -11,13 +12,6 @@ interface MetricsTabProps {
 }
 
 const MetricsTab: React.FC<MetricsTabProps> = ({ technicalData }) => {
-  // Helper function para props de animação
-  const divAnimationProps = (delay: number) => ({
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { delay, duration: 0.5 }
-  });
-
   return (
     <motion.div 
       className="metrics-tab"
@@ -33,27 +27,38 @@ const MetricsTab: React.FC<MetricsTabProps> = ({ technicalData }) => {
         </div>
       </div>
 
-      {/* Grid de Métricas Corrigido e Simplificado */}
       <div className="metrics-grid">
-      
-        {/* Passando o technicalData inteiro para cada card */}
-        
-        <motion.div {...divAnimationProps(0.1)}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+        >
           <RadarAnalysisCard technicalData={technicalData} />
         </motion.div>
 
-        <motion.div {...divAnimationProps(0.2)}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
           <ToneAnalysisCard technicalData={technicalData} />
         </motion.div>
 
-        <motion.div {...divAnimationProps(0.3)}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
           <IntegrityCard technicalData={technicalData} />
         </motion.div>
-        
-        <motion.div {...divAnimationProps(0.4)}>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
           <NexumKeywordsCard technicalData={technicalData} />
         </motion.div>
-        
       </div>
 
       <style>{`
