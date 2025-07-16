@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Copy, Check, FileText } from 'lucide-react';
@@ -69,6 +70,129 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
           </div>
         )}
       </div>
+
+      <style>{`
+        .report-tab {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .report-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .header-content {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .header-icon {
+          color: #0b74e5;
+        }
+
+        .header-content h3 {
+          margin: 0;
+          color: #1e293b;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+
+        .header-content p {
+          margin: 0;
+          color: #64748b;
+          font-size: 0.9rem;
+        }
+
+        .copy-button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background: linear-gradient(45deg, #10b981, #059669);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .copy-button:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .copy-button:disabled {
+          opacity: 0.8;
+          cursor: not-allowed;
+        }
+
+        .report-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .response-text {
+          flex: 1;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 1.5rem;
+          font-size: 1rem;
+          line-height: 1.6;
+          color: #334155;
+          overflow-y: auto;
+          max-height: 500px;
+        }
+
+        .report-paragraph {
+          margin: 0 0 1rem 0;
+        }
+
+        .report-paragraph:last-child {
+          margin-bottom: 0;
+        }
+
+        .report-footer {
+          margin-top: 1.5rem;
+          padding-top: 1rem;
+          border-top: 1px solid #e2e8f0;
+        }
+
+        .verification-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 0.9rem;
+          color: #64748b;
+        }
+
+        .timestamp {
+          font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+          .report-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: stretch;
+          }
+          
+          .verification-info {
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-start;
+          }
+        }
+      `}</style>
     </motion.div>
   );
 };
