@@ -598,7 +598,6 @@ export default function App() {
         <div className="saphira-results">
           <AnalysisDashboard 
             response={result} 
-            handleExportResponseJSON={handleExportResponseJSON}
             handleExportDocx={handleExportDocx}
           />
         </div>
