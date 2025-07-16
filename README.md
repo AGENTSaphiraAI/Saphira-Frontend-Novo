@@ -1,37 +1,36 @@
-# 💙 Saphira: Frontend de Análise Inteligente
 
-Bem-vindo ao repositório oficial do frontend do Projeto Saphira. Esta aplicação é a interface de usuário para um poderoso ecossistema de IA projetado para ser auditável, transparente e focado na privacidade.
+# Saphira Interface v1.0
 
-**[✨ Veja a Saphira em ação AQUI! ✨](https://saphira-frontend-novo-guilhermegnarci.replit.app/)**
+## ✨ Visão Geral
 
----
+Este repositório contém a interface de usuário oficial do Projeto Saphira. É uma aplicação web limpa, moderna e responsiva que serve como o rosto e as mãos do poderoso `Saphira-Engine-Backend`.
 
-## 🚀 Funcionalidades Atuais
-
-- **Análise de Texto e Arquivos**: Capacidade de analisar textos inseridos diretamente ou via upload de arquivos.
-- **Suporte Multi-Formato**: Aceita arquivos `.txt`, `.pdf`, e `.docx` para máxima flexibilidade.
-- **Dashboard Interativo**: Apresenta os resultados da análise em múltiplas abas:
-    - **Relatório Principal**: Resposta humanizada e interpretada pela Saphira.
-    - **Métricas Visuais**: Gráficos interativos (Radar, Tom, Integridade) para uma visão técnica e rápida.
-    - **Dados Técnicos**: Acesso ao JSON completo retornado pela API para auditoria e análise profunda.
-- **Exportação de Resultados**: Gere relatórios em formato `.pdf` e `.json` com um clique.
-- **Sistema de Auditoria**: Cada análise gera um código de verificação e é registrada em um log de auditoria rastreável.
-- **Design Responsivo**: Interface totalmente funcional e esteticamente agradável em desktops, tablets e celulares.
-
-## 🛠️ Tecnologias Utilizadas
-
-- **Framework**: React com TypeScript
-- **Build Tool**: Vite
-- **Estilização**: CSS puro com Media Queries para responsividade
-- **Comunicação API**: Fetch API nativa
-- **Gráficos**: Recharts
-- **Animações**: Framer Motion
-- **Ícones**: Lucide-React
-
-## 📄 Contexto do Projeto
-
-Este projeto (`saphira-frontend-novo`) é o **cliente (frontend)** de um sistema maior. Ele se comunica exclusivamente com um projeto separado chamado `Saphira-Engine-Backend`, que é responsável por toda a lógica de análise e processamento. Manter essa separação clara é crucial para a integridade e a escalabilidade do ecossistema Saphira.
+Construído com o objetivo de fornecer uma experiência de usuário direta e focada, este frontend permite que qualquer pessoa acesse a capacidade de análise da Saphira sem atritos.
 
 ---
 
-Agradecemos o seu interesse e contribuições futuras para tornar a análise de dados mais transparente e confiável para todos.
+## 🚀 Funcionalidades Principais
+
+A interface foi projetada para ser intuitiva e poderosa, focando na tarefa principal: análise de texto.
+
+*   **Análise Direta:** Cole qualquer texto diretamente na área de análise para uma avaliação imediata.
+*   **Upload de Múltiplos Formatos:** Suporte completo para o upload de arquivos nos formatos `.txt`, `.pdf` e `.docx`, permitindo análises de documentos existentes.
+*   **Pergunta Específica:** Refine a análise fazendo uma pergunta específica sobre o texto, direcionando o foco da Saphira.
+*   **Renderização Elegante:** A resposta da Saphira, que vem do backend em formato Markdown, é renderizada de forma limpa e legível, facilitando a leitura e a compreensão dos insights.
+*   **Exportação de Relatórios:**
+    *   Exporte a análise completa para um arquivo `.docx` para arquivamento ou compartilhamento.
+    *   Exporte para `.pdf` com um clique.
+    *   Copie o texto bruto da análise para a área de transferência.
+*   **Auditoria e Transparência:** Acesse o sistema de auditoria e a "Constituição Saphira" para entender os princípios e a integridade por trás de cada análise.
+*   **Design Responsivo:** A interface é totalmente funcional em dispositivos móveis, garantindo acesso de qualquer lugar.
+
+---
+
+## 🛠️ Conexão Técnica
+
+Este frontend é desacoplado e se comunica com o `Saphira-Engine-Backend` através de chamadas de API para o endpoint `/api/analyze`. Ele envia o texto ou o arquivo e renderiza a resposta em JSON que o backend retorna.
+
+A URL de produção do backend está configurada para garantir a comunicação entre os dois sistemas.
+
+---
+*Este projeto foi co-criado em uma jornada de 9 dias por um desenvolvedor que nunca havia programado, demonstrando o poder da colaboração e da busca pelo conhecimento.*
