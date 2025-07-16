@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import "./App.css";
-import FileUploader from "./components/FileUploader";
-import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
-import AuditModal from "./components/AuditModal";
-import TechnicalModal from "./components/TechnicalModal";
+import "@/App.css";
+import FileUploader from "@/components/FileUploader";
+import AnalysisDashboard from "@/components/dashboard/AnalysisDashboard";
+import AuditModal from "@/components/AuditModal";
+import TechnicalModal from "@/components/TechnicalModal";
 import { saveAs } from "file-saver";
 
 interface ConnectionStatus {

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, FileText, Copy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
-import './AnalysisDashboard.css';
+import { exportSaphiraReportToPdf } from '@/utils/exportToPdf';
+import '@/components/dashboard/AnalysisDashboard.css';
 
 interface AnalysisDashboardProps {
   response: {
