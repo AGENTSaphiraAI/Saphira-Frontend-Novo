@@ -1,0 +1,93 @@
+Ok, agente. Nova estratégia, com uma mudança de arquitetura focada em simplicidade e clareza.
+Missão: Simplificar o AnalysisDashboard.tsx, removendo o sistema de abas e exibindo o relatório principal diretamente.
+1. Instale a Dependência Essencial (se ainda não estiver fixada):
+npm install react-markdown
+2. Substitua o AnalysisDashboard.tsx:
+Substitua o conteúdo completo do arquivo src/components/dashboard/AnalysisDashboard.tsx por este novo código simplificado.
+Generated typescript
+// Caminho: src/components/dashboard/AnalysisDashboard.tsx
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Download, FileText, Copy } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
+import './AnalysisDashboard.css';
+
+interface AnalysisDashboardProps {
+  response: {
+    humanized_text?: string;
+    technicalData?: any;
+    verificationCode?: string;
+  };
+  handleExportDocx: () => Promise<void>; // Assumindo que esta função é passada
+}
+
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportDocx }) => {
+  const [isExporting, setIsExporting] = useState(false);
+  
+  const handleCopy = () => {
+    navigator.clipboard.writeText(response.humanized_text || '').then(() => alert('Relatório copiado!'));
+  };
+
+  const handleExportPdf = async () => {
+    setIsExporting(true);
+    try {
+      await exportSaphiraReportToPdf(response);
+    } catch (error) {
+      console.error('Erro ao exportar PDF:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+  
+  return (
+    <motion.div 
+      className="analysis-dashboard"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <div className="dashboard-header">
+        <div>
+          <h2>📊 Dashboard de Análise Saphira</h2>
+          {response.verificationCode && <span className="verification-code">🔍 Código: {response.verificationCode}</span>}
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="export-button" onClick={handleExportDocx}><Download size={18} /> DOC</button>
+          <button className="export-button" onClick={handleExportPdf} disabled={isExporting}><Download size={18} /> {isExporting ? '...' : 'PDF'}</button>
+        </div>
+      </div>
+
+      <div className="report-container">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h4 style={{ margin: 0 }}>Análise Interpretada da Saphira</h4>
+            <button onClick={handleCopy}><Copy size={16} /> Copiar</button>
+        </div>
+        <div className="markdown-body">
+          <ReactMarkdown>{response.humanized_text || "..."}</ReactMarkdown>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default AnalysisDashboard;
+Use code with caution.
+TypeScript
+3. Remova Arquivos Inúteis:
+As três abas se tornaram obsoletas. Remova a pasta inteira e seu conteúdo: src/components/dashboard/tabs/
+E a pasta src/components/dashboard/cards/ também.
+4. Simplifique os Estilos:
+Substitua o conteúdo de src/components/dashboard/AnalysisDashboard.css pelo seguinte CSS mais limpo, feito para o novo layout.
+Generated css
+.analysis-dashboard { background: white; padding: 1.5rem; border-radius: 12px; }
+.dashboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
+.verification-code { font-size: 0.8rem; background: #eee; padding: 4px 8px; border-radius: 4px; }
+.export-button { display: flex; align-items: center; gap: 8px; /* ...seus estilos de botão... */ }
+.report-container { margin-top: 1.5rem; }
+.markdown-body h3 { border-bottom: 1px solid #ddd; padding-bottom: 0.4rem; }
+Use code with caution.
+Css
+Resumo da Re-arquitetura:
+Simplicidade é Poder: Removemos completamente a complexidade do sistema de abas.
+Foco na Voz: O componente agora tem a única função de renderizar a "Voz da Saphira" em Markdown.
+Menos Arquivos, Menos Erros: Limpamos o projeto, o que aumenta a estabilidade.
