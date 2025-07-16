@@ -1,0 +1,40 @@
+Olá, agente. O backend está perfeitamente documentado. Agora, é a nossa vez de preparar a "sala de estar" para os visitantes.
+Sua Missão: Criar um README.md oficial e profissional para o projeto do frontend.
+Por favor, crie ou substitua o conteúdo do arquivo README.md na raiz do projeto por este texto, que detalha a interface e as funcionalidades da Saphira.
+Conteúdo para README.md:
+Generated markdown
+# Saphira Interface v1.0
+
+## ✨ Visão Geral
+
+Este repositório contém a interface de usuário oficial do Projeto Saphira. É uma aplicação web limpa, moderna e responsiva que serve como o rosto e as mãos do poderoso `Saphira-Engine-Backend`.
+
+Construído com o objetivo de fornecer uma experiência de usuário direta e focada, este frontend permite que qualquer pessoa acesse a capacidade de análise da Saphira sem atritos.
+
+---
+
+## 🚀 Funcionalidades Principais
+
+A interface foi projetada para ser intuitiva e poderosa, focando na tarefa principal: análise de texto.
+
+*   **Análise Direta:** Cole qualquer texto diretamente na área de análise para uma avaliação imediata.
+*   **Upload de Múltiplos Formatos:** Suporte completo para o upload de arquivos nos formatos `.txt`, `.pdf` e `.docx`, permitindo análises de documentos existentes.
+*   **Pergunta Específica:** Refine a análise fazendo uma pergunta específica sobre o texto, direcionando o foco da Saphira.
+*   **Renderização Elegante:** A resposta da Saphira, que vem do backend em formato Markdown, é renderizada de forma limpa e legível, facilitando a leitura e a compreensão dos insights.
+*   **Exportação de Relatórios:**
+    *   Exporte a análise completa para um arquivo `.docx` para arquivamento ou compartilhamento.
+    *   Exporte para `.pdf` com um clique.
+    *   Copie o texto bruto da análise para a área de transferência.
+*   **Auditoria e Transparência:** Acesse o sistema de auditoria e a "Constituição Saphira" para entender os princípios e a integridade por trás de cada análise.
+*   **Design Responsivo:** A interface é totalmente funcional em dispositivos móveis, garantindo acesso de qualquer lugar.
+
+---
+
+## 🛠️ Conexão Técnica
+
+Este frontend é desacoplado e se comunica com o `Saphira-Engine-Backend` através de chamadas de API para o endpoint `/api/analyze`. Ele envia o texto ou o arquivo e renderiza a resposta em JSON que o backend retorna.
+
+A URL de produção do backend está configurada para garantir a comunicação entre os dois sistemas.
+
+---
+*Este projeto foi co-criado em uma jornada de 9 dias por um desenvolvedor que nunca havia programado, demonstrando o poder da colaboração e da busca pelo conhecimento.*
