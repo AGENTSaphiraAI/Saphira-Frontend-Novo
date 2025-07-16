@@ -1,0 +1,99 @@
+Olá, agente. Nossa missão é refinar a exibição do relatório de análise, focando 100% em clareza.
+Passo 1: Instale a Dependência Essencial
+Precisamos de uma única biblioteca para traduzir o texto em Markdown que o backend envia para um formato HTML rico.
+npm install react-markdown
+Passo 2: Modifique o ReportTab.tsx para Renderizar Markdown
+Vamos ensinar a "Aba de Relatório Principal" a entender e formatar a nova voz da Saphira.
+Abra o arquivo src/components/dashboard/tabs/ReportTab.tsx.
+Substitua o conteúdo completo dele por este novo código. Ele é mais simples e focado, e agora usa react-markdown.
+Generated typescript
+// Caminho: src/components/dashboard/tabs/ReportTab.tsx
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import { FileText, Copy } from 'lucide-react';
+
+interface ReportTabProps {
+  interpretedResponse: string;
+  verificationCode?: string;
+}
+
+// Uma função simples para copiar texto
+const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Relatório copiado para a área de transferência!');
+  }, (err) => {
+    console.error('Erro ao copiar texto: ', err);
+    alert('Falha ao copiar o relatório.');
+  });
+};
+
+const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verificationCode }) => {
+  return (
+    <div className="report-tab" style={{ textAlign: 'left', padding: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <FileText size={22} />
+          <h3 style={{ margin: 0 }}>Análise Interpretada da Saphira</h3>
+        </div>
+        <button 
+          onClick={() => copyToClipboard(interpretedResponse)}
+          className="copy-button" // Adicione estilos se desejar
+        >
+          <Copy size={16} /> Copiar Texto
+        </button>
+      </div>
+
+      <div className="markdown-body">
+        <ReactMarkdown>{interpretedResponse}</ReactMarkdown>
+      </div>
+
+      {verificationCode && (
+        <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee', fontSize: '0.9rem' }}>
+          <strong>Código de Verificação:</strong> <span>{verificationCode}</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ReportTab;
+Use code with caution.
+TypeScript
+Passo 3: Adicione os Estilos para o Relatório ao App.css
+Para que os títulos, negritos e listas apareçam corretamente, adicione este bloco de CSS ao final do seu arquivo src/App.css.
+Generated css
+/* --- Estilos para o corpo do Relatório em Markdown --- */
+
+.markdown-body {
+  text-align: left;
+  line-height: 1.7;
+  color: #333;
+  font-size: 1rem;
+}
+
+.markdown-body h3 {
+  font-size: 1.2rem;
+  color: #1a202c;
+  border-bottom: 2px solid #cbd5e0;
+  padding-bottom: 0.3rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-body strong {
+  color: #2c5282;
+}
+
+.markdown-body ul, .markdown-body ol {
+  padding-left: 2rem;
+}
+
+.markdown-body li {
+  margin-bottom: 0.5rem;
+}
+Use code with caution.
+Css
+Resumo da Ação:
+Instalação única e segura: react-markdown.
+Modificação Isolada: Apenas o componente ReportTab.tsx será alterado.
+Resultado Final: O relatório da Saphira será exibido com formatação profissional, tornando-o claro, intuitivo e de fácil compreensão, exatamente como o planejado.
