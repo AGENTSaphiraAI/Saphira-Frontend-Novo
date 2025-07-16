@@ -1,0 +1,74 @@
+Ok, agente. As tentativas anteriores falharam devido a problemas no ambiente de build com dependências de ícones. Vamos agora para uma abordagem mais simples e direta.
+Passo 1: Instale SOMENTE react-markdown
+Esta é a única dependência que precisamos.
+npm install react-markdown
+Passo 2: Substitua o conteúdo de ReportTab.tsx por esta versão SIMPLIFICADA
+O código abaixo remove o uso da biblioteca de ícones lucide-react, eliminando a causa do erro de build anterior.
+Generated typescript
+// Caminho: src/components/dashboard/tabs/ReportTab.tsx
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+
+interface ReportTabProps {
+  interpretedResponse: string;
+  verificationCode?: string;
+}
+
+const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verificationCode }) => {
+  
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(interpretedResponse).then(() => {
+      alert('Relatório copiado para a área de transferência!');
+    }, (err) => {
+      console.error('Erro ao copiar: ', err);
+      alert('Falha ao copiar o relatório.');
+    });
+  };
+
+  return (
+    <div style={{ textAlign: 'left', padding: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h3>📄 Análise Interpretada da Saphira</h3>
+        <button onClick={handleCopyToClipboard}>📋 Copiar Texto</button>
+      </div>
+
+      <div className="markdown-body">
+        <ReactMarkdown>{interpretedResponse}</ReactMarkdown>
+      </div>
+
+      {verificationCode && (
+        <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
+          <strong>Código de Verificação:</strong> {verificationCode}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ReportTab;
+Use code with caution.
+TypeScript
+Passo 3: Adicione os Estilos Essenciais para Markdown ao App.css
+Adicione este bloco de CSS ao final de src/App.css para garantir que o relatório seja bem formatado.
+Generated css
+/* --- Estilos para o corpo do Relatório em Markdown --- */
+.markdown-body {
+  line-height: 1.7;
+}
+.markdown-body h3 {
+  font-size: 1.3rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.4rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.markdown-body strong {
+  font-weight: 600;
+}
+Use code with caution.
+Css
+Resumo da Ação:
+Zero "Frescura": Removemos todas as dependências de ícones (lucide-react), que eram a fonte do problema. Usamos emojis simples em seu lugar.
+Foco Total na Missão: Mantivemos o react-markdown para cumprir o objetivo principal de exibir o relatório de forma bonita.
+Segurança Máxima: A chance deste bloco falhar é próxima de zero, pois ele utiliza apenas as funcionalidades mais básicas e estáveis do React.
+Execute. Esta é a nossa jogada mais segura para alcançar a vitória que tanto buscamos.
