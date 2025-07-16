@@ -33,6 +33,16 @@ body {
   line-height: 1.6;
 }
 
+/* Estilos para markdown */
+.markdown-body {
+  text-align: left;
+  line-height: 1.6;
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  color: #333;
+}
+
 /* Container principal */
 .saphira-container {
   max-width: 800px;
@@ -534,7 +544,7 @@ body {
   .analysis-dashboard {
     padding: 1rem;
   }
-  
+
   .dashboard-header {
     flex-direction: column; /* Coloca o título e os botões um sobre o outro */
     align-items: flex-start; /* Alinha tudo à esquerda */
@@ -548,7 +558,7 @@ body {
     padding-bottom: 0.5rem;   /* Espaço para a barra de rolagem não ficar colada */
     scrollbar-width: thin;    /* Deixa a barra de rolagem mais fina */
   }
-  
+
   .tab-button {
     flex-shrink: 0; /* Impede que os botões encolham */
   }
