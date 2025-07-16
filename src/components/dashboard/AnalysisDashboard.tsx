@@ -1,29 +1,47 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Download, FileText, Copy } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import { saveAs } from 'file-saver';
-import { exportSaphiraReportToPdf } from '@/utils/exportToPdf';
-import '@/components/dashboard/AnalysisDashboard.css';
+import { FileText, BarChart3, Code, Download } from 'lucide-react';
+import ReportTab from './tabs/ReportTab';
+import MetricsTab from './tabs/MetricsTab';
+import RawDataTab from './tabs/RawDataTab';
+import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
+import './AnalysisDashboard.css';
 
 interface AnalysisDashboardProps {
   response: {
     humanized_text?: string;
-    technicalData?: any;
+    technical_data?: any;
     verificationCode?: string;
+    [key: string]: any;
   };
+  handleExportResponseJSON?: () => void;
+  handleExportDocx?: () => void;
 }
 
-const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
+  const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'raw'>('report');
   const [isExporting, setIsExporting] = useState(false);
 
-  // Backend URL - mesma que é usada no App.tsx
-  const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(response.humanized_text || '').then(() => alert('Relatório copiado!'));
-  };
+  const tabs = [
+    {
+      id: 'report' as const,
+      label: 'Relatório Principal',
+      icon: FileText,
+      description: 'Resposta interpretada da Saphira'
+    },
+    {
+      id: 'metrics' as const,
+      label: 'Métricas Visuais',
+      icon: BarChart3,
+      description: 'Análise técnica em gráficos'
+    },
+    {
+      id: 'raw' as const,
+      label: 'Dados Técnicos',
+      icon: Code,
+      description: 'JSON completo da análise'
+    }
+  ];
 
   const handleExportPdf = async () => {
     setIsExporting(true);
@@ -31,43 +49,9 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
       await exportSaphiraReportToPdf(response);
     } catch (error) {
       console.error('Erro ao exportar PDF:', error);
+      alert('❌ Erro ao exportar PDF. Tente novamente.');
     } finally {
       setIsExporting(false);
-    }
-  };
-
-  // Lógica de exportação DOCX movida para dentro do componente
-  const handleExportDocx = async () => {
-    if (!response) {
-      alert("⚠️ Nenhuma resposta para exportar.");
-      return;
-    }
-    console.log("📥 Iniciando exportação para DOCX...");
-    
-    try {
-      const exportResponse = await fetch(`${BACKEND_BASE_URL}/api/export/docx`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          humanized_text: response.humanized_text,
-          verificationCode: response.verificationCode
-        })
-      });
-
-      if (!exportResponse.ok) {
-        throw new Error(`Erro no servidor: ${exportResponse.statusText}`);
-      }
-      
-      const blob = await exportResponse.blob();
-      const fileName = `saphira_relatorio_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.docx`;
-      saveAs(blob, fileName);
-      console.log(`✅ Relatório DOCX exportado: ${fileName}`);
-
-    } catch (err) {
-      console.error("❌ Erro ao exportar DOCX:", err);
-      alert("Falha ao gerar o relatório DOCX. Verifique o console.");
     }
   };
 
@@ -76,31 +60,93 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response }) => {
       className="analysis-dashboard"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
     >
+      {/* Cabeçalho do Dashboard */}
       <div className="dashboard-header">
-        <div>
+        <div className="header-info">
           <h2>📊 Dashboard de Análise Saphira</h2>
-          {response.verificationCode && <span className="verification-code">🔍 Código: {response.verificationCode}</span>}
+          <p>Análise completa com visualizações interativas</p>
+          {response.verificationCode && (
+            <span className="verification-code">
+              🔍 Código: {response.verificationCode}
+            </span>
+          )}
         </div>
+
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="export-button" onClick={handleExportDocx}><Download size={18} /> DOC</button>
-          <button className="export-button" onClick={handleExportPdf} disabled={isExporting}><Download size={18} /> {isExporting ? '...' : 'PDF'}</button>
+          {handleExportResponseJSON && (
+            <button 
+              className="export-pdf-button"
+              onClick={handleExportResponseJSON}
+              style={{
+                background: 'linear-gradient(45deg, #4caf50 0%, #66bb6a 100%)',
+                boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)'
+              }}
+            >
+              <Download size={20} />
+              Exportar JSON
+            </button>
+          )}
+
+          <button 
+              className="export-pdf-button"
+              onClick={handleExportDocx}
+              disabled={!handleExportDocx}
+            >
+              <Download size={20} />
+              Exportar DOC
+            </button>
+
+          <button 
+            className="export-pdf-button"
+            onClick={handleExportPdf}
+            disabled={isExporting}
+          >
+            <Download size={20} />
+            {isExporting ? 'Exportando...' : 'Exportar PDF'}
+          </button>
         </div>
       </div>
 
-      <div className="report-container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h4 style={{ margin: 0 }}>Análise Interpretada da Saphira</h4>
-          <button onClick={handleCopy} className="copy-button">
-            <Copy size={16} /> Copiar
+      {/* Navegação das Abas */}
+      <div className="dashboard-tabs">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            <tab.icon size={20} />
+            <div className="tab-content">
+              <span className="tab-label">{tab.label}</span>
+              <span className="tab-description">{tab.description}</span>
+            </div>
           </button>
-        </div>
-        <div className="markdown-body">
-          <ReactMarkdown>
-            {response.humanized_text || "Aguardando análise..."}
-          </ReactMarkdown>
-        </div>
+        ))}
       </div>
+
+      {/* Conteúdo das Abas */}
+      <motion.div 
+        className="dashboard-content"
+        key={activeTab}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {activeTab === 'report' && (
+          <ReportTab 
+            interpretedResponse={response.humanized_text || 'Resposta não disponível'}
+            verificationCode={response.verificationCode}
+          />
+        )}
+        {activeTab === 'metrics' && (
+          <MetricsTab technicalData={response.technical_data || response} />
+        )}
+        {activeTab === 'raw' && (
+          <RawDataTab technicalData={response.technical_data || response} />
+        )}
+      </motion.div>
     </motion.div>
   );
 };
