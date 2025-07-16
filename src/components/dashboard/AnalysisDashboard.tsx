@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, BarChart3, Code, Download } from 'lucide-react';
+import { FileText, Download } from 'lucide-react';
 import ReportTab from './tabs/ReportTab';
-import MetricsTab from './tabs/MetricsTab';
-import RawDataTab from './tabs/RawDataTab';
 import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
 import './AnalysisDashboard.css';
 
@@ -28,18 +26,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
       label: 'Relatório Principal',
       icon: FileText,
       description: 'Resposta interpretada da Saphira'
-    },
-    {
-      id: 'metrics' as const,
-      label: 'Métricas Visuais',
-      icon: BarChart3,
-      description: 'Análise técnica em gráficos'
-    },
-    {
-      id: 'raw' as const,
-      label: 'Dados Técnicos',
-      icon: Code,
-      description: 'JSON completo da análise'
     }
   ];
 
@@ -139,12 +125,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
             interpretedResponse={response.humanized_text || 'Resposta não disponível'}
             verificationCode={response.verificationCode}
           />
-        )}
-        {activeTab === 'metrics' && (
-          <MetricsTab technicalData={response.technical_data || response} />
-        )}
-        {activeTab === 'raw' && (
-          <RawDataTab technicalData={response.technical_data || response} />
         )}
       </motion.div>
     </motion.div>
