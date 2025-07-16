@@ -1,0 +1,28 @@
+Ok, agente. As tentativas anteriores falharam porque o "contrato de props" entre App.tsx e AnalysisDashboard.tsx está causando conflitos no build. Vamos resolver isso com uma refatoração que elimina esta dependência.
+Sua Missão: Mover a Lógica de Exportação para Dentro do AnalysisDashboard
+Passo 1: Torne o AnalysisDashboard.tsx Autossuficiente
+Abra o arquivo src/components/dashboard/AnalysisDashboard.tsx.
+Copie a lógica da função handleExportDocx que criamos anteriormente (que faz o fetch para o endpoint /api/export/docx) e cole-a dentro do componente AnalysisDashboard.
+Você também precisará de uma forma de obter a URL do backend. Copie ou recrie a função getBackendUrl() que existe no App.tsx e coloque-a também dentro do AnalysisDashboard.tsx ou em um arquivo de utils.
+Importe saveAs de file-saver no topo do arquivo.
+Passo 2: Simplifique a Interface (props)
+Agora que o componente tem sua própria lógica, ele não precisa mais recebê-la do pai.
+No topo do arquivo AnalysisDashboard.tsx, remova handleExportDocx da definição da interface AnalysisDashboardProps. A interface deve ficar limpa, esperando apenas pela response:
+Generated typescript
+interface AnalysisDashboardProps {
+  response: { /* ... */ };
+}
+Use code with caution.
+TypeScript
+Remova handleExportDocx da lista de props que o componente recebe na sua declaração.
+Passo 3: Faça a Limpeza Final no Pai (App.tsx)
+O erro original está aqui. Vamos eliminá-lo para sempre.
+Abra src/App.tsx.
+Remova completamente a definição da função handleExportDocx de dentro do App.tsx. Ela não é mais necessária aqui.
+Na linha onde você renderiza <AnalysisDashboard />, remova a passagem da prop handleExportDocx. A chamada deve ficar o mais simples possível:
+<AnalysisDashboard response={result} />
+Resumo da Ação Sistêmica:
+Estamos eliminando a causa raiz de todos os erros de deploy: a passagem da função handleExportDocx como prop.
+O AnalysisDashboard se tornará autônomo, contendo toda a lógica que ele precisa para funcionar.
+Isso simplifica a comunicação entre os componentes ao máximo, o que irá, de uma vez por todas, satisfazer o sistema de build.
+Esta é a nossa solução de arquitetura. Execute-a.
