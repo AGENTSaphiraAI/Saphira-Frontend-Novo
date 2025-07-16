@@ -919,23 +919,6 @@ body {
   }
 }
 
-/* --- Estilos para o corpo do Relatório em Markdown --- */
-.markdown-body {
-  line-height: 1.7;
-}
-
-.markdown-body h3 {
-  font-size: 1.3rem;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 0.4rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.markdown-body strong {
-  font-weight: 600;
-}
-
 /* Efeito de "glow" nos botões de ação */
 .btn-success:hover, .btn-danger:hover {
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
