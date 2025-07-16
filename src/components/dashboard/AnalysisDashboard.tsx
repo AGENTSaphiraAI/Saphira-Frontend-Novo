@@ -60,7 +60,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div className="dashboard-export-buttons">
           {handleExportResponseJSON && (
             <button 
               className="export-pdf-button"
@@ -71,7 +71,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
               }}
             >
               <Download size={20} />
-              Exportar JSON
+              <span>Exportar JSON</span>
             </button>
           )}
 
@@ -81,7 +81,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
               disabled={!handleExportDocx}
             >
               <Download size={20} />
-              Exportar DOC
+              <span>Exportar DOC</span>
             </button>
 
           <button 
@@ -90,7 +90,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
             disabled={isExporting}
           >
             <Download size={20} />
-            {isExporting ? 'Exportando...' : 'Exportar PDF'}
+            <span>{isExporting ? 'Exportando...' : 'Exportar PDF'}</span>
           </button>
         </div>
       </div>

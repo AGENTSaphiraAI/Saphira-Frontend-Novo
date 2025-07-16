@@ -16,6 +16,12 @@
   border-bottom: 2px solid #e2e8f0;
 }
 
+.dashboard-export-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .header-info h2 {
   margin: 0 0 0.5rem 0;
   color: #1e293b;
@@ -130,8 +136,21 @@
   
   .dashboard-header {
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     align-items: stretch;
+  }
+  
+  .dashboard-export-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .export-pdf-button {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+    font-size: 14px;
+    padding: 0.75rem 1rem;
   }
   
   .dashboard-tabs {
@@ -140,5 +159,39 @@
   
   .tab-button {
     min-width: unset;
+  }
+}
+
+/* Ajustes específicos para telas muito pequenas (Samsung S22 e similares) */
+@media (max-width: 400px) {
+  .analysis-dashboard {
+    padding: 0.75rem;
+  }
+  
+  .dashboard-header {
+    gap: 1rem;
+  }
+  
+  .header-info h2 {
+    font-size: 1.2rem;
+  }
+  
+  .header-info p {
+    font-size: 0.9rem;
+  }
+  
+  .verification-code {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .export-pdf-button {
+    font-size: 13px;
+    padding: 0.7rem 0.8rem;
+    min-height: 44px;
+  }
+  
+  .dashboard-content {
+    padding: 1.5rem;
   }
 }
