@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, FileText } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 
 interface ReportTabProps {
   interpretedResponse: string;

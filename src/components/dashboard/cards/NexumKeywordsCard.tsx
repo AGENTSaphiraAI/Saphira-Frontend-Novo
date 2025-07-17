@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Hash, TrendingUp } from 'lucide-react';
+import { Hash } from 'lucide-react';
 
 interface NexumKeywordsCardProps {
   technicalData: any;

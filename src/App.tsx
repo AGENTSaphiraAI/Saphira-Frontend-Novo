@@ -4,8 +4,6 @@ import FileUploader from "./components/FileUploader";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import AuditModal from "./components/AuditModal";
 import TechnicalModal from "./components/TechnicalModal";
-import ReactMarkdown from 'react-markdown';
-import { saveAs } from "file-saver";
 
 interface ConnectionStatus {
   status: 'unknown' | 'testing' | 'online' | 'offline';
@@ -45,11 +43,10 @@ export default function App() {
   const abortControllerRef = useRef<AbortController | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Constantes
+  // Constantes otimizadas
   const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
-  const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutos
+  const KEEP_ALIVE_INTERVAL = 600000; // 10 minutos
   const REQUEST_TIMEOUT = 12000; // 12 segundos
-
 
   const placeholderExamples = [
     "Digite um artigo para verificar contradições, viés e estrutura lógica...",
@@ -105,10 +102,10 @@ export default function App() {
       clearTimeout(typingTimeoutRef.current);
     }
 
-    // Define um novo timeout com duração otimizada
+    // Define um novo timeout otimizado
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
-    }, 800); // 800ms para UX mais suave
+    }, 600); // 600ms otimizado
   }, []);
 
   // Keep-alive otimizado
@@ -205,10 +202,7 @@ export default function App() {
     console.log("🔍 Iniciando análise...");
 
     try {
-      // TODO: BACKEND INTEGRATION POINT
-      // Esta é a chamada principal para o endpoint /api/analyze do backend
-      // Dados enviados: { text: textToAnalyze, question: specificQuestion }
-      // Resposta esperada: { displayData: { humanized_text, technicalData }, verificationCode }
+      
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: "POST",
         headers: {
@@ -248,7 +242,6 @@ export default function App() {
         verificationCode
       });
 
-      // Linha CRÍTICA: Faz o botão de exportar aparecer.
       setShowExport(true);
 
     } catch (error: unknown) {
@@ -280,9 +273,7 @@ export default function App() {
     setSpecificQuestion("");
     setResult(null);
     setUploadedFile(null);
-    // Linha CRÍTICA: Esconde o botão de exportar novamente.
     setShowExport(false);
-    console.log("🧹 Interface limpa");
   }, [loading]);
 
   // Função para exportar resposta em JSON

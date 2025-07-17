@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import jsPDF from "jspdf";
 
 interface FileUploaderProps {
   onFileContentChange?: (content: string, fileName: string) => void;
