@@ -11,8 +11,7 @@
 **Interface de usuário oficial do Projeto Saphira**  
 *Análise Inteligente, Técnica e Auditável*
 
-[🚀 **Demo ao Vivo**](https://saphira-frontend-novo-guilhermegnarci.replit.app/) | [📚 **Documentação**](#-documentação) | [🛠️ **Instalação**](#️-instalação)
-
+</div>
 </div>
 
 ---
@@ -85,39 +84,7 @@ A **Saphira Interface** é uma aplicação web moderna e responsiva que serve co
 
 ---
 
-## 🔧 Instalação
 
-### **Pré-requisitos**
-- Node.js 16+ 
-- npm ou yarn
-- Backend Saphira-Engine rodando
-
-### **Instalação Local**
-
-```bash
-# Clone o repositório
-git clone <url-do-repositorio>
-cd saphira-frontend-novo
-
-# Instale as dependências
-npm install
-
-# Configure as variáveis de ambiente
-echo "VITE_API_URL=https://seu-backend-url.com" > .env
-
-# Inicie o servidor de desenvolvimento
-npm run dev
-```
-
-### **Scripts Disponíveis**
-
-```bash
-npm run dev      # Servidor de desenvolvimento (porta 5000)
-npm run build    # Build de produção
-npm run preview  # Preview do build de produção
-```
-
----
 
 ## 🏗️ Arquitetura do Projeto
 
@@ -257,45 +224,7 @@ GET /health
 
 ---
 
-## 🚀 Deploy
 
-### **Deploy no Replit (Recomendado)**
-1. Fork este repositório no Replit
-2. Configure a variável `VITE_API_URL` apontando para seu backend
-3. Execute `npm run dev` para desenvolvimento
-4. Use `npm run build` para produção
-
-### **Deploy em Outros Ambientes**
-```bash
-# Build de produção
-npm run build
-
-# Pasta dist/ contém os arquivos estáticos
-# Sirva com qualquer servidor HTTP (Nginx, Apache, Vercel, Netlify)
-```
-
----
-
-## 🤝 Contribuição
-
-### **Como Contribuir**
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-### **Padrões de Commit**
-```
-feat: adiciona nova funcionalidade
-fix: corrige bug
-docs: atualiza documentação
-style: mudanças de formatação
-refactor: refatoração de código
-test: adiciona ou modifica testes
-```
-
----
 
 ## 📄 Licença
 
