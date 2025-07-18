@@ -202,7 +202,7 @@ export default function App() {
     console.log("🔍 Iniciando análise...");
 
     try {
-
+      
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: "POST",
         headers: {
@@ -309,7 +309,7 @@ export default function App() {
       return;
     }
     console.log("📥 Iniciando exportação para DOCX...");
-
+    
     try {
       const response = await fetch(`${BACKEND_BASE_URL}/api/export/docx`, {
         method: "POST",
@@ -325,7 +325,7 @@ export default function App() {
       if (!response.ok) {
         throw new Error(`Erro no servidor: ${response.statusText}`);
       }
-
+      
       const blob = await response.blob();
       const fileName = `saphira_relatorio_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.docx`;
       saveAs(blob, fileName);
@@ -364,8 +364,10 @@ export default function App() {
   const handleTestConnection = useCallback(async () => {
     if (connectionStatus.status === 'testing') return;
 
-    console.log(`🔗 Testando conexão com backend...`);
-    // URLs sensíveis removidas dos logs por segurança
+    console.log("🔗 Testando conexão com backend...");
+    console.log("🎯 [TESTE] Backend oficial:", BACKEND_BASE_URL);
+    console.log("🎯 [TESTE] Health check:", `${BACKEND_BASE_URL}/health`);
+    console.log("🎯 [TESTE] API endpoint:", `${BACKEND_BASE_URL}/api/analyze`);
 
     setConnectionStatus({ status: 'testing' });
 

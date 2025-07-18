@@ -3,11 +3,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Copy, Check } from 'lucide-react';
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FileText, Copy, Check } from 'lucide-react';
-import { saveAs } from 'file-saver';
-
 interface ReportTabProps {
   interpretedResponse: string;
   verificationCode?: string;
@@ -59,7 +54,7 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
           {copied ? <Check size={20} /> : <Copy size={20} />}
           {copied ? 'Copiado!' : 'Copiar Texto'}
         </button>
-      </div>iv>
+      </div>
 
       <div className="report-content">
         <div className="response-text">
@@ -113,96 +108,6 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
           margin: 0;
           color: #64748b;
           font-size: 0.9rem;
-        }
-
-        .copy-button {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.75rem 1rem;
-          background: linear-gradient(45deg, #0b74e5 0%, #1d4ed8 100%);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.9rem;
-          font-weight: 500;
-          transition: all 0.2s ease;
-        }
-
-        .copy-button:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(11, 116, 229, 0.3);
-        }
-
-        .copy-button:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-
-        .report-content {
-          flex: 1;
-          overflow-y: auto;
-        }
-
-        .response-text {
-          background: #f8fafc;
-          border-radius: 12px;
-          padding: 1.5rem;
-          border: 1px solid #e2e8f0;
-          min-height: 200px;
-        }
-
-        .report-paragraph {
-          margin-bottom: 1rem;
-          line-height: 1.6;
-          color: #334155;
-        }
-
-        .report-footer {
-          margin-top: 1.5rem;
-          padding-top: 1rem;
-          border-top: 1px solid #e2e8f0;
-        }
-
-        .verification-info {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: rgba(255, 193, 7, 0.1);
-          padding: 1rem;
-          border-radius: 8px;
-          border: 1px solid rgba(255, 193, 7, 0.3);
-        }
-
-        .verification-info span {
-          color: #b45309;
-          font-size: 0.9rem;
-        }
-
-        .timestamp {
-          opacity: 0.8;
-        }
-
-        @media (max-width: 768px) {
-          .report-header {
-            flex-direction: column;
-            gap: 1rem;
-            align-items: flex-start;
-          }
-          
-          .verification-info {
-            flex-direction: column;
-            gap: 0.5rem;
-            align-items: flex-start;
-          }
-        }
-      `}</style>
-    </motion.div>
-  );
-};
-
-export default ReportTab;m;
         }
 
         .copy-button {
