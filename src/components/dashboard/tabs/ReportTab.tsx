@@ -114,7 +114,7 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
           align-items: center;
           gap: 0.5rem;
           padding: 0.75rem 1rem;
-          background: linear-gradient(45deg, #10b981, #059669);
+          background: linear-gradient(45deg, #0b74e5, #0563e5);
           color: white;
           border: none;
           border-radius: 8px;
@@ -125,7 +125,7 @@ const ReportTab: React.FC<ReportTabProps> = ({ interpretedResponse, verification
 
         .copy-button:hover:not(:disabled) {
           transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+          box-shadow: 0 4px 12px rgba(11, 116, 229, 0.3);
         }
 
         .copy-button:disabled {
