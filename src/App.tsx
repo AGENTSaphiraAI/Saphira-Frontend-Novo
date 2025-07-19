@@ -73,11 +73,20 @@ export default function App() {
   // Handler global para promises rejeitadas
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      // Filtrar erros conhecidos e aceitáveis
       if (event.reason?.name === 'AbortError' || 
-          event.reason?.message?.includes('fetch')) {
+          event.reason?.message?.includes('fetch') ||
+          event.reason?.message?.includes('network') ||
+          event.reason?.code === 'NETWORK_ERROR' ||
+          !event.reason) {
+        event.preventDefault(); // Previne log no console
         return;
       }
-      console.warn('Unhandled promise rejection:', event.reason);
+      
+      // Log apenas erros relevantes
+      if (event.reason instanceof Error) {
+        console.warn('🚨 Promise rejeitada:', event.reason.message);
+      }
       event.preventDefault();
     };
 
@@ -125,7 +134,7 @@ export default function App() {
             method: "GET",
             mode: "cors",
             cache: "no-cache"
-          }, 8000);
+          }, 6000);
 
           const response = await request;
           cleanup();
@@ -134,13 +143,10 @@ export default function App() {
             console.log("✅ Keep-alive OK");
             setKeepAliveActive(true);
           } else {
-            console.warn("⚠️ Keep-alive warning:", response.status);
             setKeepAliveActive(false);
           }
         } catch (err) {
-          if (err instanceof Error && err.name !== 'AbortError') {
-            console.warn("⚠️ Keep-alive falhou:", err.message);
-          }
+          // Silenciar erros de keep-alive para não gerar unhandledrejection
           setKeepAliveActive(false);
         }
       };
@@ -195,45 +201,42 @@ export default function App() {
 
     if (loading || !textToAnalyze) return;
 
+    // Evitar múltiplas análises simultâneas
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
+      await new Promise(resolve => setTimeout(resolve, 100)); // Pequena pausa
     }
 
     setLoading(true);
     setResult(null);
-
     console.log("🔍 Iniciando análise...");
 
     try {
-      
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Origin": window.location.origin,
+          "Accept": "application/json"
         },
         body: JSON.stringify({
           text: textToAnalyze,
           question: specificQuestion.trim() || ""
         }),
-        credentials: "omit",
         mode: "cors",
         cache: "no-cache"
-      }, 30000);
+      }, 25000); // Timeout de 25s
 
       const response = await request;
       cleanup();
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erro HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+        throw new Error(`HTTP ${response.status}`);
       }
 
       const data = await response.json();
       console.log("✅ Análise concluída");
 
-      // Registrar na auditoria
+      // Registrar na auditoria com verificação
       const verificationCode = addAuditEntry(
         textToAnalyze,
         data.displayData?.humanized_text || "Resposta não disponível",
@@ -249,25 +252,24 @@ export default function App() {
       setShowExport(true);
 
     } catch (error: unknown) {
-      console.error("❌ Erro na análise:", error);
-
-      let errorMessage = "Tive dificuldades para analisar seu texto.";
+      let errorMessage = "Erro na análise do texto.";
 
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = "⏱️ Timeout: Análise cancelada. Tente novamente.";
-        } else if (error.message.includes("fetch")) {
-          errorMessage = "🌐 Erro de conexão. Verifique se o backend está online.";
-        } else {
-          errorMessage = `⚠️ ${error.message}`;
+          errorMessage = "⏱️ Análise cancelada por timeout.";
+        } else if (error.message.includes("fetch") || error.message.includes("network")) {
+          errorMessage = "🌐 Erro de conexão com backend.";
+        } else if (error.message.includes("HTTP")) {
+          errorMessage = `⚠️ Erro do servidor: ${error.message}`;
         }
       }
 
+      console.warn("❌ Análise falhou:", errorMessage);
       setResult({ humanized_text: errorMessage, verificationCode: undefined });
     } finally {
       setLoading(false);
     }
-  }, [userText, specificQuestion, loading, createRequestWithTimeout, uploadedFile]);
+  }, [userText, specificQuestion, loading, createRequestWithTimeout, uploadedFile, addAuditEntry]);
 
   // Função de limpeza
   const handleClear = useCallback(() => {
@@ -364,54 +366,35 @@ export default function App() {
     console.log(`🛡️ Logs de auditoria exportados: ${fileName}`);
   }, [auditLogs]);
 
-  // Teste de conexão aprimorado
+  // Teste de conexão otimizado
   const handleTestConnection = useCallback(async () => {
-    if (connectionStatus.status === 'testing') return;
+    if (connectionStatus.status === 'testing') {
+      console.log("⚠️ Teste já em andamento, aguarde...");
+      return;
+    }
 
     console.log("🔗 Testando conexão com backend...");
-    console.log("🎯 [TESTE] Backend oficial:", BACKEND_BASE_URL);
-    console.log("🎯 [TESTE] Health check:", `${BACKEND_BASE_URL}/health`);
-    console.log("🎯 [TESTE] API endpoint:", `${BACKEND_BASE_URL}/api/analyze`);
-
     setConnectionStatus({ status: 'testing' });
 
     try {
-      // TESTE 1: Verificar se backend responde (GET simples)
-      console.log("🎯 TESTE 1: GET simples na raiz do backend");
-      const healthResponse = await fetch(BACKEND_BASE_URL, {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache"
-      });
-
-      if (healthResponse.ok) {
-        console.log("✅ GET raiz funcionou! Status:", healthResponse.status);
-      } else {
-        console.warn("⚠️ GET raiz retornou:", healthResponse.status);
-      }
-
-      // TESTE 2: Testar endpoint API específico
-      console.log("🎯 TESTE 2: POST no endpoint API:", `${BACKEND_BASE_URL}/api/analyze`);
+      // Teste otimizado único
       const startTime = Date.now();
-
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Origin": window.location.origin
+          "Accept": "application/json"
         },
         body: JSON.stringify({
-          text: "teste de conexão automática",
-          question: "verificar funcionamento do sistema"
+          text: "teste conexão",
+          question: "status"
         }),
         mode: "cors",
         cache: "no-cache"
-      }, 15000); // 15 segundos timeout
+      }, 10000);
 
       const response = await request;
       cleanup();
-
       const responseTime = Date.now() - startTime;
 
       if (response.ok) {
@@ -422,14 +405,10 @@ export default function App() {
           responseTime 
         });
 
-        const displayText = data.displayData?.humanized_text || data.humanized_text || "Resposta não disponível";
-
-        alert(`🎉 CONEXÃO ESTABELECIDA COM SUCESSO!\n\n✅ Status: ${response.status} OK\n⚡ Tempo de resposta: ${responseTime}ms\n🔗 Backend: Totalmente operacional\n🧠 Módulos Saphira: Ativos\n\n📋 Resposta de teste:\n"${displayText.substring(0, 200)}${displayText.length > 200 ? '...' : ''}"`);
-
-        console.log("✅ Teste de conexão completo - Sistema operacional!");
+        console.log("✅ Conexão estabelecida com sucesso!");
+        alert(`🎉 CONEXÃO OK!\n⚡ ${responseTime}ms\n🔗 Backend operacional`);
       } else {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        throw new Error(`HTTP ${response.status}`);
       }
 
     } catch (error: unknown) {
@@ -438,20 +417,17 @@ export default function App() {
         lastChecked: new Date() 
       });
 
-      console.error("❌ Erro no teste de conexão:", error);
-
-      let errorMessage = "Erro desconhecido";
+      let errorMessage = "Erro de conexão";
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = "Timeout: Conexão demorou mais de 15 segundos";
-        } else if (error.message.includes('fetch')) {
-          errorMessage = "Erro de rede - Backend inacessível";
-        } else {
-          errorMessage = error.message;
+          errorMessage = "Timeout na conexão";
+        } else if (error.message.includes('fetch') || error.message.includes('network')) {
+          errorMessage = "Erro de rede";
         }
       }
 
-      alert(`❌ FALHA NA CONEXÃO COM BACKEND\n\n🔴 Erro: ${errorMessage}\n\n💡 Possíveis causas:\n• Backend em hibernação (aguarde 30s)\n• Problema de rede temporário\n• URL do backend incorreta\n• Timeout na requisição\n\n🔄 Tente novamente em alguns segundos.`);
+      console.warn("⚠️ Teste de conexão falhou:", errorMessage);
+      alert(`⚠️ Conexão falhou: ${errorMessage}\n🔄 Tente novamente`);
     }
   }, [connectionStatus.status, createRequestWithTimeout]);
 
