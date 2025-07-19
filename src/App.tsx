@@ -20,6 +20,7 @@ interface AuditEntry {
   fileName?: string;
   response: string;
   verificationCode: string;
+  expert_analysis?: string;
 }
 
 export default function App() {
@@ -165,14 +166,15 @@ export default function App() {
   }, []);
 
   // Utilitário para adicionar entrada de auditoria
-  const addAuditEntry = useCallback((originalText: string, response: string, fileName?: string) => {
+  const addAuditEntry = useCallback((originalText: string, response: string, fileName?: string, expertAnalysis?: string) => {
     const entry: AuditEntry = {
       id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       timestamp: new Date(),
       originalText,
       fileName,
       response,
-      verificationCode: generateVerificationCode()
+      verificationCode: generateVerificationCode(),
+      expert_analysis: expertAnalysis
     };
 
     setAuditLogs(prev => [entry, ...prev]);
@@ -234,7 +236,8 @@ export default function App() {
       const verificationCode = addAuditEntry(
         textToAnalyze,
         data.displayData?.humanized_text || "Resposta não disponível",
-        uploadedFile?.name
+        uploadedFile?.name,
+        data.displayData?.expert_analysis
       );
 
       setResult({

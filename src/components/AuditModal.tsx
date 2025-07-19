@@ -1,5 +1,6 @@
 
 import React from "react";
+import ReactMarkdown from "react-markdown";
 
 interface AuditEntry {
   id: string;
@@ -8,6 +9,7 @@ interface AuditEntry {
   fileName?: string;
   response: string;
   verificationCode: string;
+  expert_analysis?: string;
 }
 
 interface AuditModalProps {
@@ -87,14 +89,30 @@ function AuditModal({ isOpen, onClose, auditLogs, onExportLogs }: AuditModalProp
                     </div>
                     
                     <div className="response-content">
-                      <h4>💬 Resposta:</h4>
+                      <h4>💬 Resposta Principal:</h4>
                       <div className="content-preview">
-                        {entry.response.length > 200 
-                          ? entry.response.substring(0, 200) + "..."
-                          : entry.response
-                        }
+                        <ReactMarkdown>
+                          {entry.response.length > 200 
+                            ? entry.response.substring(0, 200) + "..."
+                            : entry.response
+                          }
+                        </ReactMarkdown>
                       </div>
                     </div>
+                    
+                    {entry.expert_analysis && (
+                      <div className="expert-analysis-content">
+                        <h4>🔬 Análise Profunda (10/10):</h4>
+                        <div className="content-preview">
+                          <ReactMarkdown>
+                            {entry.expert_analysis.length > 300 
+                              ? entry.expert_analysis.substring(0, 300) + "..."
+                              : entry.expert_analysis
+                            }
+                          </ReactMarkdown>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

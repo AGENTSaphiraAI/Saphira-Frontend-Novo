@@ -1036,11 +1036,27 @@ body {
   border-left: 4px solid #64b5f6;
 }
 
+.expert-analysis-content {
+  background: rgba(0, 255, 213, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #00ffd5;
+  border-top: 1px dashed #00ffd5;
+  margin-top: 1rem;
+}
+
 .original-content h4,
 .response-content h4 {
   margin: 0 0 0.5rem 0;
   color: #90caf9;
   font-size: 1rem;
+}
+
+.expert-analysis-content h4 {
+  margin: 0 0 0.5rem 0;
+  color: #00ffd5;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .file-info {
