@@ -47,8 +47,8 @@ export default function App() {
 
   // Constantes otimizadas
   const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
-  const KEEP_ALIVE_INTERVAL = 600000; // 10 minutos
-  const REQUEST_TIMEOUT = 12000; // 12 segundos
+  const KEEP_ALIVE_INTERVAL = 300000; // 5 minutos  
+  const REQUEST_TIMEOUT = 8000; // 8 segundos
 
   const placeholderExamples = [
     "Digite um artigo para verificar contradições, viés e estrutura lógica...",
@@ -216,15 +216,19 @@ export default function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization"
         },
         body: JSON.stringify({
           text: textToAnalyze,
           question: specificQuestion.trim() || ""
         }),
         mode: "cors",
-        cache: "no-cache"
-      }, 25000); // Timeout de 25s
+        cache: "no-cache",
+        credentials: "omit"
+      }, 20000); // Timeout de 25s
 
       const response = await request;
       cleanup();
@@ -256,11 +260,13 @@ export default function App() {
 
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = "⏱️ Análise cancelada por timeout.";
-        } else if (error.message.includes("fetch") || error.message.includes("network")) {
-          errorMessage = "🌐 Erro de conexão com backend.";
+          errorMessage = "⏱️ Tempo limite excedido. Tente novamente.";
+        } else if (error.message.includes("fetch") || error.message.includes("network") || error.message.includes("Failed to fetch")) {
+          errorMessage = "🌐 Problema de conectividade. Verifique sua conexão.";
         } else if (error.message.includes("HTTP")) {
           errorMessage = `⚠️ Erro do servidor: ${error.message}`;
+        } else if (error.message.includes("CORS")) {
+          errorMessage = "🔒 Erro de CORS. Backend pode estar inacessível.";
         }
       }
 
@@ -379,19 +385,15 @@ export default function App() {
     try {
       // Teste otimizado único
       const startTime = Date.now();
-      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
-        method: "POST",
+      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/health`, {
+        method: "GET",
         headers: {
-          "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify({
-          text: "teste conexão",
-          question: "status"
-        }),
         mode: "cors",
-        cache: "no-cache"
-      }, 10000);
+        cache: "no-cache",
+        credentials: "omit"
+      }, 8000);
 
       const response = await request;
       cleanup();
