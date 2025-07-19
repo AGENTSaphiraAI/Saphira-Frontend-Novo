@@ -30,7 +30,7 @@ export default defineConfig({
     target: 'esnext',
     minify: 'esbuild',
     rollupOptions: {
-      external: ['#minpath']
+      external: ['#minpath', '#minproc']
     }
   },
 });
