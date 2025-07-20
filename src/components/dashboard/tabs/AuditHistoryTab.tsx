@@ -40,6 +40,15 @@ const styles = `
   display: block;
   margin-bottom: 0.5rem;
 }
+.content-text {
+  color: #1f2937 !important;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+.detail-label {
+  font-weight: 600;
+  color: #374151 !important;
+}
 `;
 
 interface AuditHistoryTabProps {
