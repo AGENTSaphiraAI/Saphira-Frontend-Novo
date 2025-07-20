@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download } from 'lucide-react';
+import { FileText, Download, Clock } from 'lucide-react';
 import ReportTab from './tabs/ReportTab';
+import AuditHistoryTab from './tabs/AuditHistoryTab';
 import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
 import './AnalysisDashboard.css';
 
@@ -12,12 +13,13 @@ interface AnalysisDashboardProps {
     verificationCode?: string;
     [key: string]: any;
   };
+  history: any[];
   handleExportResponseJSON?: () => void;
   handleExportDocx?: () => void;
 }
 
-const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
-  const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'raw'>('report');
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, history, handleExportResponseJSON, handleExportDocx }) => {
+  const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'raw' | 'history'>('report');
   const [isExporting, setIsExporting] = useState(false);
 
   const tabs = [
@@ -26,6 +28,12 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
       label: 'Relatório Principal',
       icon: FileText,
       description: 'Resposta interpretada da Saphira'
+    },
+    {
+      id: 'history' as const,
+      label: 'Histórico de Auditoria',
+      icon: Clock,
+      description: `${history?.length || 0} análise${(history?.length || 0) !== 1 ? 's' : ''} registrada${(history?.length || 0) !== 1 ? 's' : ''}`
     }
   ];
 
@@ -125,6 +133,9 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
             interpretedResponse={response.humanized_text || 'Resposta não disponível'}
             verificationCode={response.verificationCode}
           />
+        )}
+        {activeTab === 'history' && (
+          <AuditHistoryTab history={history} />
         )}
       </motion.div>
     </motion.div>
