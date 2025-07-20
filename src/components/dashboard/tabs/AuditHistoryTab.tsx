@@ -34,6 +34,7 @@ const styles = `
 }
 .history-item-section {
   margin-top: 1rem;
+  color: #333; /* Adicione esta linha para escurecer o texto */
 }
 .history-item-section strong {
   color: #1a237e;
