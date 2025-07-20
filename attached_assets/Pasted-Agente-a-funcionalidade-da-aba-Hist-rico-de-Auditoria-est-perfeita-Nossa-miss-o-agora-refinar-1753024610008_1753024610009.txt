@@ -1,0 +1,91 @@
+Agente, a funcionalidade da aba "Histórico de Auditoria" está perfeita. Nossa missão agora é refinar seu visual para que fique alinhado com o design premium do restante da aplicação.
+Sua Tarefa: Modifique o arquivo src/components/dashboard/tabs/AuditHistoryTab.tsx para substituir os estilos "inline" por uma abordagem mais robusta e elegante usando classes de CSS.
+Substitua o conteúdo completo do arquivo AuditHistoryTab.tsx pelo código abaixo:
+Generated tsx
+// Caminho: src/components/dashboard/tabs/AuditHistoryTab.tsx
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+
+// Este CSS será "scoped" ou adicionado a um arquivo .css global se preferir
+const styles = `
+.audit-history-tab {
+  padding: 1rem;
+}
+.audit-history-tab h3 {
+  color: #3f51b5;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.history-item {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+  flex-wrap: wrap;
+}
+.history-item-header .timestamp {
+  font-weight: bold;
+}
+.history-item-section {
+  margin-top: 1rem;
+}
+.history-item-section strong {
+  color: #1a237e;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+`;
+
+interface AuditHistoryTabProps {
+  history: any[];
+}
+
+const AuditHistoryTab: React.FC<AuditHistoryTabProps> = ({ history }) => {
+  return (
+    <div className="audit-history-tab">
+      <style>{styles}</style> {/* Aplica os estilos */}
+      <h3>Histórico de Auditoria</h3>
+      {history.length > 0 ? (
+        history.map((item) => (
+          <div key={item.id} className="history-item">
+            <div className="history-item-header">
+              <span className="timestamp">Realizada em: {new Date(item.timestamp).toLocaleString()}</span>
+            </div>
+
+            <div className="history-item-section">
+              <strong>Entrada:</strong>
+              <p>{item.originalText}</p>
+            </div>
+            
+            <div className="history-item-section">
+              <strong>Resposta Principal:</strong>
+              <ReactMarkdown>{item.displayData.humanized_text}</ReactMarkdown>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>O histórico de análises está vazio.</p>
+      )}
+    </div>
+  );
+};
+
+export default AuditHistoryTab;
+Use code with caution.
+Tsx
+Resumo das Melhorias:
+Estilo Unificado: O código agora usa classes de CSS (history-item, history-item-header, etc.), o que torna o design consistente e fácil de manter.
+Design "Card": Cada entrada do histórico agora é um "card" visualmente agradável com sombra sutil.
+Tipografia Refinada: A data e os títulos dentro de cada card têm destaque, melhorando a legibilidade.
+Após esta alteração, o seu painel de auditoria terá um visual profissional e coeso com o resto da aplicação, tanto no PC quanto no mobile.
