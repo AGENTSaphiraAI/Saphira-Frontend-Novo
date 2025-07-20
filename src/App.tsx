@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./App.css";
 import FileUploader from "./components/FileUploader";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
-import AuditModal from "./components/AuditModal";
 import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
 
@@ -10,18 +9,6 @@ interface ConnectionStatus {
   status: 'unknown' | 'testing' | 'online' | 'offline';
   lastChecked?: Date;
   responseTime?: number;
-}
-
-
-
-interface AuditEntry {
-  id: string;
-  timestamp: Date;
-  originalText: string;
-  fileName?: string;
-  response: string;
-  verificationCode: string;
-  expert_analysis?: string;
 }
 
 export default function App() {
@@ -33,8 +20,6 @@ export default function App() {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'unknown' });
   const [keepAliveActive, setKeepAliveActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{ content: string; name: string } | null>(null);
-  const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);
-  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -82,7 +67,7 @@ export default function App() {
         event.preventDefault(); // Previne log no console
         return;
       }
-      
+
       // Log apenas erros relevantes
       if (event.reason instanceof Error) {
         console.warn('🚨 Promise rejeitada:', event.reason.message);
@@ -172,23 +157,6 @@ export default function App() {
     return `SAP-${timestamp.toString(36).toUpperCase()}-${random.toUpperCase()}`;
   }, []);
 
-  // Utilitário para adicionar entrada de auditoria
-  const addAuditEntry = useCallback((originalText: string, response: string, fileName?: string, expertAnalysis?: string) => {
-    const entry: AuditEntry = {
-      id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-      timestamp: new Date(),
-      originalText,
-      fileName,
-      response,
-      verificationCode: generateVerificationCode(),
-      expert_analysis: expertAnalysis
-    };
-
-    setAuditLogs(prev => [entry, ...prev]);
-    console.log(`🛡️ Auditoria registrada: ${entry.verificationCode}`);
-    return entry.verificationCode;
-  }, [generateVerificationCode]);
-
   // Handler para arquivo carregado
   const handleFileContentChange = useCallback((content: string, fileName: string) => {
     setUploadedFile({ content, name: fileName });
@@ -240,13 +208,7 @@ export default function App() {
       const data = await response.json();
       console.log("✅ Análise concluída");
 
-      // Registrar na auditoria com verificação
-      const verificationCode = addAuditEntry(
-        textToAnalyze,
-        data.displayData?.humanized_text || "Resposta não disponível",
-        uploadedFile?.name,
-        data.displayData?.expert_analysis
-      );
+      const verificationCode = generateVerificationCode();
 
       setResult({
         ...data.displayData,
@@ -275,7 +237,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, [userText, specificQuestion, loading, createRequestWithTimeout, uploadedFile, addAuditEntry]);
+  }, [userText, specificQuestion, loading, createRequestWithTimeout, uploadedFile, generateVerificationCode]);
 
   // Função de limpeza
   const handleClear = useCallback(() => {
@@ -321,7 +283,7 @@ export default function App() {
       return;
     }
     console.log("📥 Iniciando exportação para DOCX...");
-    
+
     try {
       const response = await fetch(`${BACKEND_BASE_URL}/api/export/docx`, {
         method: "POST",
@@ -337,7 +299,7 @@ export default function App() {
       if (!response.ok) {
         throw new Error(`Erro no servidor: ${response.statusText}`);
       }
-      
+
       const blob = await response.blob();
       const fileName = `saphira_relatorio_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.docx`;
       saveAs(blob, fileName);
@@ -348,29 +310,6 @@ export default function App() {
       alert("Falha ao gerar o relatório DOCX. Verifique o console.");
     }
   }, [result]);
-
-  // Função para exportar logs de auditoria
-  const handleExportAuditLogs = useCallback(() => {
-    if (auditLogs.length === 0) {
-      alert("⚠️ Nenhum log de auditoria para exportar.");
-      return;
-    }
-
-    const exportData = {
-      exportTimestamp: new Date().toISOString(),
-      totalEntries: auditLogs.length,
-      auditLogs: auditLogs.map(log => ({
-        ...log,
-        timestamp: log.timestamp.toISOString()
-      }))
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-    const fileName = `saphira_audit_logs_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
-    saveAs(blob, fileName);
-
-    console.log(`🛡️ Logs de auditoria exportados: ${fileName}`);
-  }, [auditLogs]);
 
   // Teste de conexão otimizado
   const handleTestConnection = useCallback(async () => {
@@ -448,8 +387,6 @@ export default function App() {
     };
   }, []);
 
-
-
   return (
     <div className="saphira-container">
       {/* Header */}
@@ -524,19 +461,9 @@ export default function App() {
         </button>
       </div>
 
-      {/* Export and Audit Section */}
+      {/* Export Section */}
       {showExport && (
         <div className="saphira-export-section">
-          <div className="export-buttons">
-            <button 
-              className="saphira-button audit-button"
-              onClick={() => setIsAuditModalOpen(true)}
-              title="Ver histórico de análises"
-            >
-              🛡️ Ver Auditoria ({auditLogs.length})
-            </button>
-          </div>
-
           <div className="future-exports">
             <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
           </div>
@@ -578,29 +505,11 @@ export default function App() {
         </div>
       )}
 
-      {/* Audit Modal */}
-      <AuditModal
-        isOpen={isAuditModalOpen}
-        onClose={() => setIsAuditModalOpen(false)}
-        history={auditLogs.map(log => ({
-          id: log.id,
-          timestamp: log.timestamp.toISOString(),
-          originalText: log.originalText,
-          displayData: {
-            humanized_text: log.response,
-            expert_analysis: log.expert_analysis
-          },
-          verification_code: log.verificationCode
-        }))}
-      />
-
       {/* Technical Modal - Sobre a Saphira */}
       <TechnicalModal
         isOpen={isTechnicalModalOpen}
         onClose={() => setIsTechnicalModalOpen(false)}
       />
-
-
     </div>
   );
 }
