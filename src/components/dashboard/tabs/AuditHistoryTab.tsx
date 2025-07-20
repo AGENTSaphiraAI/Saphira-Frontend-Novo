@@ -61,7 +61,27 @@ const AuditHistoryTab: React.FC<AuditHistoryTabProps> = ({ history }) => {
     <div className="audit-history-tab">
       <style>{styles}</style> {/* Aplica os estilos */}
       <h3>Histórico de Auditoria</h3>
-      {/* Área limpa - sem conteúdo */}
+      {history.length > 0 ? (
+        history.map((item) => (
+          <div key={item.id} className="history-item">
+            <div className="history-item-header">
+              <span className="timestamp">Realizada em: {new Date(item.timestamp).toLocaleString()}</span>
+            </div>
+
+            <div className="history-item-section">
+              <strong>Entrada:</strong>
+              <p>{item.originalText}</p>
+            </div>
+
+            <div className="history-item-section">
+              <strong>Resposta Principal:</strong>
+              <ReactMarkdown>{item.displayData?.humanized_text || item.humanized_text || 'Resposta não disponível'}</ReactMarkdown>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>O histórico de análises está vazio.</p>
+      )}
     </div>
   );
 };
