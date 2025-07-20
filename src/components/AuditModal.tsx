@@ -1,127 +1,71 @@
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import './AuditModal.css';
 
-import React from "react";
-import ReactMarkdown from "react-markdown";
-
+// Estrutura de dados que o modal espera receber
 interface AuditEntry {
   id: string;
-  timestamp: Date;
+  timestamp: string;
   originalText: string;
-  fileName?: string;
-  response: string;
-  verificationCode: string;
-  expert_analysis?: string;
+  displayData: {
+    humanized_text: string;
+    expert_analysis?: string;
+  };
+  verification_code: string;
 }
 
 interface AuditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  auditLogs: AuditEntry[];
-  onExportLogs: () => void;
+  history: AuditEntry[];
 }
 
-function AuditModal({ isOpen, onClose, auditLogs, onExportLogs }: AuditModalProps) {
+const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose, history }) => {
   if (!isOpen) return null;
 
-  const formatTimestamp = (date: Date) => {
-    return date.toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  };
-
   return (
-    <div className="audit-modal-overlay" onClick={onClose}>
-      <div className="audit-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="audit-modal-header">
-          <h2>🛡️ Auditoria de Rastreabilidade</h2>
-          <button className="close-button" onClick={onClose}>✕</button>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Auditoria de Rastreabilidade</h2>
+          <button onClick={onClose} className="close-btn">×</button>
         </div>
-        
-        <div className="audit-modal-content">
-          <div className="audit-controls">
-            <button 
-              className="export-logs-button"
-              onClick={onExportLogs}
-              disabled={auditLogs.length === 0}
-            >
-              📥 Exportar Logs (JSON)
-            </button>
-            <span className="logs-count">
-              {auditLogs.length} análise(s) registrada(s)
-            </span>
-          </div>
-
-          <div className="audit-logs">
-            {auditLogs.length === 0 ? (
-              <div className="no-logs">
-                📝 Nenhuma análise registrada ainda
-              </div>
-            ) : (
-              auditLogs.map((entry) => (
-                <div key={entry.id} className="audit-entry">
-                  <div className="audit-entry-header">
-                    <div className="entry-timestamp">
-                      🕒 {formatTimestamp(entry.timestamp)}
-                    </div>
-                    <div className="verification-code">
-                      Código de verificação: <code>{entry.verificationCode}</code>
-                    </div>
-                  </div>
-                  
-                  <div className="audit-entry-content">
-                    <div className="original-content">
-                      <h4>📄 Entrada:</h4>
-                      {entry.fileName && (
-                        <div className="file-info">
-                          📁 Arquivo: <strong>{entry.fileName}</strong>
-                        </div>
-                      )}
-                      <div className="content-preview">
-                        {entry.originalText.length > 200 
-                          ? entry.originalText.substring(0, 200) + "..."
-                          : entry.originalText
-                        }
-                      </div>
-                    </div>
-                    
-                    <div className="response-content">
-                      <h4>💬 Resposta Principal:</h4>
-                      <div className="content-preview">
-                        <ReactMarkdown>
-                          {entry.response.length > 200 
-                            ? entry.response.substring(0, 200) + "..."
-                            : entry.response
-                          }
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                    
-                    {entry.expert_analysis && (
-                      <div className="expert-analysis-content">
-                        <h4>🔬 Análise Profunda (10/10):</h4>
-                        <div className="content-preview">
-                          <ReactMarkdown>
-                            {entry.expert_analysis.length > 300 
-                              ? entry.expert_analysis.substring(0, 300) + "..."
-                              : entry.expert_analysis
-                            }
-                          </ReactMarkdown>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+        <div className="history-list">
+          {history.length > 0 ? (
+            history.map((item) => (
+              <div key={item.id} className="log-item">
+                <div className="log-item-header">
+                  <strong>Código de Verificação:</strong> 
+                  <span className="verification-code">{item.verification_code}</span>
+                  <span className="timestamp">{new Date(item.timestamp).toLocaleString()}</span>
                 </div>
-              ))
-            )}
-          </div>
+
+                <div className="log-section">
+                  <h4>Entrada Original:</h4>
+                  <p className="original-text">{item.originalText}</p>
+                </div>
+
+                <div className="log-section">
+                  <h4>Resposta Principal:</h4>
+                  <ReactMarkdown>{item.displayData.humanized_text}</ReactMarkdown>
+                </div>
+
+                {/* Exibe a Análise Profunda apenas se ela existir */}
+                {item.displayData.expert_analysis && (
+                  <div className="log-section expert-analysis">
+                    <h4>Análise Profunda (Modo Expert):</h4>
+                    <ReactMarkdown>{item.displayData.expert_analysis}</ReactMarkdown>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <p>Nenhuma análise no histórico.</p>
+          )}
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default AuditModal;
