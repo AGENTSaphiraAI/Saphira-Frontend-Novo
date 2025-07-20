@@ -582,8 +582,16 @@ export default function App() {
       <AuditModal
         isOpen={isAuditModalOpen}
         onClose={() => setIsAuditModalOpen(false)}
-        auditLogs={auditLogs}
-        onExportLogs={handleExportAuditLogs}
+        history={auditLogs.map(log => ({
+          id: log.id,
+          timestamp: log.timestamp.toISOString(),
+          originalText: log.originalText,
+          displayData: {
+            humanized_text: log.response,
+            expert_analysis: log.expert_analysis
+          },
+          verification_code: log.verificationCode
+        }))}
       />
 
       {/* Technical Modal - Sobre a Saphira */}

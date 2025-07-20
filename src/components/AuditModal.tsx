@@ -28,7 +28,29 @@ const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose, history }) => 
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Auditoria de Rastreabilidade</h2>
-          <button onClick={onClose} className="close-btn">×</button>
+          <div className="header-actions">
+            <button 
+              className="export-logs-btn" 
+              onClick={() => {
+                const exportData = {
+                  exportTimestamp: new Date().toISOString(),
+                  totalEntries: history.length,
+                  auditLogs: history
+                };
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `saphira_audit_logs_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              disabled={history.length === 0}
+            >
+              📥 Exportar Logs ({history.length})
+            </button>
+            <button onClick={onClose} className="close-btn">×</button>
+          </div>
         </div>
         <div className="history-list">
           {history.length > 0 ? (

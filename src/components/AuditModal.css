@@ -36,6 +36,34 @@
   margin-bottom: 1.5rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.export-logs-btn {
+  background: linear-gradient(45deg, #4caf50 0%, #66bb6a 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.export-logs-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.export-logs-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .modal-header h2 {
   margin: 0;
   color: #1a237e;
