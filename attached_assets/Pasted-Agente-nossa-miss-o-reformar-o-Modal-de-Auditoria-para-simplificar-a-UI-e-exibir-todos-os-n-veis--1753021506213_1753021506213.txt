@@ -1,0 +1,196 @@
+Agente, nossa missão é reformar o Modal de Auditoria para simplificar a UI e exibir todos os níveis de análise do backend, garantindo um design responsivo.
+Tarefa 1: Substituir a Lógica do Modal
+Substitua todo o conteúdo do arquivo src/components/AuditModal.tsx pelo seguinte código, que é mais limpo, mais direto e sincronizado com os dados do backend.
+Generated tsx
+// Caminho do arquivo a ser substituído: src/components/AuditModal.tsx
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import './AuditModal.css';
+
+// Estrutura de dados que o modal espera receber
+interface AuditEntry {
+  id: string;
+  timestamp: string;
+  originalText: string;
+  displayData: {
+    humanized_text: string;
+    expert_analysis?: string;
+  };
+  verification_code: string;
+}
+
+interface AuditModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  history: AuditEntry[];
+}
+
+const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose, history }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Auditoria de Rastreabilidade</h2>
+          <button onClick={onClose} className="close-btn">×</button>
+        </div>
+        <div className="history-list">
+          {history.length > 0 ? (
+            history.map((item) => (
+              <div key={item.id} className="log-item">
+                <div className="log-item-header">
+                  <strong>Código de Verificação:</strong> 
+                  <span className="verification-code">{item.verification_code}</span>
+                  <span className="timestamp">{new Date(item.timestamp).toLocaleString()}</span>
+                </div>
+                
+                <div className="log-section">
+                  <h4>Entrada Original:</h4>
+                  <p className="original-text">{item.originalText}</p>
+                </div>
+
+                <div className="log-section">
+                  <h4>Resposta Principal:</h4>
+                  <ReactMarkdown>{item.displayData.humanized_text}</ReactMarkdown>
+                </div>
+                
+                {/* Exibe a Análise Profunda apenas se ela existir */}
+                {item.displayData.expert_analysis && (
+                  <div className="log-section expert-analysis">
+                    <h4>Análise Profunda (Modo Expert):</h4>
+                    <ReactMarkdown>{item.displayData.expert_analysis}</ReactMarkdown>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <p>Nenhuma análise no histórico.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AuditModal;
+Use code with caution.
+Tsx
+Tarefa 2: Atualizar os Estilos para PC e Mobile
+Crie um arquivo chamado src/components/AuditModal.css (se ele não existir) ou substitua seu conteúdo por este CSS otimizado.
+Generated css
+/* Caminho do arquivo: src/components/AuditModal.css */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: #fdfdfd;
+  color: #333;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90vw;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #1a237e;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #888;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.log-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.log-item-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.verification-code {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #e8eaf6;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.log-section {
+  margin-top: 1rem;
+}
+
+.log-section h4 {
+  margin: 0 0 0.5rem 0;
+  color: #3f51b5;
+}
+
+.original-text {
+  background-color: #f5f5f5;
+  padding: 0.8rem;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.expert-analysis {
+  border-top: 2px dashed #3f51b5;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+}
+
+/* Responsividade para Celular */
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 1rem;
+    width: 95vw;
+    max-height: 95vh;
+  }
+
+  .log-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
