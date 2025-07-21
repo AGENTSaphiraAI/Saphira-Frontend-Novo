@@ -202,6 +202,37 @@
   }
 }
 
+/* Otimização de tipografia para mobile */
+@media (max-width: 600px) {
+  .dashboard-content {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .dashboard-content p {
+    font-size: 14px;
+  }
+  
+  .dashboard-content h1,
+  .dashboard-content h2,
+  .dashboard-content h3,
+  .dashboard-content h4 {
+    font-size: 1.1em;
+    margin-bottom: 0.8rem;
+  }
+  
+  .dashboard-content ul,
+  .dashboard-content ol {
+    font-size: 14px;
+    padding-left: 1.2rem;
+  }
+  
+  .dashboard-content blockquote {
+    font-size: 14px;
+    padding: 0.8rem;
+  }
+}
+
 /* Ajustes específicos para iPhone SE (375px) */
 @media (max-width: 375px) {
   .analysis-dashboard {
@@ -238,6 +269,7 @@
   
   .dashboard-content {
     padding: 0.75rem;
+    font-size: 13px;
   }
 }
 

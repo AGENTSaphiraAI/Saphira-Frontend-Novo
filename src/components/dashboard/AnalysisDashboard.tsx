@@ -72,6 +72,10 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
               className="export-pdf-button"
               onClick={handleExportDocx}
               disabled={!handleExportDocx}
+              style={{
+                background: 'linear-gradient(45deg, #0b74e5 0%, #1d4ed8 100%)',
+                boxShadow: '0 4px 12px rgba(11, 116, 229, 0.3)'
+              }}
             >
               <Download size={20} />
               <span>Exportar DOC</span>

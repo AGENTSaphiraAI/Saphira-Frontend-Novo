@@ -412,6 +412,7 @@ export default function App() {
           placeholder="Pergunta Específica (Opcional)"
           value={specificQuestion}
           onChange={(e) => setSpecificQuestion(e.target.value)}
+          ```typescript
           disabled={loading}
         />
       </div>
@@ -462,10 +463,16 @@ export default function App() {
       </div>
 
       {/* Export Section */}
-      {showExport && (
+      {showExport && result && (
         <div className="saphira-export-section">
-          <div className="future-exports">
-            <span className="future-note">🔜 Em breve: Exportar PDF e DOC</span>
+          <div className="export-buttons">
+            <button 
+              className="export-button"
+              onClick={handleExportResponseJSON}
+            >
+              📄 Exportar JSON
+            </button>
+
           </div>
         </div>
       )}
