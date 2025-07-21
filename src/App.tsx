@@ -24,7 +24,6 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [showExport, setShowExport] = useState(false);
-  const [analysisHistory, setAnalysisHistory] = useState<any[]>([]);
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -215,17 +214,6 @@ export default function App() {
         ...data.displayData,
         verificationCode
       });
-
-      // Salvar análise no histórico
-      setAnalysisHistory(prevHistory => [
-        {
-          id: new Date().toISOString(), // ID único
-          timestamp: new Date().toISOString(),
-          originalText: textToAnalyze, // O texto ou nome do arquivo
-          ...data // O resultado completo da API
-        },
-        ...prevHistory
-      ]);
 
       setShowExport(true);
 
@@ -511,7 +499,6 @@ export default function App() {
         <div className="saphira-results">
           <AnalysisDashboard 
             response={result} 
-            history={analysisHistory}
             handleExportResponseJSON={handleExportResponseJSON}
             handleExportDocx={handleExportDocx}
           />
