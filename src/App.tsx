@@ -412,7 +412,6 @@ export default function App() {
           placeholder="Pergunta Específica (Opcional)"
           value={specificQuestion}
           onChange={(e) => setSpecificQuestion(e.target.value)}
-          ```typescript
           disabled={loading}
         />
       </div>
