@@ -239,7 +239,7 @@ export default function App() {
         // Cenário de Sucesso
         console.log("✅ Análise multimodal concluída com sucesso");
         const verificationCode = generateVerificationCode();
-        
+
         setResult({
           ...data.displayData,
           verificationCode
