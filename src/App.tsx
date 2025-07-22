@@ -175,15 +175,21 @@ export default function App() {
   }, []);
 
   // Função de análise multimodal otimizada
-  const handleSubmit = useCallback(async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+  const handleSubmit = useCallback(async (e?: React.FormEvent | React.MouseEvent) => {
+    try {
+      if (e && typeof e.preventDefault === 'function') {
+        e.preventDefault();
+      }
+    } catch (error) {
+      // Ignorar erros de preventDefault para eventos inválidos
+    }
 
     const textToAnalyze = userText.trim();
     if (!selectedFile && !textToAnalyze) {
       alert("Por favor, forneça um texto ou selecione um arquivo para análise.");
       return;
     }
-    
+
     if (loading) return;
 
     // Evitar múltiplas análises simultâneas
@@ -238,7 +244,7 @@ export default function App() {
     } catch (error: unknown) {
       console.error("❌ Falha na análise:", error);
       let errorMessage = (error instanceof Error) ? error.message : "Ocorreu um erro desconhecido.";
-      
+
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           errorMessage = "⏱️ Tempo limite excedido. Tente novamente.";
@@ -246,7 +252,7 @@ export default function App() {
           errorMessage = "🌐 Problema de conectividade. Verifique sua conexão.";
         }
       }
-      
+
       setResult({ 
         humanized_text: `Falha na Análise: ${errorMessage}`,
         verificationCode: undefined 
