@@ -1,0 +1,56 @@
+Agente, o diagnóstico final foi um sucesso. O erro está isolado na função handleSubmit ao lidar com uploads de arquivo. A lógica de envio de texto está perfeita.
+Sua Missão Final:
+Substitua apenas a função handleSubmit no arquivo src/App.tsx pela versão final e corrigida abaixo. Esta versão garante que o File Object seja tratado e enviado corretamente.
+Generated typescript
+// Em src/App.tsx, substitua a função handleSubmit existente por esta:
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const textInput = userText.trim();
+
+  if (!selectedFile && !textInput) {
+    alert("Por favor, forneça um texto ou selecione um arquivo para análise.");
+    return;
+  }
+  
+  if (loading) return;
+
+  setLoading(true);
+  setResult(null);
+
+  const formData = new FormData();
+  formData.append('question', specificQuestion.trim());
+
+  // Lógica corrigida: prioriza o arquivo e garante o envio correto
+  if (selectedFile) {
+    console.log(`📦 Enviando arquivo para análise: ${selectedFile.name}`);
+    formData.append('file', selectedFile);
+  } else {
+    console.log("📝 Enviando texto manual para análise.");
+    const textBlob = new Blob([textInput], { type: 'text/plain' });
+    formData.append('file', textBlob, 'input_manual.txt');
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
+      method: 'POST',
+      body: formData, // O navegador lida com o Content-Type para FormData
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erro do Servidor (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    setResult(data);
+
+  } catch (error: unknown) {
+    console.error("❌ Falha na análise:", error);
+    let errorMessage = (error instanceof Error) ? error.message : "Ocorreu um erro desconhecido.";
+    setResult({ displayData: { humanized_text: `Falha Crítica na Análise: ${errorMessage}` } });
+  } finally {
+    setLoading(false);
+  }
+};
