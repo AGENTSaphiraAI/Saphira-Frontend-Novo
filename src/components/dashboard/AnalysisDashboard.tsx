@@ -21,6 +21,8 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
   handleExportResponseJSON, 
   handleExportDocx 
 }) => {
+  const [isExporting, setIsExporting] = useState(false);
+
   // Normalizar resposta para garantir compatibilidade
   const normalizedResponse = {
     humanized_text: response?.humanized_text || response?.resposta_interpretada || response?.response || "Resposta não disponível",
@@ -77,10 +79,10 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
             </button>
           )}
 
-          <button 
+          {handleExportDocx && (
+            <button 
               className="export-pdf-button"
               onClick={handleExportDocx}
-              disabled={!handleExportDocx}
               style={{
                 background: 'linear-gradient(45deg, #0b74e5 0%, #1d4ed8 100%)',
                 boxShadow: '0 4px 12px rgba(11, 116, 229, 0.3)'
@@ -89,6 +91,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
               <Download size={20} />
               <span>Exportar DOC</span>
             </button>
+          )}
 
           <button 
             className="export-pdf-button"
