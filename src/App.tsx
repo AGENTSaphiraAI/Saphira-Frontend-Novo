@@ -175,8 +175,8 @@ export default function App() {
   }, []);
 
   // Função de análise multimodal corrigida
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
 
     const textInput = userText.trim();
 
@@ -422,7 +422,7 @@ export default function App() {
       <div className="saphira-buttons">
         <button 
           className={`saphira-button btn-success ${loading ? 'loading' : ''}`}
-          onClick={() => handleSubmit()} 
+          onClick={handleSubmit} 
           disabled={loading || (!userText.trim() && !selectedFile)}
         >
           {loading ? "🔄 Analisando..." : "🔎 Analisar"}
