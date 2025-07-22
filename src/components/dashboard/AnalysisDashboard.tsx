@@ -16,19 +16,8 @@ interface AnalysisDashboardProps {
   handleExportDocx?: () => void;
 }
 
-const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ 
-  response, 
-  handleExportResponseJSON, 
-  handleExportDocx 
-}) => {
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
   const [isExporting, setIsExporting] = useState(false);
-
-  // Normalizar resposta para garantir compatibilidade
-  const normalizedResponse = {
-    humanized_text: response?.humanized_text || response?.resposta_interpretada || response?.response || "Resposta não disponível",
-    technicalData: response?.technicalData || response?.technical_data || response?.analise_tecnica || response,
-    verificationCode: response?.verificationCode || response?.verification_code || `SAP-${Date.now()}`
-  };
 
   // Simplificado para mostrar apenas o relatório principal
   const activeTab = 'report';
@@ -36,7 +25,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
   const handleExportPdf = async () => {
     setIsExporting(true);
     try {
-      await exportSaphiraReportToPdf(normalizedResponse);
+      await exportSaphiraReportToPdf(response);
     } catch (error) {
       console.error('Erro ao exportar PDF:', error);
       alert('❌ Erro ao exportar PDF. Tente novamente.');
@@ -57,9 +46,9 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
         <div className="header-info">
           <h2>📊 Dashboard de Análise Saphira</h2>
           <p>Análise completa com visualizações interativas</p>
-          {normalizedResponse.verificationCode && (
+          {response.verificationCode && (
             <span className="verification-code">
-              🔍 Código: {normalizedResponse.verificationCode}
+              🔍 Código: {response.verificationCode}
             </span>
           )}
         </div>
@@ -79,10 +68,10 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
             </button>
           )}
 
-          {handleExportDocx && (
-            <button 
+          <button 
               className="export-pdf-button"
               onClick={handleExportDocx}
+              disabled={!handleExportDocx}
               style={{
                 background: 'linear-gradient(45deg, #0b74e5 0%, #1d4ed8 100%)',
                 boxShadow: '0 4px 12px rgba(11, 116, 229, 0.3)'
@@ -91,7 +80,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
               <Download size={20} />
               <span>Exportar DOC</span>
             </button>
-          )}
 
           <button 
             className="export-pdf-button"
@@ -112,8 +100,8 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
         transition={{ duration: 0.5 }}
       >
         <ReportTab 
-          interpretedResponse={normalizedResponse.humanized_text}
-          verificationCode={normalizedResponse.verificationCode}
+          interpretedResponse={response.humanized_text || 'Resposta não disponível'}
+          verificationCode={response.verificationCode}
         />
       </motion.div>
     </motion.div>

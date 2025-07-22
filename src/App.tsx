@@ -174,71 +174,87 @@ export default function App() {
     console.log(`📁 Arquivo integrado: ${fileName} (${file ? 'File object' : 'content apenas'})`);
   }, []);
 
-  // Função de análise multimodal corrigida
-  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+  // Função de análise multimodal otimizada
+  const handleSubmit = useCallback(async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    const textInput = userText.trim();
-
-    if (!selectedFile && !textInput) {
+    const textToAnalyze = userText.trim();
+    if (!selectedFile && !textToAnalyze) {
       alert("Por favor, forneça um texto ou selecione um arquivo para análise.");
       return;
     }
     
     if (loading) return;
 
+    // Evitar múltiplas análises simultâneas
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
     setLoading(true);
     setResult(null);
+    console.log("🔍 Iniciando análise multimodal...");
 
     const formData = new FormData();
     formData.append('question', specificQuestion.trim());
 
-    // Lógica corrigida: prioriza o arquivo e garante o envio correto
     if (selectedFile) {
-      console.log(`📦 Enviando arquivo para análise: ${selectedFile.name}`);
       formData.append('file', selectedFile);
     } else {
-      console.log("📝 Enviando texto manual para análise.");
-      const textBlob = new Blob([textInput], { type: 'text/plain' });
+      const textBlob = new Blob([textToAnalyze], { type: 'text/plain' });
       formData.append('file', textBlob, 'input_manual.txt');
     }
 
     try {
-      console.log("🚀 Enviando requisição para:", `${BACKEND_BASE_URL}/api/analyze`);
-      
-      const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
+      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: 'POST',
-        body: formData, // O navegador lida com o Content-Type para FormData
-      });
+        body: formData, // O navegador definirá o Content-Type correto
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "omit"
+      }, 30000); // Timeout de 30s para arquivos
 
-      console.log("📡 Resposta recebida - Status:", response.status);
+      const response = await request;
+      cleanup();
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("❌ Erro do servidor:", errorText);
-        throw new Error(`Erro do Servidor (${response.status}): ${errorText}`);
+        throw new Error(`Erro do Servidor: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      
-      // Normalizar a estrutura da resposta do backend
-      const normalizedResult = {
-        humanized_text: data.humanized_text || data.resposta_interpretada || data.response || "Resposta não disponível",
-        technicalData: data.technicalData || data.technical_data || data.analise_tecnica || data,
-        verificationCode: data.verificationCode || data.verification_code || generateVerificationCode()
-      };
-      
-      console.log("✅ Resposta normalizada:", normalizedResult);
-      setResult(normalizedResult);
+      console.log("✅ Análise multimodal concluída");
+
+      const verificationCode = generateVerificationCode();
+
+      setResult({
+        ...data.displayData,
+        verificationCode
+      });
+
+      setShowExport(true);
 
     } catch (error: unknown) {
       console.error("❌ Falha na análise:", error);
       let errorMessage = (error instanceof Error) ? error.message : "Ocorreu um erro desconhecido.";
-      setResult({ displayData: { humanized_text: `Falha Crítica na Análise: ${errorMessage}` } });
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = "⏱️ Tempo limite excedido. Tente novamente.";
+        } else if (error.message.includes("fetch") || error.message.includes("network")) {
+          errorMessage = "🌐 Problema de conectividade. Verifique sua conexão.";
+        }
+      }
+      
+      setResult({ 
+        humanized_text: `Falha na Análise: ${errorMessage}`,
+        verificationCode: undefined 
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [userText, specificQuestion, loading, createRequestWithTimeout, selectedFile, generateVerificationCode]);
 
   // Função de limpeza
   const handleClear = useCallback(() => {
@@ -436,7 +452,7 @@ export default function App() {
       <div className="saphira-buttons">
         <button 
           className={`saphira-button btn-success ${loading ? 'loading' : ''}`}
-          onClick={handleSubmit} 
+          onClick={() => handleSubmit()} 
           disabled={loading || (!userText.trim() && !selectedFile)}
         >
           {loading ? "🔄 Analisando..." : "🔎 Analisar"}
