@@ -219,27 +219,40 @@ export default function App() {
         mode: "cors",
         cache: "no-cache",
         credentials: "omit"
-      }, 30000); // Timeout de 30s para arquivos
+      }, 60000); // Timeout de 60s para processamento OCR
 
       const response = await request;
       cleanup();
 
+      // Primeiro, verificamos se a resposta de rede está OK
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Erro do Servidor: ${response.status} - ${errorText}`);
+        throw new Error(`Erro do Servidor (${response.status}): ${errorText}`);
       }
 
       const data = await response.json();
-      console.log("✅ Análise multimodal concluída");
+      console.log("📡 Resposta recebida - Status:", response.status);
+      console.log("🔍 Dados recebidos:", data);
 
-      const verificationCode = generateVerificationCode();
-
-      setResult({
-        ...data.displayData,
-        verificationCode
-      });
-
-      setShowExport(true);
+      // AGORA, A VERIFICAÇÃO DE CONTEÚDO (O CORAÇÃO DA MUDANÇA)
+      if (data && data.displayData && data.displayData.humanized_text) {
+        // Cenário de Sucesso
+        console.log("✅ Análise multimodal concluída com sucesso");
+        const verificationCode = generateVerificationCode();
+        
+        setResult({
+          ...data.displayData,
+          verificationCode
+        });
+        setShowExport(true);
+      } else if (data && data.error) {
+        // Cenário onde o Backend reporta um erro controlado (ex: OCR falhou)
+        throw new Error(`Erro no Backend: ${data.error}`);
+      } else {
+        // Cenário de resposta inesperada
+        console.warn("⚠️ Estrutura de resposta inesperada:", data);
+        throw new Error("Formato de resposta inesperado recebido do servidor.");
+      }
 
     } catch (error: unknown) {
       console.error("❌ Falha na análise:", error);
@@ -247,14 +260,17 @@ export default function App() {
 
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = "⏱️ Tempo limite excedido. Tente novamente.";
+          errorMessage = "⏱️ Tempo limite de 60s excedido. Para arquivos grandes com OCR, tente novamente.";
         } else if (error.message.includes("fetch") || error.message.includes("network")) {
-          errorMessage = "🌐 Problema de conectividade. Verifique sua conexão.";
+          errorMessage = "🌐 Problema de conectividade. Verifique sua conexão e tente novamente.";
+        } else if (error.message.includes("OCR") || error.message.includes("texto extraído")) {
+          errorMessage = "🔍 Falha no processamento OCR. Verifique se o arquivo contém texto legível.";
         }
       }
 
+      // Exibe a mensagem de erro formatada na interface
       setResult({ 
-        humanized_text: `Falha na Análise: ${errorMessage}`,
+        humanized_text: `Falha Crítica na Análise: ${errorMessage}`,
         verificationCode: undefined 
       });
     } finally {
