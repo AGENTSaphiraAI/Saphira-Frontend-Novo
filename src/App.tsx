@@ -204,18 +204,32 @@ export default function App() {
     }
 
     try {
+      console.log("🚀 Enviando requisição para:", `${BACKEND_BASE_URL}/api/analyze`);
+      
       const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
         method: 'POST',
         body: formData, // O navegador lida com o Content-Type para FormData
       });
 
+      console.log("📡 Resposta recebida - Status:", response.status);
+
       if (!response.ok) {
         const errorText = await response.text();
+        console.error("❌ Erro do servidor:", errorText);
         throw new Error(`Erro do Servidor (${response.status}): ${errorText}`);
       }
 
       const data = await response.json();
-      setResult(data);
+      
+      // Normalizar a estrutura da resposta do backend
+      const normalizedResult = {
+        humanized_text: data.humanized_text || data.resposta_interpretada || data.response || "Resposta não disponível",
+        technicalData: data.technicalData || data.technical_data || data.analise_tecnica || data,
+        verificationCode: data.verificationCode || data.verification_code || generateVerificationCode()
+      };
+      
+      console.log("✅ Resposta normalizada:", normalizedResult);
+      setResult(normalizedResult);
 
     } catch (error: unknown) {
       console.error("❌ Falha na análise:", error);
