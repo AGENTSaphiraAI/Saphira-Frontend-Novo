@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 interface FileUploaderProps {
-  onFileContentChange?: (content: string, fileName: string) => void;
+  onFileContentChange?: (content: string, fileName: string, file?: File) => void;
 }
 
 function FileUploader({ onFileContentChange }: FileUploaderProps) {
@@ -24,6 +24,13 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
 
     setIsUploading(true);
 
+    // Verificar limite de 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      alert("⚠️ Arquivo muito grande! O limite é de 10MB. Por favor, selecione um arquivo menor.");
+       setIsUploading(false);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
@@ -33,7 +40,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
 
 
       if (onFileContentChange) {
-        onFileContentChange(content, file.name);
+        onFileContentChange(content, file.name, file); // Passando o File object também
       }
 
       console.log(`📁 Arquivo carregado: ${file.name} (${content.length} caracteres)`);

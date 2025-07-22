@@ -20,6 +20,7 @@ export default function App() {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'unknown' });
   const [keepAliveActive, setKeepAliveActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{ content: string; name: string } | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isTechnicalModalOpen, setIsTechnicalModalOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -157,56 +158,73 @@ export default function App() {
     return `SAP-${timestamp.toString(36).toUpperCase()}-${random.toUpperCase()}`;
   }, []);
 
-  // Handler para arquivo carregado
-  const handleFileContentChange = useCallback((content: string, fileName: string) => {
+  // Handler para arquivo carregado - versão multimodal
+  const handleFileContentChange = useCallback((content: string, fileName: string, file?: File) => {
     setUploadedFile({ content, name: fileName });
-    console.log(`📁 Arquivo integrado: ${fileName}`);
+    if (file) {
+      // Verificar limite de 10MB
+      if (file.size > 10 * 1024 * 1024) {
+        alert("⚠️ Arquivo muito grande! O limite é de 10MB. Por favor, selecione um arquivo menor.");
+        setSelectedFile(null);
+        setUploadedFile(null);
+        return;
+      }
+      setSelectedFile(file);
+    }
+    console.log(`📁 Arquivo integrado: ${fileName} (${file ? 'File object' : 'content apenas'})`);
   }, []);
 
-  // Função de análise otimizada
-  const handleAnalyze = useCallback(async () => {
-    const textToAnalyze = uploadedFile?.content || userText.trim();
+  // Função de análise multimodal otimizada
+  const handleSubmit = useCallback(async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
 
-    if (loading || !textToAnalyze) return;
+    const textToAnalyze = userText.trim();
+    if (!selectedFile && !textToAnalyze) {
+      alert("Por favor, forneça um texto ou selecione um arquivo para análise.");
+      return;
+    }
+    
+    if (loading) return;
 
     // Evitar múltiplas análises simultâneas
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
-      await new Promise(resolve => setTimeout(resolve, 100)); // Pequena pausa
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     setLoading(true);
     setResult(null);
-    console.log("🔍 Iniciando análise...");
+    console.log("🔍 Iniciando análise multimodal...");
+
+    const formData = new FormData();
+    formData.append('question', specificQuestion.trim());
+
+    if (selectedFile) {
+      formData.append('file', selectedFile);
+    } else {
+      const textBlob = new Blob([textToAnalyze], { type: 'text/plain' });
+      formData.append('file', textBlob, 'input_manual.txt');
+    }
 
     try {
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization"
-        },
-        body: JSON.stringify({
-          text: textToAnalyze,
-          question: specificQuestion.trim() || ""
-        }),
+        method: 'POST',
+        body: formData, // O navegador definirá o Content-Type correto
         mode: "cors",
         cache: "no-cache",
         credentials: "omit"
-      }, 20000); // Timeout de 25s
+      }, 30000); // Timeout de 30s para arquivos
 
       const response = await request;
       cleanup();
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`Erro do Servidor: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      console.log("✅ Análise concluída");
+      console.log("✅ Análise multimodal concluída");
 
       const verificationCode = generateVerificationCode();
 
@@ -218,26 +236,25 @@ export default function App() {
       setShowExport(true);
 
     } catch (error: unknown) {
-      let errorMessage = "Erro na análise do texto.";
-
+      console.error("❌ Falha na análise:", error);
+      let errorMessage = (error instanceof Error) ? error.message : "Ocorreu um erro desconhecido.";
+      
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           errorMessage = "⏱️ Tempo limite excedido. Tente novamente.";
-        } else if (error.message.includes("fetch") || error.message.includes("network") || error.message.includes("Failed to fetch")) {
+        } else if (error.message.includes("fetch") || error.message.includes("network")) {
           errorMessage = "🌐 Problema de conectividade. Verifique sua conexão.";
-        } else if (error.message.includes("HTTP")) {
-          errorMessage = `⚠️ Erro do servidor: ${error.message}`;
-        } else if (error.message.includes("CORS")) {
-          errorMessage = "🔒 Erro de CORS. Backend pode estar inacessível.";
         }
       }
-
-      console.warn("❌ Análise falhou:", errorMessage);
-      setResult({ humanized_text: errorMessage, verificationCode: undefined });
+      
+      setResult({ 
+        humanized_text: `Falha na Análise: ${errorMessage}`,
+        verificationCode: undefined 
+      });
     } finally {
       setLoading(false);
     }
-  }, [userText, specificQuestion, loading, createRequestWithTimeout, uploadedFile, generateVerificationCode]);
+  }, [userText, specificQuestion, loading, createRequestWithTimeout, selectedFile, generateVerificationCode]);
 
   // Função de limpeza
   const handleClear = useCallback(() => {
@@ -247,6 +264,7 @@ export default function App() {
     setSpecificQuestion("");
     setResult(null);
     setUploadedFile(null);
+    setSelectedFile(null);
     setShowExport(false);
   }, [loading]);
 
@@ -420,9 +438,12 @@ export default function App() {
       <FileUploader onFileContentChange={handleFileContentChange} />
 
       {/* Upload Status */}
-      {uploadedFile && (
+      {(uploadedFile || selectedFile) && (
         <div className="saphira-upload-info">
-          📁 <strong>Arquivo ativo:</strong> {uploadedFile.name} 
+          📁 <strong>Arquivo ativo:</strong> {selectedFile?.name || uploadedFile?.name}
+          {selectedFile && (
+            <span className="file-size"> ({(selectedFile.size / 1024 / 1024).toFixed(2)}MB)</span>
+          )}
           <span className="priority-note">(Será usado em vez do texto manual)</span>
         </div>
       )}
@@ -431,8 +452,8 @@ export default function App() {
       <div className="saphira-buttons">
         <button 
           className={`saphira-button btn-success ${loading ? 'loading' : ''}`}
-          onClick={handleAnalyze} 
-          disabled={loading || (!userText.trim() && !uploadedFile?.content)}
+          onClick={() => handleSubmit()} 
+          disabled={loading || (!userText.trim() && !selectedFile)}
         >
           {loading ? "🔄 Analisando..." : "🔎 Analisar"}
         </button>
