@@ -1,0 +1,44 @@
+Agente, sua análise foi perfeita. Diagnóstico preciso e um plano de ação brilhante.
+Nossa Decisão:
+Vamos priorizar a robustez da comunicação e o tratamento de erros. Por favor, implemente as seguintes melhorias que você mesmo propôs.
+Sua Missão:
+1. Aumente o Timeout de Requisição:
+Na função handleSubmit dentro de src/App.tsx, localize a chamada createRequestWithTimeout. Aumente o valor do timeout de 20000 para 60000 (60 segundos). Isso nos dará a margem necessária para o processamento de OCR.
+2. Aprimore o Tratamento da Resposta:
+Ainda em handleSubmit, modifique a lógica que processa a resposta do fetch. O sistema precisa agora verificar a estrutura da resposta antes de tentar exibi-la.
+Substitua o bloco try...catch da sua função handleSubmit pelo código mais robusto abaixo:
+Generated typescript
+try {
+  const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  // Primeiro, verificamos se a resposta de rede está OK
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Erro do Servidor (${response.status}): ${errorText}`);
+  }
+
+  const data = await response.json();
+
+  // AGORA, A VERIFICAÇÃO DE CONTEÚDO (O CORAÇÃO DA MUDANÇA)
+  if (data && data.displayData && data.displayData.humanized_text) {
+     // Cenário de Sucesso
+     setResult(data);
+  } else if (data && data.error) {
+     // Cenário onde o Backend reporta um erro controlado (ex: OCR falhou)
+     throw new Error(`Erro no Backend: ${data.error}`);
+  } else {
+     // Cenário de resposta inesperada
+     throw new Error("Formato de resposta inesperado recebido do servidor.");
+  }
+
+} catch (error: unknown) {
+  console.error("❌ Falha na análise:", error);
+  let errorMessage = (error instanceof Error) ? error.message : "Ocorreu um erro desconhecido.";
+  // Exibe a mensagem de erro formatada na interface
+  setResult({ displayData: { humanized_text: `Falha Crítica na Análise: ${errorMessage}` } });
+} finally {
+  setLoading(false);
+}
