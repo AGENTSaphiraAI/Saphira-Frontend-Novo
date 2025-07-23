@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React from 'react';
 
 interface MetadataInfoProps {
   data: {
@@ -20,4 +20,4 @@ const MetadataInfo: React.FC<MetadataInfoProps> = ({ data }) => {
   );
 };
 
-export default memo(MetadataInfo);
+export default MetadataInfo;

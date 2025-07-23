@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { MessageSquare } from 'lucide-react';
 
@@ -116,4 +116,4 @@ const ToneAnalysisCard: React.FC<ToneAnalysisCardProps> = ({ technicalData }) =>
   );
 };
 
-export default memo(ToneAnalysisCard);
+export default ToneAnalysisCard;

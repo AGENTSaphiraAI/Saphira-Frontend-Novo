@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React from 'react';
 import { Shield, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface IntegrityCardProps {
@@ -145,4 +145,4 @@ const IntegrityCard: React.FC<IntegrityCardProps> = ({ technicalData }) => {
   );
 };
 
-export default memo(IntegrityCard);
+export default IntegrityCard;

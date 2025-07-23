@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React from 'react';
 
 interface BadgeProps {
   icon: string;
@@ -15,4 +15,4 @@ const Badge: React.FC<BadgeProps> = ({ icon, label, category }) => {
   );
 };
 
-export default memo(Badge);
+export default Badge;

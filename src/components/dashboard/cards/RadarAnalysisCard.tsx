@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React from 'react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { Target } from 'lucide-react';
 
@@ -121,4 +121,4 @@ const RadarAnalysisCard: React.FC<RadarAnalysisCardProps> = ({ technicalData }) 
   );
 };
 
-export default memo(RadarAnalysisCard);
+export default RadarAnalysisCard;

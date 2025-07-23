@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import React, { useState } from "react";
 
 interface FileUploaderProps {
   onFileContentChange?: (content: string, fileName: string, file?: File) => void;
@@ -127,4 +127,4 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
   );
 }
 
-export default memo(FileUploader);
+export default FileUploader;
