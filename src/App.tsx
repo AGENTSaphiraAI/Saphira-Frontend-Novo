@@ -210,7 +210,7 @@ export default function App() {
     if (selectedFile) {
       formData.append('file', selectedFile);
     } else {
-      const textBlob = new Blob([textTo  Analyze], { type: 'text/plain' });
+      const textBlob = new Blob([textToAnalyze], { type: 'text/plain' });
       formData.append('file', textBlob, 'input_manual.txt');
     }
 
