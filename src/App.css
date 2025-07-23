@@ -295,6 +295,55 @@ body {
   backdrop-filter: blur(10px);
 }
 
+/* Analysis Mode Selector */
+.analysis-mode-selector {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.analysis-mode-selector label {
+  font-weight: 600;
+  color: #e6f3ff;
+  font-size: 0.95rem;
+}
+
+.mode-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #e6f3ff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  min-width: 120px;
+}
+
+.mode-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.mode-button.active {
+  background: linear-gradient(135deg, var(--saphira-blue-light), var(--saphira-blue-bright));
+  color: white;
+  border-color: var(--saphira-blue-bright);
+  box-shadow: 0 4px 15px rgba(11, 116, 229, 0.4);
+}
+
+.mode-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Upload info */
 .saphira-upload-info {
   background: rgba(255, 255, 255, 0.1);

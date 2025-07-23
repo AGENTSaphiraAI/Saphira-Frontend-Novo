@@ -25,6 +25,7 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [showExport, setShowExport] = useState(false);
+  const [analysisMode, setAnalysisMode] = useState<'padrao' | 'especialista'>('padrao');
 
   // Refs para controle de state
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -204,11 +205,12 @@ export default function App() {
 
     const formData = new FormData();
     formData.append('question', specificQuestion.trim());
+    formData.append('analysis_mode', analysisMode);
 
     if (selectedFile) {
       formData.append('file', selectedFile);
     } else {
-      const textBlob = new Blob([textToAnalyze], { type: 'text/plain' });
+      const textBlob = new Blob([textTo  Analyze], { type: 'text/plain' });
       formData.append('file', textBlob, 'input_manual.txt');
     }
 
@@ -288,6 +290,7 @@ export default function App() {
     setUploadedFile(null);
     setSelectedFile(null);
     setShowExport(false);
+    setAnalysisMode('padrao');
   }, [loading]);
 
   // Função para exportar resposta em JSON
@@ -454,6 +457,27 @@ export default function App() {
           onChange={(e) => setSpecificQuestion(e.target.value)}
           disabled={loading}
         />
+
+        {/* Seletor de Modo de Análise */}
+        <div className="analysis-mode-selector">
+          <label>Nível de Profundidade:</label>
+          <button 
+            type="button"
+            onClick={() => setAnalysisMode('padrao')}
+            className={`mode-button ${analysisMode === 'padrao' ? 'active' : ''}`}
+            disabled={loading}
+          >
+            📊 Padrão
+          </button>
+          <button 
+            type="button"
+            onClick={() => setAnalysisMode('especialista')}
+            className={`mode-button ${analysisMode === 'especialista' ? 'active' : ''}`}
+            disabled={loading}
+          >
+            🔬 Especialista
+          </button>
+        </div>
       </div>
 
       {/* File Uploader */}
