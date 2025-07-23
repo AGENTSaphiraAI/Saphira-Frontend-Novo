@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Hash, TrendingUp } from 'lucide-react';
 
 interface NexumKeywordsCardProps {
@@ -141,4 +141,4 @@ const NexumKeywordsCard: React.FC<NexumKeywordsCardProps> = ({ technicalData }) 
   );
 };
 
-export default NexumKeywordsCard;
+export default memo(NexumKeywordsCard);

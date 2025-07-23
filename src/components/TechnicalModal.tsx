@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 
 interface TechnicalModalProps {
   isOpen: boolean;
@@ -95,4 +95,4 @@ const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default TechnicalModal;
+export default memo(TechnicalModal);
