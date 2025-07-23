@@ -1,0 +1,119 @@
+Agente, o backend foi atualizado com sucesso e agora suporta um analysis_mode ("padrao" ou "especialista"). Sua missão é implementar no frontend um "seletor de modo" para que o usuário possa escolher o nível de profundidade da análise.
+1. Gerenciamento do Estado (em src/App.tsx)
+Primeiro, vamos adicionar um estado para controlar o modo de análise.
+Ação: No arquivo App.tsx, adicione um novo useState para o modo de análise.
+Generated typescript
+// [Contexto: dentro do componente App em App.tsx]
+
+// ... (outros useStates)
+const [analysisMode, setAnalysisMode] = useState<'padrao' | 'especialista'>('padrao');
+// ...
+Use code with caution.
+TypeScript
+2. O Seletor de Modo (em src/App.tsx)
+Agora, vamos adicionar os botões para o usuário escolher o modo. Um bom lugar é logo abaixo do campo "Pergunta Específica".
+Ação: Adicione o seguinte bloco JSX no seu formulário de análise.
+Generated jsx
+// [Contexto: dentro do return do App.tsx, no formulário]
+
+<div className="analysis-mode-selector">
+  <label>Nível de Profundidade:</label>
+  <button 
+    onClick={() => setAnalysisMode('padrao')}
+    className={analysisMode === 'padrao' ? 'active' : ''}
+  >
+    Padrão
+  </button>
+  <button 
+    onClick={() => setAnalysisMode('especialista')}
+    className={analysisMode === 'especialista' ? 'active' : ''}
+  >
+    Especialista
+  </button>
+</div>
+Use code with caution.
+Jsx
+3. Enviando o Modo para o Backend (em src/App.tsx)
+Precisamos incluir o modo selecionado quando enviamos a requisição de análise.
+Ação: Na função handleSubmit, quando você monta o formData, adicione o analysisMode.
+Generated typescript
+// [Contexto: dentro da função handleSubmit em App.tsx]
+
+const formData = new FormData();
+// ... (código que adiciona input_text, file, question) ...
+formData.append('analysis_mode', analysisMode); // <-- ADICIONE ESTA LINHA
+Use code with caution.
+TypeScript
+4. Estilizando o Seletor (em src/App.css)
+Vamos garantir que os botões do seletor sejam elegantes.
+Ação: Adicione este CSS ao seu arquivo de estilos principal.
+Generated css
+.analysis-mode-selector {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.analysis-mode-selector label {
+  margin-right: 0.5rem;
+  font-weight: 500;
+}
+.analysis-mode-selector button {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.analysis-mode-selector button:hover {
+  background-color: #f0f0f0;
+}
+.analysis-mode-selector button.active {
+  background-color: #0B74E5; /* Nosso azul Saphira */
+  color: white;
+  border-color: #0B74E5;
+}
+Use code with caution.
+Css
+5. Exibindo a Análise Profunda (em src/components/AuditModal.tsx)
+Finalmente, como prometido, vamos revelar a análise profunda no cofre da auditoria.
+Ação: No seu AuditModal.tsx, modifique o loop que exibe o histórico para incluir a expert_analysis se ela existir.
+Generated jsx
+// [Contexto: dentro do seu Modal de Auditoria]
+
+{item.displayData.expert_analysis && (
+    <div className="log-section expert-analysis-container">
+        <h4>Análise Profunda (Modo Especialista)</h4>
+        
+        {/* Renderiza o aprofundamento técnico */}
+        <div className="expert-subsection">
+            <strong>Aprofundamento Técnico:</strong>
+            <ReactMarkdown>
+                {item.displayData.expert_analysis.technical_deep_dive || "Não disponível"}
+            </ReactMarkdown>
+        </div>
+
+        {/* Renderiza a auditoria de raciocínio */}
+        <div className="expert-subsection">
+            <strong>Auditoria de Raciocínio:</strong>
+            <ReactMarkdown>
+                {item.displayData.expert_analysis.reasoning_audit || "Não disponível"}
+            </ReactMarkdown>
+        </div>
+    </div>
+)}
+Use code with caution.
+Jsx
+E adicione este estilo para o container da análise profunda:
+Generated css
+.expert-analysis-container {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+.expert-subsection {
+    margin-top: 0.5rem;
+}
