@@ -1,0 +1,19 @@
+Olá, agente. Executamos uma otimização profunda e bem-sucedida no backend. Agora, é hora de aplicarmos o mesmo nível de excelência e cuidado ao nosso frontend.
+Sua Missão: Realizar uma "faxina" segura, focando em otimizações de performance e limpeza de código que não alterem a funcionalidade ou a aparência atual da aplicação.
+Por favor, execute as seguintes tarefas de otimização, seguindo esta ordem:
+1. Limpeza de Dependências:
+Analise o arquivo package.json. Identifique e remova quaisquer dependências que foram instaladas, mas que não estão sendo mais usadas no código. Isso irá reduzir o tamanho final da nossa aplicação.
+2. Otimização de Componentes (Memoização):
+Analise nossos componentes React principais. Aplique a técnica de React.memo em componentes que são puramente visuais e que não precisam ser renderizados novamente a cada mudança de estado no componente pai. Isso evitará re-renderizações desnecessárias e melhorará a fluidez da interface, especialmente em dispositivos móveis.
+3. Revisão de Código Comentado:
+Faça uma varredura em todo o código-fonte (.tsx e .css) em busca de grandes blocos de código que foram comentados e que não são mais necessários. Remova esses "entulhos" para tornar nosso código mais limpo e legível.
+4. Otimização de Imagens (Se Aplicável):
+Verifique se temos alguma imagem no projeto e, se sim, certifique-se de que estão em um formato otimizado (como .webp) ou que podemos aplicar compressão para reduzir o tempo de carregamento.
+5. Diagnóstico Final (Validação):
+Após as otimizações, por favor, execute o comando npm run build. Precisamos garantir que a aplicação continue compilando perfeitamente. Em seguida, forneça um relatório, similar ao que foi feito no backend, resumindo as melhorias realizadas:
+Número de dependências removidas.
+Número de componentes otimizados com React.memo.
+Estimativa da redução no tamanho do "bundle" final.
+Confirmação de que todas as funcionalidades visuais permanecem inalteradas.
+Lembrete de Segurança: A prioridade máxima é a estabilidade. Se qualquer otimização apresentar o menor risco de quebrar uma funcionalidade, aborte essa otimização específica e prossiga com as outras.
+Aguardando seu relatório de otimização.
