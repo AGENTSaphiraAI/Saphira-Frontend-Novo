@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface MetadataInfoProps {
@@ -9,7 +8,7 @@ interface MetadataInfoProps {
   };
 }
 
-const MetadataInfo: React.FC<MetadataInfoProps> = ({ data }) => {
+const MetadataInfo = React.memo(function MetadataInfo({ data }: MetadataInfoProps) {
   return (
     <div className="card metadata-card">
       <h5>ℹ️ Metadados</h5>
@@ -18,6 +17,6 @@ const MetadataInfo: React.FC<MetadataInfoProps> = ({ data }) => {
       <p>Módulos: {data.modules_used.join(", ")}</p>
     </div>
   );
-};
+});
 
 export default MetadataInfo;
