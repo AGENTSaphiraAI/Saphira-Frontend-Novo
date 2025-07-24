@@ -311,6 +311,83 @@
   }
 }
 
+/* Estilos da Nova Vitrine */
+.about-saphira-container {
+  font-family: 'Inter', sans-serif;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, rgba(11, 116, 229, 0.1), rgba(30, 150, 255, 0.1));
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.hero-section h1 { 
+  color: var(--saphira-blue-deep); 
+  font-size: 2.5rem; 
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+}
+
+.hero-section .subtitle { 
+  font-size: 1.2rem; 
+  color: var(--saphira-blue-light); 
+  max-width: 600px; 
+  margin: 1rem auto 0; 
+  line-height: 1.6;
+}
+
+.marketing-section {
+  padding: 3rem 1rem;
+  border-bottom: 1px solid rgba(11, 116, 229, 0.1);
+}
+
+.marketing-section.alternate {
+  background-color: rgba(11, 116, 229, 0.03);
+}
+
+.marketing-section h2 { 
+  font-size: 2rem; 
+  color: var(--saphira-blue-deep); 
+  margin-bottom: 1rem; 
+  text-align: center; 
+}
+
+.marketing-section p, .marketing-section li { 
+  color: #2d3748; 
+  font-size: 1.1rem; 
+  max-width: 700px; 
+  margin: 0 auto; 
+  line-height: 1.7; 
+}
+
+.marketing-section ul { 
+  list-style: none; 
+  padding: 0; 
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.marketing-section li { 
+  margin-bottom: 1rem; 
+  padding-left: 1.5rem; 
+  position: relative; 
+}
+
+.marketing-section li::before { 
+  content: '✅'; 
+  position: absolute; 
+  left: 0; 
+  color: var(--saphira-accent); 
+}
+
+.cta-section { 
+  border-bottom: none; 
+  text-align: center; 
+}
+
 /* Animações */
 @keyframes fadeInUp {
   from {

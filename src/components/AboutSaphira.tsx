@@ -76,7 +76,7 @@ const AboutSaphira: React.FC = () => {
         <ReactMarkdown>{readmeContent}</ReactMarkdown>
       ) : (
         // Modo Marketing (nova vitrine)
-        <div className="marketing-container">
+        <div className="about-saphira-container">
           <HeroSection />
           <ProblemSection />
           <SolutionSection />

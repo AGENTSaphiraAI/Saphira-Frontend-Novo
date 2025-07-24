@@ -1,35 +1,11 @@
 
 import React from 'react';
-import { SolutionSectionProps } from '../types';
 
-const SolutionSection: React.FC<SolutionSectionProps> = ({
-  title = "A Solução Saphira",
-  solutions = [
-    "**Constituição de 21 Leis** que garante análises auditáveis e neutras",
-    "**Expertise jurídica inicial** com capacidade de expansão para outros nichos",
-    "**Transparência total** em todos os processos analíticos",
-    "**Metodologia de criação ágil** com parceria Humano-IA"
-  ]
-}) => {
-  return (
-    <section className="marketing-solution">
-      <h2 className="section-title">{title}</h2>
-      <div className="solutions-container">
-        <div className="solution-highlight">
-          <h3>Uma IA, Múltiplas Especialidades</h3>
-          <p>A essência da Saphira é sua **Constituição de 21 Leis**, que garante que toda análise seja auditável, neutra e consciente de seus próprios limites de certeza.</p>
-        </div>
-        <div className="solutions-list">
-          {solutions.map((solution, index) => (
-            <div key={index} className="solution-item">
-              <div className="solution-icon">✅</div>
-              <p>{solution}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
+const SolutionSection: React.FC = () => (
+  <div className="marketing-section alternate">
+    <h2>A Solução: A Primeira IA de Integridade do Mundo</h2>
+    <p>Saphira não foi criada para ser "mais uma" IA criativa. Ela é o antídoto. Governada por uma Constituição de 21 Leis, sua função não é inventar, é analisar. Cada relatório é selado com uma assinatura criptográfica, garantindo uma verdade auditável e um rigor técnico que você pode verificar.</p>
+  </div>
+);
 
-export default SolutionSection;
+export default SolutionSection;efault SolutionSection;
