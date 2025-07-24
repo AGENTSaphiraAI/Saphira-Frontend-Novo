@@ -1,9 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import HeroSection from './marketing/sections/HeroSection';
+import ProblemSection from './marketing/sections/ProblemSection';
+import SolutionSection from './marketing/sections/SolutionSection';
+import FeaturesSection from './marketing/sections/FeaturesSection';
+import CtaSection from './marketing/sections/CtaSection';
 import './AboutSaphira.css';
+import './marketing/marketing.css';
 
-// Novo texto estratégico da Saphira
+// Modo de visualização: 'legacy' (atual) ou 'marketing' (nova vitrine)
+type ViewMode = 'legacy' | 'marketing';
+
+// Conteúdo original mantido para compatibilidade
 const readmeContent = `
 # 💎 Saphira: O Futuro da Análise Inteligente
 
@@ -29,9 +38,52 @@ Saphira é mais que uma amiga. É a sua especialista de plantão, pronta para tr
 `;
 
 const AboutSaphira: React.FC = () => {
+  const [viewMode, setViewMode] = useState<ViewMode>('legacy');
+
   return (
     <div className="about-container">
-      <ReactMarkdown>{readmeContent}</ReactMarkdown>
+      {/* Toggle para alternar entre modos */}
+      <div className="view-mode-toggle" style={{ 
+        textAlign: 'center', 
+        marginBottom: '2rem',
+        padding: '1rem',
+        background: 'rgba(11, 116, 229, 0.1)',
+        borderRadius: '12px'
+      }}>
+        <label style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.5rem', display: 'block' }}>
+          Visualização:
+        </label>
+        <button
+          onClick={() => setViewMode(viewMode === 'legacy' ? 'marketing' : 'legacy')}
+          style={{
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            border: '2px solid var(--saphira-blue-deep)',
+            background: viewMode === 'marketing' ? 'var(--saphira-blue-deep)' : 'transparent',
+            color: viewMode === 'marketing' ? 'white' : 'var(--saphira-blue-deep)',
+            cursor: 'pointer',
+            fontWeight: '600',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          {viewMode === 'legacy' ? '🚀 Ativar Vitrine Marketing' : '📝 Voltar ao Original'}
+        </button>
+      </div>
+
+      {/* Renderização condicional baseada no modo */}
+      {viewMode === 'legacy' ? (
+        // Modo Legacy (atual)
+        <ReactMarkdown>{readmeContent}</ReactMarkdown>
+      ) : (
+        // Modo Marketing (nova vitrine)
+        <div className="marketing-container">
+          <HeroSection />
+          <ProblemSection />
+          <SolutionSection />
+          <FeaturesSection />
+          <CtaSection />
+        </div>
+      )}
     </div>
   );
 };
