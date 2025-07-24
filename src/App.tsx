@@ -467,7 +467,7 @@ export default function App() {
             className={`mode-button ${analysisMode === 'padrao' ? 'active' : ''}`}
             disabled={loading}
           >
-            📊 Padrão
+            📊 Análise Geral
           </button>
           <button 
             type="button"
@@ -475,7 +475,7 @@ export default function App() {
             className={`mode-button ${analysisMode === 'especialista' ? 'active' : ''}`}
             disabled={loading}
           >
-            🔬 Especialista
+            🔬 Análise Jurídica
           </button>
         </div>
       </div>
