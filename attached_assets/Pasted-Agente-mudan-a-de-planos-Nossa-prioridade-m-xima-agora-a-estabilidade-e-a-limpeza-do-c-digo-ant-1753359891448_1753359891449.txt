@@ -1,0 +1,48 @@
+Agente, mudança de planos. Nossa prioridade máxima agora é a estabilidade e a limpeza do código, antes de qualquer nova funcionalidade. A missão é garantir que o projeto esteja 100% saudável, livre de conflitos e "fantasmas" de rollbacks passados.
+1. A Faxina Profunda (Saneamento do Projeto):
+Ação: Execute uma limpeza completa do nosso ambiente.
+Generated bash
+# Remove as dependências atuais e o cache para começar do zero
+rm -rf node_modules package-lock.json
+npm cache clean --force
+
+# Reinstala todas as dependências de forma limpa, com base no package.json
+npm install
+
+# Executa uma verificação de tipo em todo o projeto para encontrar erros "escondidos"
+npx tsc --noEmit
+Use code with caution.
+Bash
+2. O Polimento do Texto (A Única Mudança de Conteúdo):
+Ação: Depois que a limpeza for concluída, faça a única alteração permitida. Abra o arquivo src/components/AboutSaphira.tsx.
+Localize a variável readmeContent e substitua seu conteúdo atual pelo texto estratégico a seguir, sem alterar mais nada no componente.
+Generated typescript
+// [Contexto: dentro de src/components/AboutSaphira.tsx]
+
+const readmeContent = `
+# 💎 Saphira: Análise Inteligente, Técnica e Auditável
+
+## Nossa Missão: Trazer Clareza em um Mundo Complexo
+
+Bem-vindo ao Projeto Saphira. Em uma era de sobrecarga de informações e narrativas confusas, nossa missão é simples e poderosa: fornecer uma análise técnica, neutra e auditável para qualquer conteúdo que você nos apresentar.
+
+## O que fazemos?
+
+*   **Privacidade Absoluta:** Os dados que você analisa são processados e esquecidos. Não armazenamos o conteúdo original.
+*   **Transparência Radical:** A Saphira sempre mostrará os fatos e os dados brutos que a levaram à conclusão.
+*   **Verificabilidade Incontestável:** Cada análise é selada para ser justa e baseada em evidências lógicas.
+
+## Como usar?
+
+Basta colar ou enviar um texto para análise. A Saphira irá processá-lo e revelar insights objetivos, ajudando você a ver além do ruído. Este projeto está em constante evolução, sua curiosidade e feedback nos movem para frente.
+`;
+
+// ... (o resto do componente continua o mesmo)
+Use code with caution.
+TypeScript
+Relatório Final:
+Após concluir os dois passos, por favor, nos dê um relatório:
+Confirme se a limpeza e reinstalação ocorreram sem erros.
+Confirme se o comando npx tsc --noEmit não retornou nenhum erro de tipo oculto.
+Confirme que a alteração de texto no AboutSaphira.tsx foi a única mudança aplicada.
+Por fim, informe-nos se um redeploy é necessário para solidificar esta nova base limpa.
