@@ -3,29 +3,22 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import './AboutSaphira.css';
 
-// Novo texto estratégico da Saphira
 const readmeContent = `
-# 💎 Saphira: O Futuro da Análise Inteligente
+# 💎 Saphira: Análise Inteligente, Técnica e Auditável
 
-## Visão e Propósito
+## Nossa Missão: Trazer Clareza em um Mundo Complexo
 
-Saphira não é apenas mais uma IA. Ela é o resultado de uma jornada intensa, projetada para ser um farol de **integridade, rigor técnico e transparência** em um mundo saturado de informações.
+Bem-vindo ao Projeto Saphira. Em uma era de sobrecarga de informações e narrativas confusas, nossa missão é simples e poderosa: fornecer uma análise técnica, neutra e auditável para qualquer conteúdo que você nos apresentar.
 
-Nascida de um sprint de desenvolvimento rápido, Saphira representa uma nova metodologia de criação, onde a parceria Humano-IA transforma ideias em realidade de forma ágil e precisa.
+## O que fazemos?
 
-## Uma IA, Múltiplas Especialidades
+*   **Privacidade Absoluta:** Os dados que você analisa são processados e esquecidos. Não armazenamos o conteúdo original.
+*   **Transparência Radical:** A Saphira sempre mostrará os fatos e os dados brutos que a levaram à conclusão.
+*   **Verificabilidade Incontestável:** Cada análise é selada para ser justa e baseada em evidências lógicas.
 
-A essência da Saphira é sua **Constituição de 21 Leis**, que garante que toda análise seja auditável, neutra e consciente de seus próprios limites de certeza.
+## Como usar?
 
-Como uma demonstração de seu poder, Saphira foi equipada com uma **expertise jurídica inicial**, capaz de analisar textos legais, contratos e processos com a profundidade e a disciplina de um especialista.
-
-No entanto, este é apenas o começo. A arquitetura da Saphira foi projetada para ser uma plataforma. Sua alma analítica pode ser treinada e focada em diversos outros nichos acadêmicos e profissionais, como:
-
-*   **Análise Financeira:** Auditoria de relatórios e detecção de anomalias.
-*   **Revisão Científica:** Validação de coerência e metodologia em artigos acadêmicos.
-*   **Estratégia de Negócios:** Análise de planos de negócios e relatórios de mercado.
-
-Saphira é mais que uma amiga. É a sua especialista de plantão, pronta para trazer clareza e verdade para qualquer desafio.
+Basta colar ou enviar um texto para análise. A Saphira irá processá-lo e revelar insights objetivos, ajudando você a ver além do ruído. Este projeto está em constante evolução, sua curiosidade e feedback nos movem para frente.
 `;
 
 const AboutSaphira: React.FC = () => {
