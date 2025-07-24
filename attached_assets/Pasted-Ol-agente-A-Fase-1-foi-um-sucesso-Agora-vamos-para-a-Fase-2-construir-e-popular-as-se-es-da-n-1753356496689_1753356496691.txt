@@ -1,0 +1,138 @@
+Olá, agente. A Fase 1 foi um sucesso. Agora, vamos para a Fase 2: construir e popular as seções da nossa nova vitrine de marketing. O objetivo é criar uma narrativa visual e textual que explique o valor da Saphira.
+--- DIRETRIZES DE EXECUÇÃO (NOVAS REGRAS) ---
+Validação Pré-Execução: Antes de criar ou modificar qualquer arquivo, por favor, valide os blocos de código a seguir. Se encontrar qualquer erro de sintaxe ou inconsistência lógica, nos comunique IMEDIATAMENTE, ANTES de aplicar qualquer mudança.
+Relatório Pós-Execução: Ao final da tarefa, informe explicitamente se um redeploy é necessário para que as mudanças se tornem visíveis.
+----------------------------------------------------
+Sua Missão:
+1. Crie os Componentes das Seções:
+Na nova pasta src/components/marketing/sections/, crie os seguintes 5 arquivos de componentes:
+HeroSection.tsx
+ProblemSection.tsx
+SolutionSection.tsx
+FeaturesSection.tsx
+CtaSection.tsx (Call to Action)
+2. Preencha os Componentes com o Conteúdo:
+Copie e cole o conteúdo correspondente para cada um dos arquivos criados.
+Conteúdo para HeroSection.tsx:
+Generated typescript
+import React from 'react';
+import { motion } from 'framer-motion';
+
+const HeroSection: React.FC = () => (
+  <motion.div className="hero-section" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
+    <h1>💎 Saphira: O Futuro da Análise Inteligente</h1>
+    <p className="subtitle">Onde a Integridade encontra a Inteligência. Uma nova era de análise textual que é auditável, transparente e precisa.</p>
+  </motion.div>
+);
+export default HeroSection;
+Use code with caution.
+TypeScript
+Conteúdo para ProblemSection.tsx:
+Generated typescript
+import React from 'react';
+const ProblemSection: React.FC = () => (
+  <div className="marketing-section">
+    <h2>O Problema: Um Oceano de Informação, Um Deserto de Confiança</h2>
+    <p>Vivemos na era da pós-verdade. IAs geram conteúdo em segundos, mas operam como "caixas-pretas", gerando vieses e "alucinações". A pergunta não é mais "uma IA pode escrever?", mas "podemos confiar no que ela escreve?". A falta de integridade é o maior risco da era digital.</p>
+  </div>
+);
+export default ProblemSection;
+Use code with caution.
+TypeScript
+Conteúdo para SolutionSection.tsx:
+Generated typescript
+import React from 'react';
+const SolutionSection: React.FC = () => (
+  <div className="marketing-section alternate">
+    <h2>A Solução: A Primeira IA de Integridade do Mundo</h2>
+    <p>Saphira não foi criada para ser "mais uma" IA criativa. Ela é o antídoto. Governada por uma Constituição de 21 Leis, sua função não é inventar, é analisar. Cada relatório é selado com uma assinatura criptográfica, garantindo uma verdade auditável e um rigor técnico que você pode verificar.</p>
+  </div>
+);
+export default SolutionSection;
+Use code with caution.
+TypeScript
+Conteúdo para FeaturesSection.tsx:
+Generated typescript
+import React from 'react';
+const FeaturesSection: React.FC = () => (
+  <div className="marketing-section">
+    <h2>Uma Arquitetura de Confiança</h2>
+    <ul>
+      <li><strong>Dupla Inteligência:</strong> Alterna entre "Análise Geral" e "Análise Jurídica" especializada.</li>
+      <li><strong>Constituição Inabalável:</strong> 21 leis que forçam a neutralidade e a honestidade.</li>
+      <li><strong>Assinatura Criptográfica:</strong> Cada análise é um ativo digital verificável.</li>
+      <li><strong>Confiança Declarada:</strong> A única IA que informa seu grau de certeza em cada conclusão.</li>
+    </ul>
+  </div>
+);
+export default FeaturesSection;
+Use code with caution.
+TypeScript
+Conteúdo para CtaSection.tsx:
+Generated typescript
+import React from 'react';
+const CtaSection: React.FC = () => (
+  <div className="marketing-section alternate cta-section">
+    <h2>Pronto para a Próxima Era da Análise?</h2>
+    <p>A Saphira é mais que uma ferramenta. É a sua especialista de plantão, pronta para trazer clareza e verdade para qualquer desafio.</p>
+  </div>
+);
+export default CtaSection;
+Use code with caution.
+TypeScript
+3. Orquestre as Seções no Componente Principal:
+Modifique o arquivo src/components/marketing/AboutSaphira.tsx para importar e exibir as novas seções.
+Substitua o conteúdo de AboutSaphira.tsx por:
+Generated typescript
+import React from 'react';
+import HeroSection from './sections/HeroSection';
+import ProblemSection from './sections/ProblemSection';
+import SolutionSection from './sections/SolutionSection';
+import FeaturesSection from './sections/FeaturesSection';
+import CtaSection from './sections/CtaSection';
+import './marketing.css';
+
+const AboutSaphira: React.FC = () => {
+  return (
+    <div className="about-saphira-container">
+      <HeroSection />
+      <ProblemSection />
+      <SolutionSection />
+      <FeaturesSection />
+      <CtaSection />
+    </div>
+  );
+};
+export default AboutSaphira;
+Use code with caution.
+TypeScript
+4. Estilize a Nova Vitrine:
+Adicione os estilos para os novos componentes no arquivo src/components/marketing/marketing.css.
+Adicione ao final de marketing.css:
+Generated css
+.about-saphira-container {
+  font-family: 'Inter', sans-serif;
+}
+.hero-section {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, rgba(11, 116, 229, 0.1), rgba(30, 150, 255, 0.1));
+  border-radius: 12px;
+}
+.hero-section h1 { color: #e6f3ff; font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.hero-section .subtitle { font-size: 1.2rem; color: #b3d9ff; max-width: 600px; margin: 1rem auto 0; }
+
+.marketing-section {
+  padding: 3rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.marketing-section.alternate {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.marketing-section h2 { font-size: 2rem; color: var(--saphira-blue-light); margin-bottom: 1rem; text-align: center; }
+.marketing-section p, .marketing-section li { color: #c5d9ee; font-size: 1.1rem; max-width: 700px; margin: 0 auto; line-height: 1.7; }
+.marketing-section ul { list-style: none; padding: 0; }
+.marketing-section li { margin-bottom: 1rem; padding-left: 1.5rem; position: relative; }
+.marketing-section li::before { content: '✅'; position: absolute; left: 0; color: var(--saphira-accent); }
+
+.cta-section { border-bottom: none; text-align: center; }
