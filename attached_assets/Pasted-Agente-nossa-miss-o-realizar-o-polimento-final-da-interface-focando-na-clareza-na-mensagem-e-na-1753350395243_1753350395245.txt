@@ -1,0 +1,65 @@
+Agente, nossa missão é realizar o polimento final da interface, focando na clareza, na mensagem e na experiência mobile. Todas as alterações são visuais e textuais.
+1. Renomeie os Botões de Modo de Análise:
+Ação: No arquivo src/App.tsx, encontre os botões do analysis-mode-selector.
+Altere o texto do primeiro botão de "Padrão" para "Análise Geral".
+Altere o texto do segundo botão de "Especialista" para "Análise Jurídica".
+2. Otimize o Layout Mobile dos Botões:
+Ação: No seu arquivo de CSS principal (src/App.css), adicione a seguinte regra para garantir que o seletor de modo se adapte bem a telas pequenas.
+Generated css
+/* Adicionar ao final do App.css */
+@media (max-width: 480px) {
+  .analysis-mode-selector {
+    flex-direction: column;
+    align-items: stretch; /* Faz os botões ocuparem a largura total */
+    gap: 0.5rem;
+  }
+  .analysis-mode-selector label {
+    margin-bottom: 0.5rem; /* Espaço abaixo do label */
+    text-align: center;
+  }
+}
+Use code with caution.
+Css
+3. Atualize o Texto "Sobre a Saphira":
+Ação: Para refletir a nova identidade da Saphira sem tocar no backend, vamos atualizar o texto diretamente no componente. Abra o arquivo src/components/AboutSaphira.tsx.
+Substitua o conteúdo completo do arquivo pela versão abaixo, que contém a nova mensagem estratégica.
+Generated typescript
+// Caminho: src/components/AboutSaphira.tsx
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import './AboutSaphira.css';
+
+// Novo texto estratégico da Saphira
+const readmeContent = `
+# 💎 Saphira: O Futuro da Análise Inteligente
+
+## Visão e Propósito
+
+Saphira não é apenas mais uma IA. Ela é o resultado de uma jornada intensa, projetada para ser um farol de **integridade, rigor técnico e transparência** em um mundo saturado de informações.
+
+Nascida de um sprint de desenvolvimento rápido, Saphira representa uma nova metodologia de criação, onde a parceria Humano-IA transforma ideias em realidade de forma ágil e precisa.
+
+## Uma IA, Múltiplas Especialidades
+
+A essência da Saphira é sua **Constituição de 21 Leis**, que garante que toda análise seja auditável, neutra e consciente de seus próprios limites de certeza.
+
+Como uma demonstração de seu poder, Saphira foi equipada com uma **expertise jurídica inicial**, capaz de analisar textos legais, contratos e processos com a profundidade e a disciplina de um especialista.
+
+No entanto, este é apenas o começo. A arquitetura da Saphira foi projetada para ser uma plataforma. Sua alma analítica pode ser treinada e focada em diversos outros nichos acadêmicos e profissionais, como:
+
+*   **Análise Financeira:** Auditoria de relatórios e detecção de anomalias.
+*   **Revisão Científica:** Validação de coerência e metodologia em artigos acadêmicos.
+*   **Estratégia de Negócios:** Análise de planos de negócios e relatórios de mercado.
+
+Saphira é mais que uma amiga. É a sua especialista de plantão, pronta para trazer clareza e verdade para qualquer desafio.
+`;
+
+const AboutSaphira: React.FC = () => {
+  return (
+    <div className="about-container">
+      <ReactMarkdown>{readmeContent}</ReactMarkdown>
+    </div>
+  );
+};
+
+export default AboutSaphira;
