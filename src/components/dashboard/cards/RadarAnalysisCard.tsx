@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import { Target } from 'lucide-react';
 
 interface RadarAnalysisCardProps {
@@ -8,31 +7,13 @@ interface RadarAnalysisCardProps {
 }
 
 const RadarAnalysisCard: React.FC<RadarAnalysisCardProps> = ({ technicalData }) => {
-  const getMetricValue = (key: string): number => {
-    if (!technicalData) return Math.random() * 100;
-    
-    switch (key) {
-      case 'tone':
-        return technicalData.tom?.confianca || technicalData.tone || Math.random() * 100;
-      case 'bias':
-        return technicalData.vies?.confianca || technicalData.bias || Math.random() * 100;
-      case 'contradiction':
-        return technicalData.contradicoes?.confianca || technicalData.contradiction || Math.random() * 100;
-      case 'clarity':
-        return technicalData.clarity || Math.random() * 100;
-      case 'consistency':
-        return technicalData.consistency || Math.random() * 100;
-      default:
-        return Math.random() * 100;
-    }
-  };
-
+  // NOVA LÓGICA DE EXTRAÇÃO - Lê o JSON real do backend
   const data = [
-    { subject: 'Tom', A: getMetricValue('tone'), fullMark: 100 },
-    { subject: 'Viés', A: getMetricValue('bias'), fullMark: 100 },
-    { subject: 'Contradições', A: getMetricValue('contradiction'), fullMark: 100 },
-    { subject: 'Clareza', A: getMetricValue('clarity'), fullMark: 100 },
-    { subject: 'Consistência', A: getMetricValue('consistency'), fullMark: 100 },
+    { subject: 'Risco Forense', A: technicalData?.forensic_analysis?.risk_score || 0, fullMark: 100 },
+    { subject: 'Carga Emocional', A: (technicalData?.forensic_analysis?.emotional_load_score || 0) * 10, fullMark: 100 },
+    { subject: 'Densidade Jurídica', A: (technicalData?.legal_extraction?.densidade_juridica || 0) * 10, fullMark: 100 },
+    { subject: 'Confiança Geral', A: (technicalData?.confidence_level?.score || 0) * 100, fullMark: 100 },
+    { subject: 'Assertividade', A: (technicalData?.voice_calibration?.assertiveness_level || 0) * 20, fullMark: 100 },
   ];
 
   return (
@@ -41,7 +22,7 @@ const RadarAnalysisCard: React.FC<RadarAnalysisCardProps> = ({ technicalData }) 
         <Target className="card-icon" size={20} />
         <h4>Análise Multidimensional</h4>
       </div>
-      
+
       <div className="card-content">
         <ResponsiveContainer width="100%" height={200}>
           <RadarChart data={data}>
@@ -65,7 +46,7 @@ const RadarAnalysisCard: React.FC<RadarAnalysisCardProps> = ({ technicalData }) 
             />
           </RadarChart>
         </ResponsiveContainer>
-        
+
         <div className="radar-summary">
           <span>Pontuação Média: {(data.reduce((acc, item) => acc + item.A, 0) / data.length).toFixed(1)}%</span>
         </div>
