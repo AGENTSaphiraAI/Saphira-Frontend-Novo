@@ -94,7 +94,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
         </div>
       </div>
 
-      {/* Header de Status (NOVO BLOCO) */}
+      {/* Header de Status - FIOS RECONECTADOS */}
       <div className="status-header">
         <StatusBadge 
           icon="🎤" 
