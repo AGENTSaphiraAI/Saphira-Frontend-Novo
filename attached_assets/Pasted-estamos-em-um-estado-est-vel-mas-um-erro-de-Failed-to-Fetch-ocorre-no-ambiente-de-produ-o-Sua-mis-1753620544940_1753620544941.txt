@@ -1,0 +1,46 @@
+estamos em um estado estável, mas um erro de Failed to Fetch ocorre no ambiente de produção. Sua missão é nos ajudar a diagnosticar a causa raiz, instalando um sistema de log detalhado.
+Sua Tarefa:
+Modifique a função handleSubmit no arquivo src/App.tsx. Você vai injetar console.log e console.error em pontos estratégicos para nos dar visibilidade total do processo.
+Substitua o bloco try...catch...finally completo dentro da função handleSubmit pelo seguinte código de diagnóstico aprimorado:```typescript
+// [Contexto: Dentro da função handleSubmit em src/App.tsx]
+// Log inicial para confirmar que a função foi chamada e ver a URL.
+console.log([CAIXA-PRETA] 🕵️ Tentando iniciar a análise. Endpoint: ${BACKEND_BASE_URL}/api/analyze);
+console.log([CAIXA-PRETA] Modo de Análise: ${analysisMode});
+try {
+// A chamada fetch direta e simplificada.
+const response = await fetch(${BACKEND_BASE_URL}/api/analyze, {
+method: 'POST',
+body: formData,
+mode: "cors"
+});
+console.log([CAIXA-PRETA] 🌐 Resposta da rede recebida. Status HTTP: ${response.status});
+if (!response.ok) {
+const errorText = await response.text().catch(() => 'Não foi possível ler o corpo da resposta de erro.');
+throw new Error(Erro de Servidor (${response.status}): ${errorText});
+}
+const data = await response.json();
+console.log("[CAIXA-PRETA] ✨ Resposta JSON parseada com sucesso:", data);
+if (data && data.displayData && data.displayData.humanized_text) {
+setResult({ ...data.displayData, verificationCode: data.displayData.verificationCode });
+setShowExport(true);
+} else {
+throw new Error("Formato de resposta JSON inesperado.");
+}
+} catch (error: unknown) {
+// Nosso log de erro detalhado para capturar o fantasma.
+console.error("[CAIXA-PRETA] 🔴 ERRO CRÍTICO CAPTURADO DURANTE O FETCH!");
+if (error instanceof Error) {
+console.error([CAIXA-PRETA] - Nome do Erro: ${error.name});
+console.error([CAIXA-PRETA] - Mensagem: ${error.message});
+console.error([CAIXA-PRETA] - Stack Trace:, error.stack);
+} else {
+console.error("[CAIXA-PRETA] Erro de tipo desconhecido:", error);
+}
+setResult({
+humanized_text: Falha na Análise: Ocorreu um problema de comunicação com o servidor. Por favor, abra o console do desenvolvedor (F12) para inspecionar os logs detalhados marcados com '[CAIXA-PRETA]'.,
+verificationCode: undefined
+});
+} finally {
+setLoading(false);
+console.log("[CAIXA-PRETA] 🏁 Processo de análise finalizado (seja com sucesso ou falha).");
+}
