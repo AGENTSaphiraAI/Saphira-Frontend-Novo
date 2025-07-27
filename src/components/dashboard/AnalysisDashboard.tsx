@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Download } from 'lucide-react';
 import ReportTab from './tabs/ReportTab';
+import StatusBadge from './StatusBadge';
 import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
 import './AnalysisDashboard.css';
 
@@ -91,6 +92,25 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
             <span>{isExporting ? 'Exportando...' : 'Exportar PDF'}</span>
           </button>
         </div>
+      </div>
+
+      {/* Header de Status (NOVO BLOCO) */}
+      <div className="status-header">
+        <StatusBadge 
+          icon="🎤" 
+          label="Modo de Voz" 
+          value={response.technical_data?.voice_calibration?.voice_mode || 'N/A'} 
+        />
+        <StatusBadge 
+          icon="🛡️" 
+          label="Risco Geral" 
+          value={response.technical_data?.forensic_analysis?.overall_manipulation_risk || 'N/A'} 
+        />
+        <StatusBadge 
+          icon="🎯" 
+          label="Confiança" 
+          value={`${((response.technical_data?.confidence_level?.score || 0) * 100).toFixed(0)}%`} 
+        />
       </div>
 
       {/* Conteúdo Principal - Relatório da Saphira */}

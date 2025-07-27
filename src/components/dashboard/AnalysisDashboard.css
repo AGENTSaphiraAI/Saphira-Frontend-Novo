@@ -1,4 +1,3 @@
-
 .analysis-dashboard {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: 16px;
@@ -135,7 +134,7 @@
     padding: 0.75rem;
     margin-top: 1rem;
   }
-  
+
   .dashboard-header {
     flex-direction: column;
     gap: 1rem;
@@ -143,59 +142,59 @@
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
   }
-  
+
   .header-info h2 {
     font-size: 1.25rem;
     margin-bottom: 0.25rem;
   }
-  
+
   .header-info p {
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .verification-code {
     font-size: 0.75rem;
     padding: 0.2rem 0.5rem;
   }
-  
+
   .dashboard-export-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
   }
-  
+
   .export-pdf-button {
     font-size: 12px;
     padding: 0.6rem 0.4rem;
     min-height: 42px;
     border-radius: 8px;
   }
-  
+
   .export-pdf-button span {
     font-size: 12px;
   }
-  
+
   .dashboard-tabs {
     flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .tab-button {
     min-width: unset;
     padding: 0.75rem 1rem;
     min-height: 60px;
   }
-  
+
   .tab-label {
     font-size: 0.9rem;
   }
-  
+
   .tab-description {
     font-size: 0.8rem;
   }
-  
+
   .dashboard-content {
     padding: 1rem;
     border-radius: 8px;
@@ -208,11 +207,11 @@
     font-size: 14px;
     line-height: 1.6;
   }
-  
+
   .dashboard-content p {
     font-size: 14px;
   }
-  
+
   .dashboard-content h1,
   .dashboard-content h2,
   .dashboard-content h3,
@@ -220,13 +219,13 @@
     font-size: 1.1em;
     margin-bottom: 0.8rem;
   }
-  
+
   .dashboard-content ul,
   .dashboard-content ol {
     font-size: 14px;
     padding-left: 1.2rem;
   }
-  
+
   .dashboard-content blockquote {
     font-size: 14px;
     padding: 0.8rem;
@@ -238,35 +237,35 @@
   .analysis-dashboard {
     padding: 0.5rem;
   }
-  
+
   .dashboard-header {
     gap: 0.75rem;
     margin-bottom: 1rem;
   }
-  
+
   .header-info h2 {
     font-size: 1.1rem;
   }
-  
+
   .header-info p {
     font-size: 0.85rem;
   }
-  
+
   .dashboard-export-buttons {
     grid-template-columns: 1fr;
     gap: 0.4rem;
   }
-  
+
   .export-pdf-button {
     font-size: 11px;
     padding: 0.5rem 0.3rem;
     min-height: 40px;
   }
-  
+
   .export-pdf-button span {
     font-size: 11px;
   }
-  
+
   .dashboard-content {
     padding: 0.75rem;
     font-size: 13px;
@@ -278,20 +277,59 @@
   .analysis-dashboard {
     padding: 1.5rem;
   }
-  
+
   .dashboard-header {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 1rem;
   }
-  
+
   .dashboard-export-buttons {
     flex-direction: row;
     gap: 0.75rem;
   }
-  
+
   .export-pdf-button {
     min-height: 44px;
     font-size: 14px;
   }
+}
+
+/* Estilos para o novo Header de Status */
+
+.status-header {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badge-icon {
+  font-size: 1.5rem;
+}
+
+.badge-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  display: block;
+}
+
+.badge-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
 }
