@@ -36,21 +36,12 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
   };
 
   return (
-    <>
-      {/* BLOCO DE DIAGNÓSTICO TEMPORÁRIO */}
-      <pre style={{ color: 'white', backgroundColor: '#1E293B', padding: '1rem', borderRadius: '8px', margin: '1rem' }}>
-        <code>
-          {JSON.stringify(response, null, 2)}
-        </code>
-      </pre>
-      {/* FIM DO BLOCO DE DIAGNÓSTICO */}
-
-      <motion.div 
-        className="analysis-dashboard"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+    <motion.div 
+      className="analysis-dashboard"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Cabeçalho do Dashboard */}
       <div className="dashboard-header">
         <div className="header-info">
@@ -135,7 +126,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
         />
       </motion.div>
     </motion.div>
-    </>
   );
 };
 
