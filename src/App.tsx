@@ -175,54 +175,52 @@ export default function App() {
     console.log(`📁 Arquivo integrado: ${fileName} (${file ? 'File object' : 'content apenas'})`);
   }, []);
 
-  // Função de análise multimodal otimizada
+  // Função de análise multimodal com estratégia Dupla Ponte
   const handleSubmit = useCallback(async (e?: React.FormEvent | React.MouseEvent) => {
-    try {
-      if (e && typeof e.preventDefault === 'function') {
-        e.preventDefault();
-      }
-    } catch (error) {
-      // Ignorar erros de preventDefault para eventos inválidos
-    }
+    if (e && typeof e.preventDefault === 'function') { e.preventDefault(); }
 
     const textToAnalyze = userText.trim();
     if (!selectedFile && !textToAnalyze) {
       alert("Por favor, forneça um texto ou selecione um arquivo para análise.");
       return;
     }
-
     if (loading) return;
-
-    // Evitar múltiplas análises simultâneas
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
 
     setLoading(true);
     setResult(null);
-    console.log("🔍 Iniciando análise multimodal...");
-
-    const formData = new FormData();
-    formData.append('question', specificQuestion.trim());
-    formData.append('analysis_mode', analysisMode);
-
+    
+    let requestBody: FormData | string;
+    let requestHeaders: HeadersInit = {};
+    
+    // --- LÓGICA DA DUPLA PONTE ---
     if (selectedFile) {
+      // PONTE 1: Carga Pesada (para arquivos)
+      console.log("[DUPLA_PONTE] 🚚 Usando a Ponte de Carga (FormData) para arquivo.");
+      const formData = new FormData();
       formData.append('file', selectedFile);
+      formData.append('question', specificQuestion.trim());
+      formData.append('analysis_mode', analysisMode);
+      requestBody = formData;
+      // Para FormData, o navegador define o Content-Type automaticamente.
     } else {
-      const textBlob = new Blob([textToAnalyze], { type: 'text/plain' });
-      formData.append('file', textBlob, 'input_manual.txt');
+      // PONTE 2: Via Expressa (para texto)
+      console.log("[DUPLA_PONTE] 🚶‍♂️ Usando a Via Expressa (JSON) para texto.");
+      const payload = {
+        text: textToAnalyze,
+        question: specificQuestion.trim(),
+        analysis_mode: analysisMode,
+      };
+      requestBody = JSON.stringify(payload);
+      requestHeaders['Content-Type'] = 'application/json';
     }
-
-    // Log inicial para confirmar que a função foi chamada e ver a URL.
+    
     console.log(`[CAIXA-PRETA] 🕵️ Tentando iniciar a análise. Endpoint: ${BACKEND_BASE_URL}/api/analyze`);
-    console.log(`[CAIXA-PRETA] Modo de Análise: ${analysisMode}`);
 
     try {
-      // A chamada fetch direta e simplificada.
       const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
         method: 'POST',
-        body: formData,
+        body: requestBody,
+        headers: requestHeaders,
         mode: "cors"
       });
 
@@ -235,35 +233,34 @@ export default function App() {
 
       const data = await response.json();
       console.log("[CAIXA-PRETA] ✨ Resposta JSON parseada com sucesso:", data);
-
+      
       if (data && data.displayData && data.displayData.humanized_text) {
         setResult({ ...data.displayData, verificationCode: data.displayData.verificationCode });
         setShowExport(true);
+      } else if (data && data.error) {
+        throw new Error(`Erro retornado pelo Backend: ${data.error}`);
       } else {
         throw new Error("Formato de resposta JSON inesperado.");
       }
 
     } catch (error: unknown) {
-      // Nosso log de erro detalhado para capturar o fantasma.
-      console.error("[CAIXA-PRETA] 🔴 ERRO CRÍTICO CAPTURADO DURANTE O FETCH!");
+      console.error("[CAIXA-PRETA] 🔴 ERRO CRÍTICO CAPTURADO!");
       if (error instanceof Error) {
-        console.error(`[CAIXA-PRETA] - Nome do Erro: ${error.name}`);
         console.error(`[CAIXA-PRETA] - Mensagem: ${error.message}`);
-        console.error(`[CAIXA-PRETA] - Stack Trace:`, error.stack);
       } else {
-        console.error("[CAIXA-PRETA] Erro de tipo desconhecido:", error);
+        console.error("[CAIXA-PRETA] - Erro de tipo desconhecido:", error);
       }
-
+      
       setResult({
-        humanized_text: `Falha na Análise: Ocorreu um problema de comunicação com o servidor. Por favor, abra o console do desenvolvedor (F12) para inspecionar os logs detalhados marcados com '[CAIXA-PRETA]'.`,
+        humanized_text: `Falha na Análise: ${(error instanceof Error) ? error.message : 'Ocorreu um erro desconhecido.'}`,
         verificationCode: undefined
       });
 
     } finally {
       setLoading(false);
-      console.log("[CAIXA-PRETA] 🏁 Processo de análise finalizado (seja com sucesso ou falha).");
+      console.log("[CAIXA-PRETA] 🏁 Processo de análise finalizado.");
     }
-  }, [userText, specificQuestion, loading, createRequestWithTimeout, selectedFile, generateVerificationCode]);
+  }, [userText, specificQuestion, loading, selectedFile, analysisMode]);
 
   // Função de limpeza
   const handleClear = useCallback(() => {
