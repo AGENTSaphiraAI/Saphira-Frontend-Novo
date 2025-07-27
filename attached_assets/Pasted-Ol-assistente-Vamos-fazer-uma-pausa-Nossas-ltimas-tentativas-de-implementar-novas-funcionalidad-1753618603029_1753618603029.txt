@@ -1,0 +1,16 @@
+Olá, assistente. Vamos fazer uma pausa. Nossas últimas tentativas de implementar novas funcionalidades no frontend resultaram em erros de deploy e instabilidade. Precisamos da sua inteligência para diagnosticar a causa raiz e nos apresentar um plano, antes de escrevermos mais uma linha de código.
+Sua missão é atuar como nosso consultor de frontend sênior.
+1. O Cenário (O Que Sabemos Com Certeza):
+Ponto Forte 1: O Backend é uma Rocha. O nosso servidor Saphira-Engine-Backend está 100% operacional, estável e respondendo. Os logs confirmam sua saúde.
+Ponto Forte 2: A Conexão é Sólida. Os testes de conexão (/health) e as configurações de CORS estão funcionando perfeitamente. O backend está pronto e esperando para conversar.
+A Grande Dificuldade: A nossa aplicação frontend funciona perfeitamente no ambiente de desenvolvimento "Preview" (npm run dev), mas falha consistentemente após o deploy (npm run build).
+2. O Fantasma (O Erro que nos Persegue):
+O sintoma principal é o erro TypeError: Failed to fetch que aparece no console do navegador do usuário final após o deploy. Isso acontece especificamente quando a função handleSubmit (para fazer uma análise) é acionada. Sabemos que o backend está online, então o "fracasso em buscar" é um sintoma, não a causa.
+3. Sua Missão (Diagnóstico e Proposta de Soluções):
+NÃO TENTE CONSERTAR NADA AINDA. Sua única tarefa é analisar e responder, em texto, às seguintes perguntas:
+Análise Causa-Raiz: Com base no seu conhecimento de aplicações React/Vite no ambiente Replit, quais são as três (3) causas mais prováveis para uma aplicação funcionar em dev mas quebrar a chamada fetch em build? Pense em coisas como:
+Otimizações de código no processo de build que podem estar "quebrando" a URL da API.
+Variáveis de ambiente (.env) que não são carregadas corretamente no build.
+Diferenças de tratamento de FormData ou headers entre o servidor de desenvolvimento e o de produção.
+Plano de Ação Sugerido: Descreva, em fases, qual seria o seu plano de ação para isolar e resolver o problema de forma definitiva. (Ex: "Fase 1: Verificar as variáveis de ambiente. Fase 2: Implementar um sistema de log no frontend...")
+Primeiro Passo Seguro: Qual é a PRIMEIRA e mais segura ação que você recomendaria que fizéssemos para obter um diagnóstico mais preciso do erro no ambiente de produção?

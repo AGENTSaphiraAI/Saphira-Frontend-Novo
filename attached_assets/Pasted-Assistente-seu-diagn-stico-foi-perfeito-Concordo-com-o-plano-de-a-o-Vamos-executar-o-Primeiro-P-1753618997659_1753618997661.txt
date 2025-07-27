@@ -1,0 +1,58 @@
+Assistente, seu diagnóstico foi perfeito. Concordo com o plano de ação. Vamos executar o "Primeiro Passo Seguro Recomendado".
+Sua Missão:
+Implementar um sistema de log detalhado no Frontend. Modifique a função handleSubmit no arquivo src/App.tsx.
+Adicione console.log e console.error em pontos estratégicos para nos dar visibilidade total do que acontece no ambiente de produção.
+Substitua o bloco catch da sua função handleSubmit pelo seguinte código aprimorado:
+Generated typescript
+// [Contexto: dentro da função handleSubmit em src/App.tsx]
+
+// Adicione este log ANTES do bloco try...catch para vermos a URL
+console.log(`[SAPPHIRA_LOG] 🕵️ Preparando para enviar requisição para: ${BACKEND_BASE_URL}/api/analyze`);
+
+try {
+  const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
+    method: 'POST',
+    body: formData,
+    mode: "cors",
+    cache: "no-cache",
+    credentials: "omit"
+  }, 60000); 
+
+  console.log("[SAPPHIRA_LOG] ✅ Requisição fetch criada. Aguardando resposta...");
+
+  const response = await request;
+  cleanup();
+
+  console.log(`[SAPPHIRA_LOG] 🌐 Resposta recebida. Status da Rede: ${response.status}`);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    // Jogamos um erro específico para ser pego pelo catch block
+    throw new Error(`Erro de Servidor (${response.status}): ${errorText}`);
+  }
+
+  const data = await response.json();
+  console.log("[SAPPHIRA_LOG] ✨ Resposta JSON parseada com sucesso:", data);
+  
+  // O resto da sua lógica de sucesso...
+
+} catch (error: unknown) {
+  console.error("[SAPPHIRA_LOG] 🔴 CAPTURADO ERRO CRÍTICO NO FETCH!");
+  if (error instanceof Error) {
+    console.error(`[SAPPHIRA_LOG]  Gatinho do Erro: ${error.name}`);
+    console.error(`[SAPPHIRA_LOG] Mensagem: ${error.message}`);
+    console.error(`[SAPPHIRA_LOG] Stack Trace:`, error.stack);
+  } else {
+    console.error("[SAPPHIRA_LOG] Erro não-padrão:", error);
+  }
+
+  // Mantém a interface do usuário informada
+  setResult({ 
+    humanized_text: `Falha Crítica na Análise: Ocorreu um problema de comunicação com o servidor. Verifique o console (F12) para detalhes técnicos.`,
+    verificationCode: undefined 
+  });
+
+} finally {
+  setLoading(false);
+  console.log("[SAPPHIRA_LOG] 🏁 Processo de análise finalizado (sucesso ou falha).");
+}
