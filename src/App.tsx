@@ -214,57 +214,89 @@ export default function App() {
       formData.append('file', textBlob, 'input_manual.txt');
     }
 
-    // O console.log de preparação pode ficar aqui, antes do try.
+    // Log detalhado ANTES do bloco try...catch para vermos a URL
     console.log(`[SAPPHIRA_LOG] 🕵️ Preparando para enviar requisição para: ${BACKEND_BASE_URL}/api/analyze`);
 
     try {
-      // A chamada fetch direta e simplificada.
-      const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
+      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: 'POST',
-        body: formData,
-        mode: "cors" // 'cors' já é o padrão para requisições cross-origin, mas é bom ser explícito.
-      });
+        body: formData, // O navegador definirá o Content-Type correto
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "omit"
+      }, 60000); // Timeout de 60s para processamento OCR
+
+      console.log("[SAPPHIRA_LOG] ✅ Requisição fetch criada. Aguardando resposta...");
+
+      const response = await request;
+      cleanup();
 
       console.log(`[SAPPHIRA_LOG] 🌐 Resposta recebida. Status da Rede: ${response.status}`);
 
+      // Primeiro, verificamos se a resposta de rede está OK
       if (!response.ok) {
-        // Se a resposta da rede não for ok, lemos o erro e o lançamos.
-        const errorText = await response.text().catch(() => 'Erro ao ler o corpo da resposta de erro.');
+        const errorText = await response.text();
+        // Jogamos um erro específico para ser pego pelo catch block
         throw new Error(`Erro de Servidor (${response.status}): ${errorText}`);
       }
 
-      // Se a resposta de rede for ok, tentamos parsear o JSON.
       const data = await response.json();
       console.log("[SAPPHIRA_LOG] ✨ Resposta JSON parseada com sucesso:", data);
+      console.log("📡 Resposta recebida - Status:", response.status);
+      console.log("🔍 Dados recebidos:", data);
 
-      // A sua lógica de sucesso para exibir os dados.
+      // AGORA, A VERIFICAÇÃO DE CONTEÚDO (O CORAÇÃO DA MUDANÇA)
       if (data && data.displayData && data.displayData.humanized_text) {
-        setResult({ ...data.displayData, verificationCode: data.displayData.verificationCode });
+        // Cenário de Sucesso
+        console.log("✅ Análise multimodal concluída com sucesso");
+        const verificationCode = generateVerificationCode();
+
+        setResult({
+          ...data.displayData,
+          verificationCode
+        });
         setShowExport(true);
+      } else if (data && data.error) {
+        // Cenário onde o Backend reporta um erro controlado (ex: OCR falhou)
+        throw new Error(`Erro no Backend: ${data.error}`);
       } else {
-        throw new Error("Formato de resposta JSON inesperado.");
+        // Cenário de resposta inesperada
+        console.warn("⚠️ Estrutura de resposta inesperada:", data);
+        throw new Error("Formato de resposta inesperado recebido do servidor.");
       }
 
     } catch (error: unknown) {
-      // O nosso bloco de log de erro continua perfeito.
-      console.error("[SAPPHIRA_LOG] 🔴 CAPTURADO ERRO CRÍTICO!");
+      console.error("[SAPPHIRA_LOG] 🔴 CAPTURADO ERRO CRÍTICO NO FETCH!");
       if (error instanceof Error) {
+        console.error(`[SAPPHIRA_LOG] Tipo do Erro: ${error.name}`);
         console.error(`[SAPPHIRA_LOG] Mensagem: ${error.message}`);
+        console.error(`[SAPPHIRA_LOG] Stack Trace:`, error.stack);
       } else {
         console.error("[SAPPHIRA_LOG] Erro não-padrão:", error);
       }
 
-      // Exibe a mensagem de erro na interface do usuário.
-      setResult({
-        humanized_text: `Falha Crítica na Análise: ${(error instanceof Error) ? error.message : 'Ocorreu um erro desconhecido.'}`,
-        verificationCode: undefined
-      });
+      let errorMessage = (error instanceof Error) ? error.message : "Ocorreu um erro desconhecido.";
 
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = "⏱️ Tempo limite de 60s excedido. Para arquivos grandes com OCR, tente novamente.";
+        } else if (error.message.includes("fetch") || error.message.includes("network")) {
+          errorMessage = "🌐 Problema de conectividade. Verifique sua conexão e tente novamente.";
+        } else if (error.message.includes("OCR") || error.message.includes("texto extraído")) {
+          errorMessage = "🔍 Falha no processamento OCR. Verifique se o arquivo contém texto legível.";
+        }
+      }
+
+      // Mantém a interface do usuário informada
+      setResult({ 
+        humanized_text: `Falha Crítica na Análise: Ocorreu um problema de comunicação com o servidor. Verifique o console (F12) para detalhes técnicos.`,
+        verificationCode: undefined 
+      });
     } finally {
       setLoading(false);
-      console.log("[SAPPHIRA_LOG] 🏁 Processo de análise finalizado.");
+      console.log("[SAPPHIRA_LOG] 🏁 Processo de análise finalizado (sucesso ou falha).");
     }
-  }, [userText, specificQuestion, loading, selectedFile, generateVerificationCode, analysisMode]);
+  }, [userText, specificQuestion, loading, createRequestWithTimeout, selectedFile, generateVerificationCode]);
 
   // Função de limpeza
   const handleClear = useCallback(() => {
