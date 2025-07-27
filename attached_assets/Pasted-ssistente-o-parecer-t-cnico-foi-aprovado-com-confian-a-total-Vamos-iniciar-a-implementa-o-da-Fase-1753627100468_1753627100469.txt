@@ -1,0 +1,78 @@
+ssistente, o parecer técnico foi aprovado com confiança total. Vamos iniciar a implementação da Fase 1 do plano recomendado.
+Sua Missão: Criar e integrar o novo "Header de Status".
+Passo 1: Crie o Componente do Badge de Status
+Crie um novo arquivo em src/components/dashboard/ chamado StatusBadge.tsx.
+Conteúdo para src/components/dashboard/StatusBadge.tsx:
+Generated typescript
+import React from 'react';
+
+interface StatusBadgeProps {
+  icon: string;
+  label: string;
+  value: string;
+}
+
+const StatusBadge: React.FC<StatusBadgeProps> = ({ icon, label, value }) => {
+  return (
+    <div className="status-badge">
+      <span className="badge-icon">{icon}</span>
+      <div className="badge-content">
+        <span className="badge-label">{label}</span>
+        <span className="badge-value">{value}</span>
+      </div>
+    </div>
+  );
+};
+
+export default StatusBadge;
+Use code with caution.
+TypeScript
+Passo 2: Adicione o CSS para o Badge e para o Header
+Abra o arquivo src/components/dashboard/AnalysisDashboard.css e adicione este CSS ao final dele.
+Generated css
+/* Estilos para o novo Header de Status */
+
+.status-header {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badge-icon {
+  font-size: 1.5rem;
+}
+
+.badge-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  display: block;
+}
+
+.badge-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+Use code with caution.
+Css
+Passo 3: Integre o Header no Dashboard Principal
+Modifique o arquivo src/components/dashboard/AnalysisDashboard.tsx.
+Importe o novo componente: import StatusBadge from './StatusBadge';
+Logo abaixo do <div className="dashboard-header">...</div> e antes do <div className="dashboard-tabs">...</div>, adicione o novo JSX para o StatusHeader:
+Generated typescript
+{/* Header de Status (NOVO BLOCO) */}
+<div className="status-header">
+  <StatusBadge icon="🎤" label="Modo de Voz" value={response.technical_data?.voice_calibration?.voice_mode || 'N/A'} />
+  <StatusBadge icon="🛡️" label="Risco Geral" value={response.technical_data?.forensic_analysis?.overall_manipulation_risk || 'N/A'} />
+  <StatusBadge icon="🎯" label="Confiança" value={`${((response.technical_data?.confidence_level?.score || 0) * 100).toFixed(0)}%`} />
+</div>
