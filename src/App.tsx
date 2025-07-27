@@ -214,9 +214,6 @@ export default function App() {
       formData.append('file', textBlob, 'input_manual.txt');
     }
 
-    // Log detalhado ANTES do bloco try...catch para vermos a URL
-    console.log(`[SAPPHIRA_LOG] 🕵️ Preparando para enviar requisição para: ${BACKEND_BASE_URL}/api/analyze`);
-
     try {
       const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: 'POST',
@@ -226,22 +223,16 @@ export default function App() {
         credentials: "omit"
       }, 60000); // Timeout de 60s para processamento OCR
 
-      console.log("[SAPPHIRA_LOG] ✅ Requisição fetch criada. Aguardando resposta...");
-
       const response = await request;
       cleanup();
-
-      console.log(`[SAPPHIRA_LOG] 🌐 Resposta recebida. Status da Rede: ${response.status}`);
 
       // Primeiro, verificamos se a resposta de rede está OK
       if (!response.ok) {
         const errorText = await response.text();
-        // Jogamos um erro específico para ser pego pelo catch block
-        throw new Error(`Erro de Servidor (${response.status}): ${errorText}`);
+        throw new Error(`Erro do Servidor (${response.status}): ${errorText}`);
       }
 
       const data = await response.json();
-      console.log("[SAPPHIRA_LOG] ✨ Resposta JSON parseada com sucesso:", data);
       console.log("📡 Resposta recebida - Status:", response.status);
       console.log("🔍 Dados recebidos:", data);
 
@@ -266,15 +257,7 @@ export default function App() {
       }
 
     } catch (error: unknown) {
-      console.error("[SAPPHIRA_LOG] 🔴 CAPTURADO ERRO CRÍTICO NO FETCH!");
-      if (error instanceof Error) {
-        console.error(`[SAPPHIRA_LOG] Tipo do Erro: ${error.name}`);
-        console.error(`[SAPPHIRA_LOG] Mensagem: ${error.message}`);
-        console.error(`[SAPPHIRA_LOG] Stack Trace:`, error.stack);
-      } else {
-        console.error("[SAPPHIRA_LOG] Erro não-padrão:", error);
-      }
-
+      console.error("❌ Falha na análise:", error);
       let errorMessage = (error instanceof Error) ? error.message : "Ocorreu um erro desconhecido.";
 
       if (error instanceof Error) {
@@ -287,14 +270,13 @@ export default function App() {
         }
       }
 
-      // Mantém a interface do usuário informada
+      // Exibe a mensagem de erro formatada na interface
       setResult({ 
-        humanized_text: `Falha Crítica na Análise: Ocorreu um problema de comunicação com o servidor. Verifique o console (F12) para detalhes técnicos.`,
+        humanized_text: `Falha Crítica na Análise: ${errorMessage}`,
         verificationCode: undefined 
       });
     } finally {
       setLoading(false);
-      console.log("[SAPPHIRA_LOG] 🏁 Processo de análise finalizado (sucesso ou falha).");
     }
   }, [userText, specificQuestion, loading, createRequestWithTimeout, selectedFile, generateVerificationCode]);
 

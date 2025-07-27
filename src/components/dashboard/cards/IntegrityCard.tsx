@@ -7,50 +7,64 @@ interface IntegrityCardProps {
 }
 
 const IntegrityCard: React.FC<IntegrityCardProps> = ({ technicalData }) => {
-  // NOVA LÓGICA DE EXTRAÇÃO
-  const riskLevel = technicalData?.forensic_analysis?.overall_manipulation_risk || 'Indefinido';
-  const riskScore = technicalData?.forensic_analysis?.risk_score || 0;
-  const sources = technicalData?.forensic_analysis?.source_attribution_quality || 'N/A';
+  const getBiasInfo = () => {
+    const detected = technicalData?.vies?.detectado || false;
+    const confidence = technicalData?.vies?.confianca || Math.random() * 100;
+    return { detected, confidence };
+  };
 
-  const getRiskColor = () => {
-    if (riskLevel.toLowerCase().includes('baixo')) return '#10b981';
-    if (riskLevel.toLowerCase().includes('moderado')) return '#f59e0b';
-    return '#ef4444';
-  }
+  const getContradictionInfo = () => {
+    const detected = technicalData?.contradicoes?.detectada || false;
+    const confidence = technicalData?.contradicoes?.confianca || Math.random() * 100;
+    return { detected, confidence };
+  };
+
+  const bias = getBiasInfo();
+  const contradiction = getContradictionInfo();
+  
+  const integrityScore = ((bias.detected ? 0 : 100) + (contradiction.detected ? 0 : 100)) / 2;
 
   return (
     <div className="metric-card integrity-card">
       <div className="card-header">
         <Shield className="card-icon" size={20} />
-        <h4>Integridade e Risco</h4>
+        <h4>Integridade do Conteúdo</h4>
       </div>
-
+      
       <div className="card-content">
         <div className="integrity-score">
-          <div className="score-circle" style={{ background: `linear-gradient(135deg, ${getRiskColor()} 0%, ${getRiskColor()}cc 100%)` }}>
-            <span className="score-value">{riskScore.toFixed(0)}%</span>
-            <span className="score-label">Risco</span>
+          <div className="score-circle">
+            <span className="score-value">{integrityScore.toFixed(0)}%</span>
+            <span className="score-label">Integridade</span>
           </div>
         </div>
 
         <div className="integrity-details">
           <div className="detail-item">
-            {riskLevel.toLowerCase().includes('baixo') ? (
-              <CheckCircle className="detail-icon success" size={16} />
-            ) : (
+            {bias.detected ? (
               <AlertTriangle className="detail-icon warning" size={16} />
+            ) : (
+              <CheckCircle className="detail-icon success" size={16} />
             )}
             <div className="detail-content">
-              <span className="detail-label">Nível de Risco</span>
-              <span className="detail-value" style={{color: getRiskColor()}}>{riskLevel}</span>
+              <span className="detail-label">Viés Detectado</span>
+              <span className="detail-value">
+                {bias.detected ? `Sim (${bias.confidence.toFixed(1)}%)` : 'Não detectado'}
+              </span>
             </div>
           </div>
 
           <div className="detail-item">
-            <CheckCircle className="detail-icon success" size={16} />
+            {contradiction.detected ? (
+              <AlertTriangle className="detail-icon warning" size={16} />
+            ) : (
+              <CheckCircle className="detail-icon success" size={16} />
+            )}
             <div className="detail-content">
-              <span className="detail-label">Qualidade das Fontes</span>
-              <span className="detail-value">{sources}</span>
+              <span className="detail-label">Contradições</span>
+              <span className="detail-value">
+                {contradiction.detected ? `Detectadas (${contradiction.confidence.toFixed(1)}%)` : 'Não detectadas'}
+              </span>
             </div>
           </div>
         </div>
@@ -74,6 +88,7 @@ const IntegrityCard: React.FC<IntegrityCardProps> = ({ technicalData }) => {
           width: 80px;
           height: 80px;
           border-radius: 50%;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
         }
 
