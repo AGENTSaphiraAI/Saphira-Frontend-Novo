@@ -214,69 +214,54 @@ export default function App() {
       formData.append('file', textBlob, 'input_manual.txt');
     }
 
+    // Log inicial para confirmar que a função foi chamada e ver a URL.
+    console.log(`[CAIXA-PRETA] 🕵️ Tentando iniciar a análise. Endpoint: ${BACKEND_BASE_URL}/api/analyze`);
+    console.log(`[CAIXA-PRETA] Modo de Análise: ${analysisMode}`);
+
     try {
-      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
+      // A chamada fetch direta e simplificada.
+      const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
         method: 'POST',
-        body: formData, // O navegador definirá o Content-Type correto
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "omit"
-      }, 60000); // Timeout de 60s para processamento OCR
+        body: formData,
+        mode: "cors"
+      });
 
-      const response = await request;
-      cleanup();
+      console.log(`[CAIXA-PRETA] 🌐 Resposta da rede recebida. Status HTTP: ${response.status}`);
 
-      // Primeiro, verificamos se a resposta de rede está OK
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erro do Servidor (${response.status}): ${errorText}`);
+        const errorText = await response.text().catch(() => 'Não foi possível ler o corpo da resposta de erro.');
+        throw new Error(`Erro de Servidor (${response.status}): ${errorText}`);
       }
 
       const data = await response.json();
-      console.log("📡 Resposta recebida - Status:", response.status);
-      console.log("🔍 Dados recebidos:", data);
+      console.log("[CAIXA-PRETA] ✨ Resposta JSON parseada com sucesso:", data);
 
-      // AGORA, A VERIFICAÇÃO DE CONTEÚDO (O CORAÇÃO DA MUDANÇA)
       if (data && data.displayData && data.displayData.humanized_text) {
-        // Cenário de Sucesso
-        console.log("✅ Análise multimodal concluída com sucesso");
-        const verificationCode = generateVerificationCode();
-
-        setResult({
-          ...data.displayData,
-          verificationCode
-        });
+        setResult({ ...data.displayData, verificationCode: data.displayData.verificationCode });
         setShowExport(true);
-      } else if (data && data.error) {
-        // Cenário onde o Backend reporta um erro controlado (ex: OCR falhou)
-        throw new Error(`Erro no Backend: ${data.error}`);
       } else {
-        // Cenário de resposta inesperada
-        console.warn("⚠️ Estrutura de resposta inesperada:", data);
-        throw new Error("Formato de resposta inesperado recebido do servidor.");
+        throw new Error("Formato de resposta JSON inesperado.");
       }
 
     } catch (error: unknown) {
-      console.error("❌ Falha na análise:", error);
-      let errorMessage = (error instanceof Error) ? error.message : "Ocorreu um erro desconhecido.";
-
+      // Nosso log de erro detalhado para capturar o fantasma.
+      console.error("[CAIXA-PRETA] 🔴 ERRO CRÍTICO CAPTURADO DURANTE O FETCH!");
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = "⏱️ Tempo limite de 60s excedido. Para arquivos grandes com OCR, tente novamente.";
-        } else if (error.message.includes("fetch") || error.message.includes("network")) {
-          errorMessage = "🌐 Problema de conectividade. Verifique sua conexão e tente novamente.";
-        } else if (error.message.includes("OCR") || error.message.includes("texto extraído")) {
-          errorMessage = "🔍 Falha no processamento OCR. Verifique se o arquivo contém texto legível.";
-        }
+        console.error(`[CAIXA-PRETA] - Nome do Erro: ${error.name}`);
+        console.error(`[CAIXA-PRETA] - Mensagem: ${error.message}`);
+        console.error(`[CAIXA-PRETA] - Stack Trace:`, error.stack);
+      } else {
+        console.error("[CAIXA-PRETA] Erro de tipo desconhecido:", error);
       }
 
-      // Exibe a mensagem de erro formatada na interface
-      setResult({ 
-        humanized_text: `Falha Crítica na Análise: ${errorMessage}`,
-        verificationCode: undefined 
+      setResult({
+        humanized_text: `Falha na Análise: Ocorreu um problema de comunicação com o servidor. Por favor, abra o console do desenvolvedor (F12) para inspecionar os logs detalhados marcados com '[CAIXA-PRETA]'.`,
+        verificationCode: undefined
       });
+
     } finally {
       setLoading(false);
+      console.log("[CAIXA-PRETA] 🏁 Processo de análise finalizado (seja com sucesso ou falha).");
     }
   }, [userText, specificQuestion, loading, createRequestWithTimeout, selectedFile, generateVerificationCode]);
 
