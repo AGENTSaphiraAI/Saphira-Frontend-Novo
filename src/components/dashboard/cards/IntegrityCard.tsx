@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Shield, AlertTriangle, CheckCircle } from 'lucide-react';
 

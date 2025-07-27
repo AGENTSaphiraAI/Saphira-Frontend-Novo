@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MessageSquare } from 'lucide-react';
 
@@ -9,8 +10,7 @@ const ToneAnalysisCard: React.FC<ToneAnalysisCardProps> = ({ technicalData }) =>
   // NOVA LÓGICA DE EXTRAÇÃO
   const dominantTone = technicalData?.voice_calibration?.voice_mode || 'N/A';
   const emotionalTone = technicalData?.forensic_analysis?.emotional_classification || 'N/A';
-  const confidence = (technicalData?.confidence_level?.score || 0) * 100;
-
+  
   const getToneEmoji = (tone: string) => {
     switch (tone.toLowerCase()) {
       case 'juiza': return '⚖️';
