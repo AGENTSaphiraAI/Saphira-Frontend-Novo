@@ -237,7 +237,7 @@ export default function App() {
       if (data && data.displayData && data.displayData.humanized_text) {
         setResult({
           humanized_text: data.displayData.humanized_text,
-          technicalData: data.rawData, // A PEÇA QUE FALTAVA!
+          technicalData: data.rawData, // <--- A CONEXÃO DEFINITIVA
           verificationCode: data.displayData.verification_code
         });
         setShowExport(true);
