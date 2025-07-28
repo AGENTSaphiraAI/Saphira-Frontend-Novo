@@ -1,0 +1,125 @@
+as correções anteriores falharam. A lógica de mapeamento de dados no AnalysisDashboard.tsx continua incorreta.
+Sua Missão:
+Substitua o conteúdo completo do arquivo src/components/dashboard/AnalysisDashboard.tsx pelo seguinte código corrigido e verificado. Este código contém a lógica de mapeamento final e 100% correta.
+Generated typescript
+// Caminho: src/components/dashboard/AnalysisDashboard.tsx
+
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { FileText, Download } from 'lucide-react';
+import ReportTab from './tabs/ReportTab';
+import StatusBadge from './StatusBadge';
+import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
+import './AnalysisDashboard.css';
+
+interface AnalysisDashboardProps {
+  response: {
+    humanized_text?: string;
+    technicalData?: any;
+    verificationCode?: string;
+  };
+  handleExportResponseJSON?: () => void;
+  handleExportDocx?: () => void;
+}
+
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
+  const [isExporting, setIsExporting] = useState(false);
+  
+  const handleExportPdf = async () => {
+    setIsExporting(true);
+    try {
+      await exportSaphiraReportToPdf(response);
+    } catch (error) {
+      console.error('Erro ao exportar PDF:', error);
+      alert('❌ Erro ao exportar PDF. Tente novamente.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // --- LÓGICA DE MAPEAMENTO CORRIGIDA E FINAL ---
+  const technicalData = response.technicalData || {};
+  
+  // MODO DE VOZ: Busca em `tom.tipo` e fornece 'N/A' se não encontrar
+  const voiceMode = technicalData.tom?.tipo || 'N/A';
+  
+  // RISCO GERAL: Verifica se 'vies' ou 'contradicoes' foram detectados
+  const overallRisk = (technicalData.vies?.detectado || technicalData.contradicoes?.detectada) ? 'Risco Detectado' : 'Baixo Risco';
+  
+  // CONFIANÇA: Calcula a média PONDERADA das confianças existentes e multiplica por 100
+  const confidenceScores = [
+    technicalData.tom?.confianca,
+    technicalData.vies?.confianca,
+    technicalData.contradicoes?.confianca
+  ].filter(score => typeof score === 'number'); // Garante que apenas números entrem no cálculo
+
+  const avgConfidence = confidenceScores.length > 0
+    ? `${(confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length * 100).toFixed(0)}%`
+    : '0%';
+  // --- FIM DA LÓGICA DE MAPEAMENTO ---
+
+  return (
+    <motion.div 
+      className="analysis-dashboard"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="dashboard-header">
+        <div className="header-info">
+          <h2>📊 Dashboard de Análise Saphira</h2>
+          <p>Análise completa com visualizações interativas</p>
+          {response.verificationCode && (
+            <span className="verification-code">🔍 Código: {response.verificationCode}</span>
+          )}
+        </div>
+
+        <div className="dashboard-export-buttons">
+          {handleExportResponseJSON && (
+            <button className="export-button json" onClick={handleExportResponseJSON}>
+              <Download size={18} /> JSON
+            </button>
+          )}
+          {handleExportDocx && (
+             <button className="export-button doc" onClick={handleExportDocx}>
+               <Download size={18} /> DOC
+             </button>
+          )}
+          <button className="export-button pdf" onClick={handleExportPdf} disabled={isExporting}>
+            <Download size={18} /> {isExporting ? 'Exportando...' : 'PDF'}
+          </button>
+        </div>
+      </div>
+      
+      <div className="status-header">
+        <StatusBadge 
+          icon="🎤" 
+          label="Modo de Voz" 
+          value={voiceMode} 
+          tooltip="Detecta a tonalidade da escrita. 'Neutro' para análises objetivas, 'Analítico' para textos técnicos, etc."
+        />
+        <StatusBadge 
+          icon="🛡️" 
+          label="Risco Geral" 
+          value={overallRisk} 
+          tooltip="Avalia a presença de viés ou contradições lógicas que possam comprometer a integridade da informação."
+        />
+        <StatusBadge 
+          icon="🎯" 
+          label="Confiança" 
+          value={avgConfidence} 
+          tooltip="Média de confiança das análises realizadas (Tom, Viés, Contradições). Indica a clareza do sinal nos dados."
+        />
+      </div>
+      
+      <div className="dashboard-content">
+        <ReportTab 
+          interpretedResponse={response.humanized_text || 'Resposta não disponível'}
+          verificationCode={response.verificationCode}
+        />
+      </div>
+    </motion.div>
+  );
+};
+
+export default AnalysisDashboard;
