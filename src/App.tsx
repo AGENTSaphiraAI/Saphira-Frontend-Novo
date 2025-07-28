@@ -33,7 +33,7 @@ export default function App() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Constantes otimizadas
-  const BACKEND_BASE_URL = "https://saphira-engine-backend.guilhermeguimaraes.replit.dev";
+  const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
   const KEEP_ALIVE_INTERVAL = 300000; // 5 minutos  
   const REQUEST_TIMEOUT = 8000; // 8 segundos
 
@@ -60,19 +60,20 @@ export default function App() {
   // Handler global para promises rejeitadas
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      // Filtrar erros conhecidos e aceitáveis
+      // Silenciar completamente erros de fetch/network
       if (event.reason?.name === 'AbortError' || 
           event.reason?.message?.includes('fetch') ||
           event.reason?.message?.includes('network') ||
+          event.reason?.message?.includes('Failed to fetch') ||
           event.reason?.code === 'NETWORK_ERROR' ||
           !event.reason) {
-        event.preventDefault(); // Previne log no console
+        event.preventDefault();
         return;
       }
 
-      // Log apenas erros relevantes
-      if (event.reason instanceof Error) {
-        console.warn('🚨 Promise rejeitada:', event.reason.message);
+      // Log apenas erros críticos não relacionados a rede
+      if (event.reason instanceof Error && !event.reason.message.includes('fetch')) {
+        console.warn('🚨 Erro crítico:', event.reason.message);
       }
       event.preventDefault();
     };
@@ -117,14 +118,17 @@ export default function App() {
 
       const pingBackend = async () => {
         try {
-          const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/health`, {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+          const response = await fetch(`${BACKEND_BASE_URL}/health`, {
             method: "GET",
             mode: "cors",
-            cache: "no-cache"
-          }, 6000);
+            cache: "no-cache",
+            signal: controller.signal
+          });
 
-          const response = await request;
-          cleanup();
+          clearTimeout(timeoutId);
 
           if (response.ok) {
             console.log("✅ Keep-alive OK");
@@ -133,7 +137,7 @@ export default function App() {
             setKeepAliveActive(false);
           }
         } catch (err) {
-          // Silenciar erros de keep-alive para não gerar unhandledrejection
+          // Silenciar completamente erros de keep-alive
           setKeepAliveActive(false);
         }
       };
