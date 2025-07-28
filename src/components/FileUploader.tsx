@@ -74,9 +74,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     <div className="file-uploader">
       <div className="upload-section">
         <label htmlFor="file-upload" className="upload-label">
-          <span className="upload-text">
-            ☁️ Selecionar Arquivo (.txt, .pdf, .docx)
-          </span>
+          ☁️ Selecionar Arquivo (.txt, .pdf, .docx)
         </label>
         <input
           id="file-upload"
@@ -101,7 +99,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
         <div className="file-preview">
           <div className="file-header">
             <div className="file-info">
-              <strong>📄 Arquivo:</strong> <span className="file-name">{fileName}</span>
+              <strong>📄 Arquivo:</strong> {fileName}
               <span className="file-size">({fileContent.length} caracteres)</span>
             </div>
             <button 
@@ -121,10 +119,10 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
               }
             </pre>
           </div>
+
+
         </div>
       )}
-
-      
     </div>
   );
 }
