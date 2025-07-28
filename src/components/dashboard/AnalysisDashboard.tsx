@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Download } from 'lucide-react';
@@ -11,7 +12,6 @@ interface AnalysisDashboardProps {
     humanized_text?: string;
     technicalData?: any;
     verificationCode?: string;
-    [key: string]: any;
   };
   handleExportResponseJSON?: () => void;
   handleExportDocx?: () => void;
@@ -19,9 +19,7 @@ interface AnalysisDashboardProps {
 
 const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
   const [isExporting, setIsExporting] = useState(false);
-
-  const activeTab = 'report'; // Mantendo a simplicidade por enquanto
-
+  
   const handleExportPdf = async () => {
     setIsExporting(true);
     try {
@@ -34,18 +32,24 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
     }
   };
 
-  // --- LÓGICA DE MAPEAMENTO CORRIGIDA ---
-  // Extrai e calcula os valores para os Badges com base no que o backend REALMENTE envia.
+  // --- LÓGICA DE MAPEAMENTO CORRIGIDA E FINAL ---
   const technicalData = response.technicalData || {};
+  
+  // MODO DE VOZ: Busca em `tom.tipo` e fornece 'N/A' se não encontrar
   const voiceMode = technicalData.tom?.tipo || 'N/A';
+  
+  // RISCO GERAL: Verifica se 'vies' ou 'contradicoes' foram detectados
   const overallRisk = (technicalData.vies?.detectado || technicalData.contradicoes?.detectada) ? 'Risco Detectado' : 'Baixo Risco';
+  
+  // CONFIANÇA: Calcula a média PONDERADA das confianças existentes e multiplica por 100
   const confidenceScores = [
-    technicalData.tom?.confianca || 0,
-    technicalData.vies?.confianca || 0,
-    technicalData.contradicoes?.confianca || 0
-  ].filter(score => score > 0);
-  const avgConfidence = confidenceScores.length > 0 
-    ? (confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length * 100).toFixed(0) + '%'
+    technicalData.tom?.confianca,
+    technicalData.vies?.confianca,
+    technicalData.contradicoes?.confianca
+  ].filter(score => typeof score === 'number'); // Garante que apenas números entrem no cálculo
+
+  const avgConfidence = confidenceScores.length > 0
+    ? `${(confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length * 100).toFixed(0)}%`
     : '0%';
   // --- FIM DA LÓGICA DE MAPEAMENTO ---
 
@@ -61,27 +65,28 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
           <h2>📊 Dashboard de Análise Saphira</h2>
           <p>Análise completa com visualizações interativas</p>
           {response.verificationCode && (
-            <span className="verification-code">
-              🔍 Código: {response.verificationCode}
-            </span>
+            <span className="verification-code">🔍 Código: {response.verificationCode}</span>
           )}
         </div>
 
         <div className="dashboard-export-buttons">
-          <button className="export-button json" onClick={handleExportResponseJSON}>
-            <Download size={18} /> JSON
-          </button>
-          <button className="export-button doc" onClick={handleExportDocx}>
-            <Download size={18} /> DOC
-          </button>
+          {handleExportResponseJSON && (
+            <button className="export-button json" onClick={handleExportResponseJSON}>
+              <Download size={18} /> JSON
+            </button>
+          )}
+          {handleExportDocx && (
+             <button className="export-button doc" onClick={handleExportDocx}>
+               <Download size={18} /> DOC
+             </button>
+          )}
           <button className="export-button pdf" onClick={handleExportPdf} disabled={isExporting}>
             <Download size={18} /> {isExporting ? 'Exportando...' : 'PDF'}
           </button>
         </div>
       </div>
-
+      
       <div className="status-header">
-        {/* Usando as variáveis corrigidas com tooltips informativos */}
         <StatusBadge 
           icon="🎤" 
           label="Modo de Voz" 
@@ -101,7 +106,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
           tooltip="Média de confiança das análises realizadas (Tom, Viés, Contradições). Indica a clareza do sinal nos dados."
         />
       </div>
-
+      
       <div className="dashboard-content">
         <ReportTab 
           interpretedResponse={response.humanized_text || 'Resposta não disponível'}
