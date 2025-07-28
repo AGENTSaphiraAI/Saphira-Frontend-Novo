@@ -1,8 +1,12 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download } from 'lucide-react';
+import { FileText, Download, BarChart3, Braces } from 'lucide-react';
+
 import ReportTab from './tabs/ReportTab';
+import MetricsTab from './tabs/MetricsTab';
 import StatusBadge from './StatusBadge';
+
 import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
 import './AnalysisDashboard.css';
 
@@ -11,17 +15,15 @@ interface AnalysisDashboardProps {
     humanized_text?: string;
     technical_data?: any;
     verificationCode?: string;
-    [key: string]: any;
   };
-  handleExportResponseJSON?: () => void;
-  handleExportDocx?: () => void;
+  handleExportResponseJSON: () => void;
+  handleExportDocx: () => void;
 }
 
 const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
   const [isExporting, setIsExporting] = useState(false);
-
-  // Simplificado para mostrar apenas o relatório principal
-  const activeTab = 'report';
+  // Reativando o estado para controlar as abas
+  const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'data'>('report');
 
   const handleExportPdf = async () => {
     setIsExporting(true);
@@ -36,27 +38,12 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
   };
 
   return (
-    <>
-      {/* BLOCO DE DIAGNÓSTICO FINAL */}
-      <pre style={{ color: 'white', backgroundColor: '#1E293B', padding: '1rem', borderRadius: '8px', margin: '1rem', textAlign: 'left' }}>
-        <code>
-          --- SORO DA VERDADE v2.0 ---<br />
-          Objeto 'technical_data' recebido:<br />
-          {JSON.stringify(response.technical_data, null, 2)}
-          <br /><br />
-          --- CHAVES DISPONÍVEIS ---<br />
-          {JSON.stringify(Object.keys(response.technical_data || {}))}
-        </code>
-      </pre>
-      {/* FIM DO BLOCO DE DIAGNÓSTICO */}
-
-      <motion.div 
-        className="analysis-dashboard"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-      {/* Cabeçalho do Dashboard */}
+    <motion.div 
+      className="analysis-dashboard"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="dashboard-header">
         <div className="header-info">
           <h2>📊 Dashboard de Análise Saphira</h2>
@@ -69,46 +56,19 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
         </div>
 
         <div className="dashboard-export-buttons">
-          {handleExportResponseJSON && (
-            <button 
-              className="export-pdf-button"
-              onClick={handleExportResponseJSON}
-              style={{
-                background: 'linear-gradient(45deg, #4caf50 0%, #66bb6a 100%)',
-                boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)'
-              }}
-            >
-              <Download size={20} />
-              <span>Exportar JSON</span>
-            </button>
-          )}
-
-          {handleExportDocx && (
-            <button 
-              className="export-pdf-button"
-              onClick={handleExportDocx}
-              style={{
-                background: 'linear-gradient(45deg, #0b74e5 0%, #1d4ed8 100%)',
-                boxShadow: '0 4px 12px rgba(11, 116, 229, 0.3)'
-              }}
-            >
-              <Download size={20} />
-              <span>Exportar DOC</span>
-            </button>
-          )}
-
-          <button 
-            className="export-pdf-button"
-            onClick={handleExportPdf}
-            disabled={isExporting}
-          >
-            <Download size={20} />
-            <span>{isExporting ? 'Exportando...' : 'Exportar PDF'}</span>
+          <button className="export-button json" onClick={handleExportResponseJSON}>
+            <Download size={18} /> JSON
+          </button>
+          <button className="export-button doc" onClick={handleExportDocx}>
+            <Download size={18} /> DOC
+          </button>
+          <button className="export-button pdf" onClick={handleExportPdf} disabled={isExporting}>
+            <Download size={18} /> {isExporting ? 'Exportando...' : 'PDF'}
           </button>
         </div>
       </div>
-
-      {/* Header de Status - FIOS RECONECTADOS */}
+      
+      {/* O cabeçalho de status que já existia, agora funcionando */}
       <div className="status-header">
         <StatusBadge 
           icon="🎤" 
@@ -127,20 +87,77 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
         />
       </div>
 
-      {/* Conteúdo Principal - Relatório da Saphira */}
+      {/* Navegação das Abas */}
+      <div className="dashboard-tabs">
+        <button 
+          className={`tab-button ${activeTab === 'report' ? 'active' : ''}`}
+          onClick={() => setActiveTab('report')}
+        >
+          <FileText size={20} />
+          <div className="tab-content">
+            <span className="tab-label">Relatório Principal</span>
+            <span className="tab-description">Análise interpretada e humanizada</span>
+          </div>
+        </button>
+        
+        <button 
+          className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
+          onClick={() => setActiveTab('metrics')}
+        >
+          <BarChart3 size={20} />
+          <div className="tab-content">
+            <span className="tab-label">Métricas Visuais</span>
+            <span className="tab-description">Gráficos e indicadores técnicos</span>
+          </div>
+        </button>
+        
+        <button 
+          className={`tab-button ${activeTab === 'data' ? 'active' : ''}`}
+          onClick={() => setActiveTab('data')}
+        >
+          <Braces size={20} />
+          <div className="tab-content">
+            <span className="tab-label">Dados Brutos</span>
+            <span className="tab-description">JSON técnico completo</span>
+          </div>
+        </button>
+      </div>
+
+      {/* Conteúdo das Abas */}
       <motion.div 
         className="dashboard-content"
+        key={activeTab}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.3 }}
       >
-        <ReportTab 
-          interpretedResponse={response.humanized_text || 'Resposta não disponível'}
-          verificationCode={response.verificationCode}
-        />
+        {activeTab === 'report' && (
+          <ReportTab 
+            interpretedResponse={response.humanized_text || 'Resposta não disponível'}
+            verificationCode={response.verificationCode}
+          />
+        )}
+        {activeTab === 'metrics' && (
+          <MetricsTab technicalData={response.technical_data} />
+        )}
+        {activeTab === 'data' && (
+          <div className="raw-data-tab">
+            <div className="raw-data-header">
+              <Braces className="header-icon" size={24} />
+              <div>
+                <h3>Dados Técnicos Brutos</h3>
+                <p>JSON completo retornado pela API</p>
+              </div>
+            </div>
+            <div className="json-container">
+              <pre className="json-content">
+                {JSON.stringify(response.technical_data || {}, null, 2)}
+              </pre>
+            </div>
+          </div>
+        )}
       </motion.div>
     </motion.div>
-    </>
   );
 };
 

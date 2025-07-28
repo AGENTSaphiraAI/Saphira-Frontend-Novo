@@ -21,6 +21,103 @@
   flex-wrap: wrap;
 }
 
+.export-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.export-button.json {
+  background: linear-gradient(45deg, #4caf50, #66bb6a);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.export-button.doc {
+  background: linear-gradient(45deg, #0b74e5, #1d4ed8);
+  box-shadow: 0 4px 12px rgba(11, 116, 229, 0.3);
+}
+
+.export-button.pdf {
+  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.export-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.export-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.raw-data-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.raw-data-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.raw-data-header .header-icon {
+  color: #0b74e5;
+}
+
+.raw-data-header h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.raw-data-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.json-container {
+  flex: 1;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  overflow: auto;
+  max-height: 500px;
+}
+
+.json-content {
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #334155;
+  white-space: pre-wrap;
+}
+
 .header-info h2 {
   margin: 0 0 0.5rem 0;
   color: #1e293b;
