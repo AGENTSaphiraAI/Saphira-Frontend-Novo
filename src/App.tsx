@@ -60,20 +60,19 @@ export default function App() {
   // Handler global para promises rejeitadas
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      // Silenciar completamente erros de fetch/network
+      // Filtrar erros conhecidos e aceitáveis
       if (event.reason?.name === 'AbortError' || 
           event.reason?.message?.includes('fetch') ||
           event.reason?.message?.includes('network') ||
-          event.reason?.message?.includes('Failed to fetch') ||
           event.reason?.code === 'NETWORK_ERROR' ||
           !event.reason) {
-        event.preventDefault();
+        event.preventDefault(); // Previne log no console
         return;
       }
 
-      // Log apenas erros críticos não relacionados a rede
-      if (event.reason instanceof Error && !event.reason.message.includes('fetch')) {
-        console.warn('🚨 Erro crítico:', event.reason.message);
+      // Log apenas erros relevantes
+      if (event.reason instanceof Error) {
+        console.warn('🚨 Promise rejeitada:', event.reason.message);
       }
       event.preventDefault();
     };
@@ -118,17 +117,14 @@ export default function App() {
 
       const pingBackend = async () => {
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-          const response = await fetch(`${BACKEND_BASE_URL}/health`, {
+          const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/health`, {
             method: "GET",
             mode: "cors",
-            cache: "no-cache",
-            signal: controller.signal
-          });
+            cache: "no-cache"
+          }, 6000);
 
-          clearTimeout(timeoutId);
+          const response = await request;
+          cleanup();
 
           if (response.ok) {
             console.log("✅ Keep-alive OK");
@@ -137,7 +133,7 @@ export default function App() {
             setKeepAliveActive(false);
           }
         } catch (err) {
-          // Silenciar completamente erros de keep-alive
+          // Silenciar erros de keep-alive para não gerar unhandledrejection
           setKeepAliveActive(false);
         }
       };
@@ -249,28 +245,14 @@ export default function App() {
 
     } catch (error: unknown) {
       console.error("[CAIXA-PRETA] 🔴 ERRO CRÍTICO CAPTURADO!");
-      console.error("URL tentada:", `${BACKEND_BASE_URL}/api/analyze`);
-      
       if (error instanceof Error) {
         console.error(`[CAIXA-PRETA] - Mensagem: ${error.message}`);
-        console.error(`[CAIXA-PRETA] - Nome: ${error.name}`);
       } else {
         console.error("[CAIXA-PRETA] - Erro de tipo desconhecido:", error);
       }
       
       setResult({
-        humanized_text: `❌ **Erro de Conexão**
-
-**Detalhes do Problema:**
-- **URL Backend:** ${BACKEND_BASE_URL}
-- **Erro:** ${(error instanceof Error) ? error.message : 'Erro desconhecido'}
-
-**Possíveis Soluções:**
-1. Verifique se o backend está online
-2. Teste a conexão usando o botão "🔗 Testar Conexão"
-3. Aguarde alguns segundos e tente novamente
-
-*Se o problema persistir, verifique os logs do console (F12)*`,
+        humanized_text: `Falha na Análise: ${(error instanceof Error) ? error.message : 'Ocorreu um erro desconhecido.'}`,
         verificationCode: undefined
       });
 
@@ -353,18 +335,6 @@ export default function App() {
       alert("Falha ao gerar o relatório DOCX. Verifique o console.");
     }
   }, [result]);
-
-  // Teste automático de conexão na inicialização
-  useEffect(() => {
-    const testInitialConnection = async () => {
-      console.log("🔄 Testando conectividade inicial...");
-      await handleTestConnection();
-    };
-    
-    // Executa teste após 2 segundos do carregamento
-    const timer = setTimeout(testInitialConnection, 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Teste de conexão otimizado
   const handleTestConnection = useCallback(async () => {
