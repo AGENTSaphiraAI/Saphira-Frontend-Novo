@@ -9,7 +9,7 @@ import './AnalysisDashboard.css';
 interface AnalysisDashboardProps {
   response: {
     humanized_text?: string;
-    technical_data?: any;
+    technicalData?: any;
     verificationCode?: string;
     [key: string]: any;
   };
@@ -36,7 +36,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
 
   // --- LÓGICA DE MAPEAMENTO CORRIGIDA ---
   // Extrai e calcula os valores para os Badges com base no que o backend REALMENTE envia.
-  const technicalData = response.technical_data || {};
+  const technicalData = response.technicalData || {};
   const voiceMode = technicalData.tom?.tipo || 'N/A';
   const overallRisk = (technicalData.vies?.detectado || technicalData.contradicoes?.detectada) ? 'Risco Detectado' : 'Baixo Risco';
   const confidenceScores = [

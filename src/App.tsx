@@ -235,7 +235,11 @@ export default function App() {
       console.log("[CAIXA-PRETA] ✨ Resposta JSON parseada com sucesso:", data);
       
       if (data && data.displayData && data.displayData.humanized_text) {
-        setResult({ ...data.displayData, verificationCode: data.displayData.verificationCode });
+        setResult({
+          humanized_text: data.displayData.humanized_text,
+          technicalData: data.rawData, // A PEÇA QUE FALTAVA!
+          verificationCode: data.displayData.verification_code
+        });
         setShowExport(true);
       } else if (data && data.error) {
         throw new Error(`Erro retornado pelo Backend: ${data.error}`);
