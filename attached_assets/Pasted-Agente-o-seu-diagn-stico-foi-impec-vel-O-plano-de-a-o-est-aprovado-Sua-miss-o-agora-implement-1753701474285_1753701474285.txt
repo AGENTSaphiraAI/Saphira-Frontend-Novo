@@ -1,0 +1,134 @@
+Agente, o seu diagnóstico foi impecável. O plano de ação está aprovado. Sua missão agora é implementar a correção completa e reativar todo o potencial visual do AnalysisDashboard.
+Sua Tarefa:
+Substitua o conteúdo completo do arquivo src/components/dashboard/AnalysisDashboard.tsx pelo código a seguir. Este código reativa o sistema de abas, conecta os dados aos componentes visuais e remove o bloco de diagnóstico.
+Generated typescript
+// Caminho do Arquivo: src/components/dashboard/AnalysisDashboard.tsx
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { FileText, Download, BarChart3, Braces } from 'lucide-react';
+
+import ReportTab from './tabs/ReportTab';
+import MetricsTab from './tabs/MetricsTab';
+import StatusBadge from './StatusBadge';
+
+import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
+import './AnalysisDashboard.css';
+
+// Usaremos a biblioteca que já está no projeto para visualizar o JSON
+import JsonView from 'react18-json-view'
+import 'react18-json-view/src/style.css'
+
+interface AnalysisDashboardProps {
+  response: {
+    humanized_text?: string;
+    technical_data?: any;
+    verificationCode?: string;
+  };
+  handleExportResponseJSON: () => void;
+  handleExportDocx: () => void;
+}
+
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
+  const [isExporting, setIsExporting] = useState(false);
+  // Reativando o estado para controlar as abas
+  const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'data'>('report');
+
+  const handleExportPdf = async () => {
+    setIsExporting(true);
+    try {
+      await exportSaphiraReportToPdf(response);
+    } catch (error) {
+      console.error('Erro ao exportar PDF:', error);
+      alert('❌ Erro ao exportar PDF. Tente novamente.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Removendo o Soro da Verdade. Não é mais necessário.
+
+  return (
+    <motion.div 
+      className="analysis-dashboard"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="dashboard-header">
+        <div className="header-info">
+          <h2>📊 Dashboard de Análise Saphira</h2>
+          <p>Análise completa com visualizações interativas</p>
+          {response.verificationCode && (
+            <span className="verification-code">
+              🔍 Código: {response.verificationCode}
+            </span>
+          )}
+        </div>
+
+        <div className="dashboard-export-buttons">
+          <button className="export-button json" onClick={handleExportResponseJSON}>
+            <Download size={18} /> JSON
+          </button>
+          <button className="export-button doc" onClick={handleExportDocx}>
+            <Download size={18} /> DOC
+          </button>
+          <button className="export-button pdf" onClick={handleExportPdf} disabled={isExporting}>
+            <Download size={18} /> {isExporting ? 'Exportando...' : 'PDF'}
+          </button>
+        </div>
+      </div>
+      
+      {/* O cabeçalho de status que já existia, agora funcionando */}
+      <div className="status-header">
+        <StatusBadge 
+          icon="🎤" 
+          label="Modo de Voz" 
+          value={response.technical_data?.voice_calibration?.voice_mode || 'N/A'} 
+        />
+        <StatusBadge 
+          icon="🛡️" 
+          label="Risco Geral" 
+          value={response.technical_data?.forensic_analysis?.overall_manipulation_risk || 'N/A'} 
+        />
+        <StatusBadge 
+          icon="🎯" 
+          label="Confiança" 
+          value={`${((response.technical_data?.confidence_level?.score || 0) * 100).toFixed(0)}%`} 
+        />
+      </div>
+
+      {/* Navegação das Abas */}
+      <div className="dashboard-tabs">
+        <button onClick={() => setActiveTab('report')} className={activeTab === 'report' ? 'active' : ''}>
+          <FileText size={16} /> Relatório Principal
+        </button>
+        <button onClick={() => setActiveTab('metrics')} className={activeTab === 'metrics' ? 'active' : ''}>
+          <BarChart3 size={16} /> Métricas Visuais
+        </button>
+        <button onClick={() => setActiveTab('data')} className={activeTab === 'data' ? 'active' : ''}>
+          <Braces size={16} /> Dados Brutos
+        </button>
+      </div>
+
+      {/* Conteúdo das Abas */}
+      <div className="dashboard-content">
+        {activeTab === 'report' && (
+          <ReportTab 
+            interpretedResponse={response.humanized_text || 'Resposta não disponível'}
+            verificationCode={response.verificationCode}
+          />
+        )}
+        {activeTab === 'metrics' && (
+          <MetricsTab technicalData={response.technical_data} />
+        )}
+        {activeTab === 'data' && (
+          <div className="raw-data-tab">
+            <JsonView src={response.technical_data || {}} theme="ocean" />
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+export default AnalysisDashboard;

@@ -1,0 +1,13 @@
+Olá, agente. Chegamos à fase final de polimento da nossa aplicação. Nossa missão é fazer com que os dados que já estamos recebendo do backend sejam exibidos de forma clara e intuitiva no nosso dashboard.
+1. O Cenário (O Que Sabemos):
+O deploy foi um sucesso. A resposta completa da API, incluindo o objeto technical_data, está chegando corretamente ao componente AnalysisDashboard.tsx. A prova disso é o nosso bloco de diagnóstico "Soro da Verdade v2.0" que está ativo e exibindo o JSON completo na tela.
+2. O Desafio (O Problema a Resolver):
+Apesar de os dados chegarem, os componentes-filho dentro do dashboard (como os StatusBadge no cabeçalho e os Cards de Métricas na aba de métricas) não estão exibindo esses dados, mostrando "N/A" ou valores padrão. A "fiação" final entre o AnalysisDashboard e seus componentes está rompida ou incorreta.
+3. Sua Missão (Diagnóstico e Proposta):
+Sua tarefa é atuar como nosso engenheiro de interface sênior.
+Parte A: Análise Causa-Raiz (Diagnóstico):
+Analise o código do AnalysisDashboard.tsx e seus principais componentes-filho (como StatusBadge.tsx e os cards em src/components/dashboard/cards/). Compare a estrutura do objeto response.technical_data (que você já conhece) com as props que cada um desses componentes-filho espera receber. Com base nessa análise, explique em texto, por favor: Por que os dados não estão "fluindo" corretamente para os componentes visuais? Onde está a exata desconexão?
+Parte B: Proposta de Solução (O Plano):
+Após seu diagnóstico, apresente um plano de correção em texto. Seu plano deve detalhar as modificações exatas necessárias no AnalysisDashboard.tsx (e talvez em seus filhos) para "conectar os fios" corretamente. Este plano também deve incluir, como passo final, a remoção completa do bloco de diagnóstico <pre> "Soro da Verdade", pois ele não será mais necessário após a correção.
+Importante: Nesta etapa, queremos apenas a sua análise e seu plano. NÃO APLIQUE NENHUMA MUDANÇA NO CÓDIGO AINDA. Queremos primeiro validar sua lógica.
+Aguardando sua análise de especialista para darmos o toque final na Saphira.
