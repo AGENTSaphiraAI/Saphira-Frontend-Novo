@@ -1,12 +1,8 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download, BarChart3, Braces } from 'lucide-react';
-
+import { FileText, Download } from 'lucide-react';
 import ReportTab from './tabs/ReportTab';
-import MetricsTab from './tabs/MetricsTab';
 import StatusBadge from './StatusBadge';
-
 import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
 import './AnalysisDashboard.css';
 
@@ -15,15 +11,16 @@ interface AnalysisDashboardProps {
     humanized_text?: string;
     technical_data?: any;
     verificationCode?: string;
+    [key: string]: any;
   };
-  handleExportResponseJSON: () => void;
-  handleExportDocx: () => void;
+  handleExportResponseJSON?: () => void;
+  handleExportDocx?: () => void;
 }
 
 const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
   const [isExporting, setIsExporting] = useState(false);
-  // Reativando o estado para controlar as abas
-  const [activeTab, setActiveTab] = useState<'report' | 'metrics' | 'data'>('report');
+
+  const activeTab = 'report'; // Mantendo a simplicidade por enquanto
 
   const handleExportPdf = async () => {
     setIsExporting(true);
@@ -37,27 +34,28 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
     }
   };
 
-  return (
-    <>
-      {/* BLOCO DE DIAGNÓSTICO FINAL */}
-      <pre style={{ color: 'white', backgroundColor: '#1E293B', padding: '1rem', borderRadius: '8px', margin: '1rem', textAlign: 'left', fontSize: '12px' }}>
-        <code>
-          --- SORO DA VERDADE v2.0 ---<br />
-          Objeto 'technical_data' recebido:<br />
-          {JSON.stringify(response.technical_data, null, 2)}
-          <br /><br />
-          --- CHAVES DISPONÍVEIS ---<br />
-          {JSON.stringify(Object.keys(response.technical_data || {}))}
-        </code>
-      </pre>
-      {/* FIM DO BLOCO DE DIAGNÓSTICO */}
+  // --- LÓGICA DE MAPEAMENTO CORRIGIDA ---
+  // Extrai e calcula os valores para os Badges com base no que o backend REALMENTE envia.
+  const technicalData = response.technical_data || {};
+  const voiceMode = technicalData.tom?.tipo || 'N/A';
+  const overallRisk = (technicalData.vies?.detectado || technicalData.contradicoes?.detectada) ? 'Risco Detectado' : 'Baixo Risco';
+  const confidenceScores = [
+    technicalData.tom?.confianca || 0,
+    technicalData.vies?.confianca || 0,
+    technicalData.contradicoes?.confianca || 0
+  ].filter(score => score > 0);
+  const avgConfidence = confidenceScores.length > 0 
+    ? (confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length * 100).toFixed(0) + '%'
+    : '0%';
+  // --- FIM DA LÓGICA DE MAPEAMENTO ---
 
-      <motion.div 
-        className="analysis-dashboard"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+  return (
+    <motion.div 
+      className="analysis-dashboard"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="dashboard-header">
         <div className="header-info">
           <h2>📊 Dashboard de Análise Saphira</h2>
@@ -81,98 +79,21 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
           </button>
         </div>
       </div>
-      
-      {/* O cabeçalho de status que já existia, agora funcionando */}
+
       <div className="status-header">
-        <StatusBadge 
-          icon="🎤" 
-          label="Modo de Voz" 
-          value={response.technical_data?.voice_calibration?.voice_mode || 'N/A'} 
-        />
-        <StatusBadge 
-          icon="🛡️" 
-          label="Risco Geral" 
-          value={response.technical_data?.forensic_analysis?.overall_manipulation_risk || 'N/A'} 
-        />
-        <StatusBadge 
-          icon="🎯" 
-          label="Confiança" 
-          value={`${((response.technical_data?.confidence_level?.score || 0) * 100).toFixed(0)}%`} 
-        />
+        {/* Usando as variáveis corrigidas */}
+        <StatusBadge icon="🎤" label="Modo de Voz" value={voiceMode} />
+        <StatusBadge icon="🛡️" label="Risco Geral" value={overallRisk} />
+        <StatusBadge icon="🎯" label="Confiança" value={avgConfidence} />
       </div>
 
-      {/* Navegação das Abas */}
-      <div className="dashboard-tabs">
-        <button 
-          className={`tab-button ${activeTab === 'report' ? 'active' : ''}`}
-          onClick={() => setActiveTab('report')}
-        >
-          <FileText size={20} />
-          <div className="tab-content">
-            <span className="tab-label">Relatório Principal</span>
-            <span className="tab-description">Análise interpretada e humanizada</span>
-          </div>
-        </button>
-        
-        <button 
-          className={`tab-button ${activeTab === 'metrics' ? 'active' : ''}`}
-          onClick={() => setActiveTab('metrics')}
-        >
-          <BarChart3 size={20} />
-          <div className="tab-content">
-            <span className="tab-label">Métricas Visuais</span>
-            <span className="tab-description">Gráficos e indicadores técnicos</span>
-          </div>
-        </button>
-        
-        <button 
-          className={`tab-button ${activeTab === 'data' ? 'active' : ''}`}
-          onClick={() => setActiveTab('data')}
-        >
-          <Braces size={20} />
-          <div className="tab-content">
-            <span className="tab-label">Dados Brutos</span>
-            <span className="tab-description">JSON técnico completo</span>
-          </div>
-        </button>
+      <div className="dashboard-content">
+        <ReportTab 
+          interpretedResponse={response.humanized_text || 'Resposta não disponível'}
+          verificationCode={response.verificationCode}
+        />
       </div>
-
-      {/* Conteúdo das Abas */}
-      <motion.div 
-        className="dashboard-content"
-        key={activeTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        {activeTab === 'report' && (
-          <ReportTab 
-            interpretedResponse={response.humanized_text || 'Resposta não disponível'}
-            verificationCode={response.verificationCode}
-          />
-        )}
-        {activeTab === 'metrics' && (
-          <MetricsTab technicalData={response.technical_data} />
-        )}
-        {activeTab === 'data' && (
-          <div className="raw-data-tab">
-            <div className="raw-data-header">
-              <Braces className="header-icon" size={24} />
-              <div>
-                <h3>Dados Técnicos Brutos</h3>
-                <p>JSON completo retornado pela API</p>
-              </div>
-            </div>
-            <div className="json-container">
-              <pre className="json-content">
-                {JSON.stringify(response.technical_data || {}, null, 2)}
-              </pre>
-            </div>
-          </div>
-        )}
-      </motion.div>
     </motion.div>
-    </>
   );
 };
 
