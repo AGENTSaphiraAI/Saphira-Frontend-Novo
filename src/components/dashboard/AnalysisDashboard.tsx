@@ -81,10 +81,25 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
       </div>
 
       <div className="status-header">
-        {/* Usando as variáveis corrigidas */}
-        <StatusBadge icon="🎤" label="Modo de Voz" value={voiceMode} />
-        <StatusBadge icon="🛡️" label="Risco Geral" value={overallRisk} />
-        <StatusBadge icon="🎯" label="Confiança" value={avgConfidence} />
+        {/* Usando as variáveis corrigidas com tooltips informativos */}
+        <StatusBadge 
+          icon="🎤" 
+          label="Modo de Voz" 
+          value={voiceMode} 
+          tooltip="Detecta a tonalidade da escrita. 'Neutro' para análises objetivas, 'Analítico' para textos técnicos, etc."
+        />
+        <StatusBadge 
+          icon="🛡️" 
+          label="Risco Geral" 
+          value={overallRisk} 
+          tooltip="Avalia a presença de viés ou contradições lógicas que possam comprometer a integridade da informação."
+        />
+        <StatusBadge 
+          icon="🎯" 
+          label="Confiança" 
+          value={avgConfidence} 
+          tooltip="Média de confiança das análises realizadas (Tom, Viés, Contradições). Indica a clareza do sinal nos dados."
+        />
       </div>
 
       <div className="dashboard-content">
