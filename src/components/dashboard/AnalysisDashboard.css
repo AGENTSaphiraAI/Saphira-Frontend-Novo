@@ -430,3 +430,88 @@
   font-weight: 600;
   color: #1e293b;
 }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .analysis-dashboard {
+    padding: 0.5rem;
+    margin: 0;
+  }
+
+  .dashboard-header {
+    padding: 1rem 0.5rem;
+    text-align: center;
+  }
+
+  .header-info h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-info p {
+    font-size: 0.85rem;
+    padding: 0 0.5rem;
+  }
+
+  .dashboard-tabs {
+    gap: 0.25rem;
+    padding: 0 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .dashboard-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+
+  .dashboard-content {
+    padding: 1rem 0.5rem;
+    min-height: 400px;
+  }
+
+  /* Status badge responsivo */
+  .status-header {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  /* Botões de ação responsivos */
+  .dashboard-export-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 0.5rem;
+  }
+
+  .dashboard-export-buttons button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .analysis-dashboard {
+    padding: 0.25rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .tab-button {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .dashboard-content {
+    padding: 0.75rem 0.25rem;
+  }
+}

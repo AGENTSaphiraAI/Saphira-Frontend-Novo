@@ -103,9 +103,39 @@ const MetricsTab: React.FC<MetricsTabProps> = ({ technicalData }) => {
         }
 
         @media (max-width: 768px) {
+          .metrics-container {
+            padding: 0.5rem;
+          }
+          
+          .metrics-header {
+            margin-bottom: 1rem;
+            padding: 0 0.5rem;
+          }
+          
+          .metrics-header h3 {
+            font-size: 1.1rem;
+          }
+          
+          .metrics-header p {
+            font-size: 0.8rem;
+          }
+          
           .metrics-grid {
             grid-template-columns: 1fr;
-            gap: 1rem;
+            gap: 0.75rem;
+            padding: 0 0.25rem;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .metrics-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+          }
+          
+          .metrics-grid {
+            gap: 0.5rem;
           }
         }
       `}</style>

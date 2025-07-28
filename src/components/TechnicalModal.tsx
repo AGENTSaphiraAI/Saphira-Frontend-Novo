@@ -64,15 +64,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     zIndex: 1000,
     backdropFilter: 'blur(5px)',
+    padding: '1rem',
   },
   content: {
     background: '#fff',
-    padding: '2rem',
+    padding: window.innerWidth <= 768 ? '1rem' : '2rem',
     borderRadius: '8px',
-    maxWidth: '650px',
-    width: '90%',
+    maxWidth: window.innerWidth <= 768 ? '95vw' : '650px',
+    width: '100%',
+    maxHeight: window.innerWidth <= 768 ? '85vh' : '80vh',
     color: '#333',
     boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+    overflowY: 'auto',
   },
   header: {
     display: 'flex',
@@ -80,16 +83,24 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     borderBottom: '1px solid #eee',
     paddingBottom: '1rem',
+    marginBottom: '1rem',
   },
   closeButton: {
     background: 'none',
     border: 'none',
-    fontSize: '2rem',
+    fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
     cursor: 'pointer',
     color: '#aaa',
+    padding: '0.25rem',
+    minWidth: '44px',
+    minHeight: '44px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   body: {
-    marginTop: '1.5rem',
+    fontSize: window.innerWidth <= 768 ? '0.9rem' : '1rem',
+    lineHeight: '1.6',
   }
 };
 
