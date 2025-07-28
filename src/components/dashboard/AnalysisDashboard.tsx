@@ -9,9 +9,11 @@ import './AnalysisDashboard.css';
 
 interface AnalysisDashboardProps {
   response: {
-    humanized_text?: string;
-    technicalData?: any;
-    verificationCode?: string;
+    displayData: {
+      humanized_text?: string;
+      verification_code?: string;
+    };
+    rawData?: any;
   };
   handleExportResponseJSON?: () => void;
   handleExportDocx?: () => void;
@@ -23,7 +25,12 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
   const handleExportPdf = async () => {
     setIsExporting(true);
     try {
-      await exportSaphiraReportToPdf(response);
+      // Passando o objeto 'response' inteiro para a função de exportação
+      await exportSaphiraReportToPdf({ 
+        humanized_text: response.displayData?.humanized_text,
+        technical_data: response.rawData,
+        verificationCode: response.displayData?.verification_code,
+      });
     } catch (error) {
       console.error('Erro ao exportar PDF:', error);
       alert('❌ Erro ao exportar PDF. Tente novamente.');
@@ -32,25 +39,13 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
     }
   };
 
-  // --- LÓGICA DE MAPEAMENTO CORRIGIDA E FINAL ---
-  const technicalData = response.technicalData || {};
-  
-  // MODO DE VOZ: Busca em `tom.tipo` e fornece 'N/A' se não encontrar
-  const voiceMode = technicalData.tom?.tipo || 'N/A';
-  
-  // RISCO GERAL: Verifica se 'vies' ou 'contradicoes' foram detectados
-  const overallRisk = (technicalData.vies?.detectado || technicalData.contradicoes?.detectada) ? 'Risco Detectado' : 'Baixo Risco';
-  
-  // CONFIANÇA: Calcula a média PONDERADA das confianças existentes e multiplica por 100
-  const confidenceScores = [
-    technicalData.tom?.confianca,
-    technicalData.vies?.confianca,
-    technicalData.contradicoes?.confianca
-  ].filter(score => typeof score === 'number'); // Garante que apenas números entrem no cálculo
+  // --- LÓGICA DE MAPEAMENTO 100% CORRIGIDA COM A "VERDADE ABSOLUTA" ---
+  const rawData = response.rawData || {};
+  const displayData = response.displayData || {};
 
-  const avgConfidence = confidenceScores.length > 0
-    ? `${(confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length * 100).toFixed(0)}%`
-    : '0%';
+  const voiceMode = rawData.voice_calibration?.voice_mode || 'N/A';
+  const overallRisk = rawData.forensic_analysis?.overall_manipulation_risk || 'N/A';
+  const confidence = rawData.confidence_level?.score ? `${(rawData.confidence_level.score * 100).toFixed(0)}%` : '0%';
   // --- FIM DA LÓGICA DE MAPEAMENTO ---
 
   return (
@@ -64,21 +59,16 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
         <div className="header-info">
           <h2>📊 Dashboard de Análise Saphira</h2>
           <p>Análise completa com visualizações interativas</p>
-          {response.verificationCode && (
-            <span className="verification-code">🔍 Código: {response.verificationCode}</span>
+          {displayData.verification_code && (
+            <span className="verification-code">🔍 Código: {displayData.verification_code}</span>
           )}
         </div>
-
         <div className="dashboard-export-buttons">
           {handleExportResponseJSON && (
-            <button className="export-button json" onClick={handleExportResponseJSON}>
-              <Download size={18} /> JSON
-            </button>
+            <button className="export-button json" onClick={handleExportResponseJSON}> <Download size={18} /> JSON </button>
           )}
           {handleExportDocx && (
-             <button className="export-button doc" onClick={handleExportDocx}>
-               <Download size={18} /> DOC
-             </button>
+             <button className="export-button doc" onClick={handleExportDocx}> <Download size={18} /> DOC </button>
           )}
           <button className="export-button pdf" onClick={handleExportPdf} disabled={isExporting}>
             <Download size={18} /> {isExporting ? 'Exportando...' : 'PDF'}
@@ -91,26 +81,26 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
           icon="🎤" 
           label="Modo de Voz" 
           value={voiceMode} 
-          tooltip="Detecta a tonalidade da escrita. 'Neutro' para análises objetivas, 'Analítico' para textos técnicos, etc."
+          tooltip="O tom e a personalidade que a Saphira adotou para a análise (ex: Juíza, Consultora)."
         />
         <StatusBadge 
           icon="🛡️" 
           label="Risco Geral" 
           value={overallRisk} 
-          tooltip="Avalia a presença de viés ou contradições lógicas que possam comprometer a integridade da informação."
+          tooltip="Avaliação do risco de manipulação textual com base em fatores como carga emocional, linguagem absolutista e qualidade das fontes."
         />
         <StatusBadge 
           icon="🎯" 
           label="Confiança" 
-          value={avgConfidence} 
-          tooltip="Média de confiança das análises realizadas (Tom, Viés, Contradições). Indica a clareza do sinal nos dados."
+          value={confidence} 
+          tooltip="Nível de confiança da Saphira em sua própria análise, com base na clareza e consistência dos dados de entrada."
         />
       </div>
       
       <div className="dashboard-content">
         <ReportTab 
-          interpretedResponse={response.humanized_text || 'Resposta não disponível'}
-          verificationCode={response.verificationCode}
+          interpretedResponse={displayData.humanized_text || 'Resposta não disponível'}
+          verificationCode={displayData.verification_code}
         />
       </div>
     </motion.div>
