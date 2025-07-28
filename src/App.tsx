@@ -4,7 +4,6 @@ import FileUploader from "./components/FileUploader";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
-import DOMPurify from 'dompurify';
 
 interface ConnectionStatus {
   status: 'unknown' | 'testing' | 'online' | 'offline';
@@ -37,49 +36,6 @@ export default function App() {
   const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
   const KEEP_ALIVE_INTERVAL = 300000; // 5 minutos  
   const REQUEST_TIMEOUT = 8000; // 8 segundos
-
-  // FUNÇÕES DE SEGURANÇA
-  const sanitizeInput = useCallback((input: string): string => {
-    // Remove scripts e tags HTML perigosas
-    let sanitized = DOMPurify.sanitize(input, { 
-      ALLOWED_TAGS: [],
-      ALLOWED_ATTR: []
-    });
-    
-    // Escape caracteres especiais
-    sanitized = sanitized
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;')
-      .replace(/\//g, '&#x2F;');
-    
-    // Limita tamanho
-    if (sanitized.length > 50000) {
-      sanitized = sanitized.substring(0, 50000);
-    }
-    
-    return sanitized;
-  }, []);
-
-  const validateTextInput = useCallback((text: string): boolean => {
-    // Verifica se não contém padrões suspeitos
-    const suspiciousPatterns = [
-      /<script[\s\S]*?>[\s\S]*?<\/script>/gi,
-      /javascript:/gi,
-      /on\w+\s*=/gi,
-      /data:text\/html/gi,
-      /vbscript:/gi
-    ];
-    
-    for (const pattern of suspiciousPatterns) {
-      if (pattern.test(text)) {
-        return false;
-      }
-    }
-    
-    return true;
-  }, []);
 
   const placeholderExamples = [
     "Digite um artigo para verificar contradições, viés e estrutura lógica...",
@@ -134,20 +90,9 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Função otimizada para feedback de digitação com sanitização
+  // Função otimizada para feedback de digitação
   const handleTypingFeedback = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const rawValue = e.target.value;
-    
-    // VALIDAÇÃO DE SEGURANÇA
-    if (!validateTextInput(rawValue)) {
-      alert("🚨 SEGURANÇA: Conteúdo suspeito detectado. Input rejeitado.");
-      return;
-    }
-    
-    // SANITIZAÇÃO
-    const sanitizedValue = sanitizeInput(rawValue);
-    
-    setUserText(sanitizedValue);
+    setUserText(e.target.value);
     setIsTyping(true);
 
     // Limpa o timeout anterior se o usuário continuar digitando
@@ -159,7 +104,7 @@ export default function App() {
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
     }, 600); // 600ms otimizado
-  }, [sanitizeInput, validateTextInput]);
+  }, []);
 
   // Keep-alive otimizado
   useEffect(() => {
@@ -272,17 +217,12 @@ export default function App() {
     console.log(`[CAIXA-PRETA] 🕵️ Tentando iniciar a análise. Endpoint: ${BACKEND_BASE_URL}/api/analyze`);
 
     try {
-      // Criar request com timeout personalizado para análise
-      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
+      const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
         method: 'POST',
         body: requestBody,
         headers: requestHeaders,
-        mode: "cors",
-        cache: "no-cache"
-      }, 30000); // 30 segundos para análise (mais tempo que conexão)
-      
-      const response = await request;
-      cleanup();
+        mode: "cors"
+      });
 
       console.log(`[CAIXA-PRETA] 🌐 Resposta da rede recebida. Status HTTP: ${response.status}`);
 
@@ -304,31 +244,15 @@ export default function App() {
       }
 
     } catch (error: unknown) {
-      // ERROR HANDLING ROBUSTO
-      console.warn("[SISTEMA] 🚨 Erro de análise detectado");
-      
-      let userMessage = "Erro de conexão com o servidor. Tente novamente.";
-      let debugInfo = "";
-      
+      console.error("[CAIXA-PRETA] 🔴 ERRO CRÍTICO CAPTURADO!");
       if (error instanceof Error) {
-        debugInfo = error.name;
-        
-        if (error.name === 'AbortError') {
-          userMessage = "Operação cancelada pelo usuário.";
-        } else if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
-          userMessage = "🌐 Falha na conexão. Verifique se o backend está ativo e tente novamente.";
-        } else if (error.message.includes('timeout')) {
-          userMessage = "⏱️ Tempo limite excedido. O servidor pode estar sobrecarregado.";
-        } else if (error.message.includes('CORS')) {
-          userMessage = "🔒 Erro de política de segurança. Contate o administrador.";
-        }
+        console.error(`[CAIXA-PRETA] - Mensagem: ${error.message}`);
+      } else {
+        console.error("[CAIXA-PRETA] - Erro de tipo desconhecido:", error);
       }
       
-      // Log detalhado para debug (sem expor dados sensíveis)
-      console.warn(`[DEBUG] ${debugInfo} - User will see: ${userMessage}`);
-      
       setResult({
-        humanized_text: `❌ **ERRO DE ANÁLISE**\n\n${userMessage}\n\n**Sugestões:**\n• Teste a conexão usando o botão "🔗 Testar Conexão"\n• Verifique se o backend está online\n• Tente novamente em alguns segundos`,
+        humanized_text: `Falha na Análise: ${(error instanceof Error) ? error.message : 'Ocorreu um erro desconhecido.'}`,
         verificationCode: undefined
       });
 
@@ -512,16 +436,8 @@ export default function App() {
           type="text"
           placeholder="Pergunta Específica (Opcional)"
           value={specificQuestion}
-          onChange={(e) => {
-            const rawValue = e.target.value;
-            if (validateTextInput(rawValue)) {
-              setSpecificQuestion(sanitizeInput(rawValue));
-            } else {
-              alert("🚨 SEGURANÇA: Pergunta contém conteúdo suspeito.");
-            }
-          }}
+          onChange={(e) => setSpecificQuestion(e.target.value)}
           disabled={loading}
-          maxLength={500}
         />
 
         {/* Seletor de Modo de Análise */}
