@@ -1,0 +1,114 @@
+o backend nos forneceu a estrutura exata e final do JSON. A discrepância com o frontend é clara. Sua missão é reescrever a lógica do AnalysisDashboard para que ele consuma a "Verdade Absoluta" que recebemos.
+Sua Tarefa:
+Substitua o conteúdo completo do arquivo src/components/dashboard/AnalysisDashboard.tsx pelo seguinte código, que está 100% sincronizado com a estrutura de dados real do backend.
+Generated typescript
+// Caminho: src/components/dashboard/AnalysisDashboard.tsx
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { FileText, Download } from 'lucide-react';
+import ReportTab from './tabs/ReportTab';
+import StatusBadge from './StatusBadge';
+import { exportSaphiraReportToPdf } from '../../utils/exportToPdf';
+import './AnalysisDashboard.css';
+
+interface AnalysisDashboardProps {
+  response: {
+    displayData: {
+      humanized_text?: string;
+      verification_code?: string;
+    };
+    rawData?: any;
+  };
+  handleExportResponseJSON?: () => void;
+  handleExportDocx?: () => void;
+}
+
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
+  const [isExporting, setIsExporting] = useState(false);
+  
+  const handleExportPdf = async () => {
+    setIsExporting(true);
+    try {
+      // Passando o objeto 'response' inteiro para a função de exportação
+      await exportSaphiraReportToPdf({ 
+        humanized_text: response.displayData?.humanized_text,
+        technical_data: response.rawData,
+        verificationCode: response.displayData?.verification_code,
+      });
+    } catch (error) {
+      console.error('Erro ao exportar PDF:', error);
+      alert('❌ Erro ao exportar PDF. Tente novamente.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // --- LÓGICA DE MAPEAMENTO 100% CORRIGIDA COM A "VERDADE ABSOLUTA" ---
+  const rawData = response.rawData || {};
+  const displayData = response.displayData || {};
+
+  const voiceMode = rawData.voice_calibration?.voice_mode || 'N/A';
+  const overallRisk = rawData.forensic_analysis?.overall_manipulation_risk || 'N/A';
+  const confidence = rawData.confidence_level?.score ? `${(rawData.confidence_level.score * 100).toFixed(0)}%` : '0%';
+  // --- FIM DA LÓGICA DE MAPEAMENTO ---
+
+  return (
+    <motion.div 
+      className="analysis-dashboard"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="dashboard-header">
+        <div className="header-info">
+          <h2>📊 Dashboard de Análise Saphira</h2>
+          <p>Análise completa com visualizações interativas</p>
+          {displayData.verification_code && (
+            <span className="verification-code">🔍 Código: {displayData.verification_code}</span>
+          )}
+        </div>
+        <div className="dashboard-export-buttons">
+          {handleExportResponseJSON && (
+            <button className="export-button json" onClick={handleExportResponseJSON}> <Download size={18} /> JSON </button>
+          )}
+          {handleExportDocx && (
+             <button className="export-button doc" onClick={handleExportDocx}> <Download size={18} /> DOC </button>
+          )}
+          <button className="export-button pdf" onClick={handleExportPdf} disabled={isExporting}>
+            <Download size={18} /> {isExporting ? 'Exportando...' : 'PDF'}
+          </button>
+        </div>
+      </div>
+      
+      <div className="status-header">
+        <StatusBadge 
+          icon="🎤" 
+          label="Modo de Voz" 
+          value={voiceMode} 
+          tooltip="O tom e a personalidade que a Saphira adotou para a análise (ex: Juíza, Consultora)."
+        />
+        <StatusBadge 
+          icon="🛡️" 
+          label="Risco Geral" 
+          value={overallRisk} 
+          tooltip="Avaliação do risco de manipulação textual com base em fatores como carga emocional, linguagem absolutista e qualidade das fontes."
+        />
+        <StatusBadge 
+          icon="🎯" 
+          label="Confiança" 
+          value={confidence} 
+          tooltip="Nível de confiança da Saphira em sua própria análise, com base na clareza e consistência dos dados de entrada."
+        />
+      </div>
+      
+      <div className="dashboard-content">
+        <ReportTab 
+          interpretedResponse={displayData.humanized_text || 'Resposta não disponível'}
+          verificationCode={displayData.verification_code}
+        />
+      </div>
+    </motion.div>
+  );
+};
+
+export default AnalysisDashboard;
