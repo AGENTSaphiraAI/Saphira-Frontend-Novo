@@ -272,12 +272,17 @@ export default function App() {
     console.log(`[CAIXA-PRETA] 🕵️ Tentando iniciar a análise. Endpoint: ${BACKEND_BASE_URL}/api/analyze`);
 
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}/api/analyze`, {
+      // Criar request com timeout personalizado para análise
+      const { request, cleanup } = createRequestWithTimeout(`${BACKEND_BASE_URL}/api/analyze`, {
         method: 'POST',
         body: requestBody,
         headers: requestHeaders,
-        mode: "cors"
-      });
+        mode: "cors",
+        cache: "no-cache"
+      }, 30000); // 30 segundos para análise (mais tempo que conexão)
+      
+      const response = await request;
+      cleanup();
 
       console.log(`[CAIXA-PRETA] 🌐 Resposta da rede recebida. Status HTTP: ${response.status}`);
 
@@ -299,27 +304,31 @@ export default function App() {
       }
 
     } catch (error: unknown) {
-      // ERROR HANDLING SEGURO - NÃO EXPOR INFORMAÇÕES SENSÍVEIS
-      console.warn("[SEGURANÇA] Erro de análise capturado");
+      // ERROR HANDLING ROBUSTO
+      console.warn("[SISTEMA] 🚨 Erro de análise detectado");
       
-      let safeErrorMessage = "Erro interno do sistema. Tente novamente.";
+      let userMessage = "Erro de conexão com o servidor. Tente novamente.";
+      let debugInfo = "";
       
       if (error instanceof Error) {
-        // Filtrar apenas erros seguros para o usuário
-        if (error.name === 'AbortError') {
-          safeErrorMessage = "Operação cancelada pelo usuário.";
-        } else if (error.message.includes('network') || error.message.includes('fetch')) {
-          safeErrorMessage = "Erro de conexão. Verifique sua internet.";
-        } else if (error.message.includes('timeout')) {
-          safeErrorMessage = "Tempo limite excedido. Tente novamente.";
-        }
+        debugInfo = error.name;
         
-        // Log interno seguro (sem dados sensíveis)
-        console.warn("[INTERNAL] Error type:", error.name);
+        if (error.name === 'AbortError') {
+          userMessage = "Operação cancelada pelo usuário.";
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+          userMessage = "🌐 Falha na conexão. Verifique se o backend está ativo e tente novamente.";
+        } else if (error.message.includes('timeout')) {
+          userMessage = "⏱️ Tempo limite excedido. O servidor pode estar sobrecarregado.";
+        } else if (error.message.includes('CORS')) {
+          userMessage = "🔒 Erro de política de segurança. Contate o administrador.";
+        }
       }
       
+      // Log detalhado para debug (sem expor dados sensíveis)
+      console.warn(`[DEBUG] ${debugInfo} - User will see: ${userMessage}`);
+      
       setResult({
-        humanized_text: `❌ ${safeErrorMessage}`,
+        humanized_text: `❌ **ERRO DE ANÁLISE**\n\n${userMessage}\n\n**Sugestões:**\n• Teste a conexão usando o botão "🔗 Testar Conexão"\n• Verifique se o backend está online\n• Tente novamente em alguns segundos`,
         verificationCode: undefined
       });
 
