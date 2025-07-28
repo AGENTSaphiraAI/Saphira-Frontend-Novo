@@ -455,10 +455,18 @@ body {
   padding: 1.5rem;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.upload-section {
+  margin-bottom: 1rem;
 }
 
 .upload-label {
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 1rem 1.5rem;
   background: linear-gradient(45deg, #ffca28 0%, #ffd95e 100%);
   color: #0a1929;
@@ -467,6 +475,35 @@ body {
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(255, 202, 40, 0.3);
+  text-align: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.upload-text {
+  display: inline;
+}
+
+.upload-info {
+  text-align: center;
+}
+
+.upload-note {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-style: italic;
+}
+
+.upload-status {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: rgba(33, 150, 243, 0.2);
+  border-radius: 8px;
+  color: #2196f3;
+  font-weight: 500;
+  animation: pulse 1.5s infinite;
 }
 
 .upload-label:hover {
@@ -644,28 +681,81 @@ body {
   }
 
   .upload-label {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     text-align: center;
     padding: 1rem;
     font-size: 14px;
+    gap: 0.5rem;
+  }
+
+  .upload-text {
+    margin-top: 0.25rem;
   }
 
   .file-preview {
     padding: 0.75rem;
     margin-top: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .file-header {
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
+    margin-bottom: 0.5rem;
+  }
+
+  .file-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .file-name {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .file-size {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: #b3d9ff;
+  }
+
+  .remove-button {
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    min-height: 40px;
   }
 
   .content-preview {
     max-height: 150px;
     font-size: 12px;
     padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #e3f2fd;
   }
 
   .saphira-upload-info {
