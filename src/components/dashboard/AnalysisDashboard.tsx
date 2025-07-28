@@ -38,12 +38,26 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
   };
 
   return (
-    <motion.div 
-      className="analysis-dashboard"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <>
+      {/* BLOCO DE DIAGNÓSTICO FINAL */}
+      <pre style={{ color: 'white', backgroundColor: '#1E293B', padding: '1rem', borderRadius: '8px', margin: '1rem', textAlign: 'left', fontSize: '12px' }}>
+        <code>
+          --- SORO DA VERDADE v2.0 ---<br />
+          Objeto 'technical_data' recebido:<br />
+          {JSON.stringify(response.technical_data, null, 2)}
+          <br /><br />
+          --- CHAVES DISPONÍVEIS ---<br />
+          {JSON.stringify(Object.keys(response.technical_data || {}))}
+        </code>
+      </pre>
+      {/* FIM DO BLOCO DE DIAGNÓSTICO */}
+
+      <motion.div 
+        className="analysis-dashboard"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
       <div className="dashboard-header">
         <div className="header-info">
           <h2>📊 Dashboard de Análise Saphira</h2>
@@ -158,6 +172,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
         )}
       </motion.div>
     </motion.div>
+    </>
   );
 };
 
