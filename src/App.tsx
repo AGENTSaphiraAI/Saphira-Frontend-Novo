@@ -4,6 +4,7 @@ import FileUploader from "./components/FileUploader";
 import AnalysisDashboard from "./components/dashboard/AnalysisDashboard";
 import TechnicalModal from "./components/TechnicalModal";
 import { saveAs } from "file-saver";
+import DOMPurify from 'dompurify';
 
 interface ConnectionStatus {
   status: 'unknown' | 'testing' | 'online' | 'offline';
@@ -36,6 +37,49 @@ export default function App() {
   const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
   const KEEP_ALIVE_INTERVAL = 300000; // 5 minutos  
   const REQUEST_TIMEOUT = 8000; // 8 segundos
+
+  // FUNÇÕES DE SEGURANÇA
+  const sanitizeInput = useCallback((input: string): string => {
+    // Remove scripts e tags HTML perigosas
+    let sanitized = DOMPurify.sanitize(input, { 
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: []
+    });
+    
+    // Escape caracteres especiais
+    sanitized = sanitized
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+    
+    // Limita tamanho
+    if (sanitized.length > 50000) {
+      sanitized = sanitized.substring(0, 50000);
+    }
+    
+    return sanitized;
+  }, []);
+
+  const validateTextInput = useCallback((text: string): boolean => {
+    // Verifica se não contém padrões suspeitos
+    const suspiciousPatterns = [
+      /<script[\s\S]*?>[\s\S]*?<\/script>/gi,
+      /javascript:/gi,
+      /on\w+\s*=/gi,
+      /data:text\/html/gi,
+      /vbscript:/gi
+    ];
+    
+    for (const pattern of suspiciousPatterns) {
+      if (pattern.test(text)) {
+        return false;
+      }
+    }
+    
+    return true;
+  }, []);
 
   const placeholderExamples = [
     "Digite um artigo para verificar contradições, viés e estrutura lógica...",
@@ -90,9 +134,20 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Função otimizada para feedback de digitação
+  // Função otimizada para feedback de digitação com sanitização
   const handleTypingFeedback = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUserText(e.target.value);
+    const rawValue = e.target.value;
+    
+    // VALIDAÇÃO DE SEGURANÇA
+    if (!validateTextInput(rawValue)) {
+      alert("🚨 SEGURANÇA: Conteúdo suspeito detectado. Input rejeitado.");
+      return;
+    }
+    
+    // SANITIZAÇÃO
+    const sanitizedValue = sanitizeInput(rawValue);
+    
+    setUserText(sanitizedValue);
     setIsTyping(true);
 
     // Limpa o timeout anterior se o usuário continuar digitando
@@ -104,7 +159,7 @@ export default function App() {
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
     }, 600); // 600ms otimizado
-  }, []);
+  }, [sanitizeInput, validateTextInput]);
 
   // Keep-alive otimizado
   useEffect(() => {
@@ -244,15 +299,27 @@ export default function App() {
       }
 
     } catch (error: unknown) {
-      console.error("[CAIXA-PRETA] 🔴 ERRO CRÍTICO CAPTURADO!");
+      // ERROR HANDLING SEGURO - NÃO EXPOR INFORMAÇÕES SENSÍVEIS
+      console.warn("[SEGURANÇA] Erro de análise capturado");
+      
+      let safeErrorMessage = "Erro interno do sistema. Tente novamente.";
+      
       if (error instanceof Error) {
-        console.error(`[CAIXA-PRETA] - Mensagem: ${error.message}`);
-      } else {
-        console.error("[CAIXA-PRETA] - Erro de tipo desconhecido:", error);
+        // Filtrar apenas erros seguros para o usuário
+        if (error.name === 'AbortError') {
+          safeErrorMessage = "Operação cancelada pelo usuário.";
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          safeErrorMessage = "Erro de conexão. Verifique sua internet.";
+        } else if (error.message.includes('timeout')) {
+          safeErrorMessage = "Tempo limite excedido. Tente novamente.";
+        }
+        
+        // Log interno seguro (sem dados sensíveis)
+        console.warn("[INTERNAL] Error type:", error.name);
       }
       
       setResult({
-        humanized_text: `Falha na Análise: ${(error instanceof Error) ? error.message : 'Ocorreu um erro desconhecido.'}`,
+        humanized_text: `❌ ${safeErrorMessage}`,
         verificationCode: undefined
       });
 
@@ -436,8 +503,16 @@ export default function App() {
           type="text"
           placeholder="Pergunta Específica (Opcional)"
           value={specificQuestion}
-          onChange={(e) => setSpecificQuestion(e.target.value)}
+          onChange={(e) => {
+            const rawValue = e.target.value;
+            if (validateTextInput(rawValue)) {
+              setSpecificQuestion(sanitizeInput(rawValue));
+            } else {
+              alert("🚨 SEGURANÇA: Pergunta contém conteúdo suspeito.");
+            }
+          }}
           disabled={loading}
+          maxLength={500}
         />
 
         {/* Seletor de Modo de Análise */}
