@@ -1455,6 +1455,64 @@ body {
   }
 }
 
+/* --- OTIMIZAÇÕES DE RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS --- */
+
+@media (max-width: 768px) {
+  .saphira-container {
+    padding: 1rem;
+  }
+
+  .saphira-title {
+    font-size: 2.2rem;
+  }
+
+  .saphira-buttons {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .analysis-dashboard {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .header-info {
+    text-align: center;
+  }
+
+  .dashboard-export-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .export-button {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .status-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .saphira-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-export-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
