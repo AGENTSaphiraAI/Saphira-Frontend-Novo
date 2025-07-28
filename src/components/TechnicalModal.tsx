@@ -1,5 +1,6 @@
 
-import React, { useEffect } from 'react';
+// Caminho do Arquivo: src/components/TechnicalModal.tsx
+import React from 'react';
 
 interface TechnicalModalProps {
   isOpen: boolean;
@@ -7,92 +8,89 @@ interface TechnicalModalProps {
 }
 
 const TechnicalModal: React.FC<TechnicalModalProps> = ({ isOpen, onClose }) => {
-  useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    if (isOpen) {
-      window.addEventListener('keydown', handleEsc);
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      window.removeEventListener('keydown', handleEsc);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, onClose]);
-
   if (!isOpen) return null;
 
+  const aboutContent = `
+    <div style="text-align: left; line-height: 1.7;">
+      <h2 style="color: #0b74e5; border-bottom: 2px solid #eee; padding-bottom: 10px;">💎 Nossa Missão: Clareza na Era da Complexidade</h2>
+      <p>
+        Em um mundo inundado de informações, a Saphira nasceu com um propósito claro: ser sua especialista em <strong>integridade e verdade operacional</strong>. Não somos apenas mais uma IA; somos sua parceira analítica, dedicada a transformar o complexo em compreensível.
+      </p>
+
+      <h3 style="color: #1e293b; margin-top: 2rem;">✨ Como a Saphira Pensa?</h3>
+      <p>
+        Nossa operação é baseada em uma <strong>"Constituição"</strong> de princípios rigorosos. Cada análise que você recebe é o resultado de um processo que valoriza:
+      </p>
+      <ul>
+        <li><strong>Neutralidade Absoluta:</strong> Analisamos os dados sem viés ou agenda.</li>
+        <li><strong>Rigor Técnico:</strong> Nossas conclusões são baseadas em lógica estruturada, não em opiniões.</li>
+        <li><strong>Transparência Radical:</strong> Acreditamos que a verdadeira inteligência inclui admitir o que não se sabe. A Saphira sempre comunicará seu grau de certeza.</li>
+      </ul>
+
+      <h3 style="color: #1e293b; margin-top: 2rem;">⚖️ Para o Especialista Jurídico: Seus Superpoderes</h3>
+      <p>
+        Ao selecionar a <strong>Análise Jurídica</strong>, você ativa protocolos de nível profissional. A Saphira se torna uma "Juíza Digital", capaz de:
+      </p>
+      <ul>
+        <li><strong>Detectar Riscos Contratuais:</strong> Identificar ambiguidades e cláusulas que conflitam com a legislação vigente.</li>
+        <li><strong>Verificar a Integridade da Informação:</strong> Analisar a coerência e a força dos argumentos em documentos legais.</li>
+        <li><strong>Acelerar a Pesquisa:</strong> Servir como uma assistente de pesquisa incansável, apontando os fatos mais relevantes em segundos.</li>
+      </ul>
+      <br>
+      <p><em>Obrigado por fazer parte da nossa jornada. Sua curiosidade nos impulsiona.</em></p>
+    </div>
+  `;
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 9999,
-        opacity: isOpen ? 1 : 0,
-        transition: 'opacity 0.4s ease'
-      }}
-      onClick={onClose}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          background: '#111827',
-          color: '#F9FAFB',
-          padding: '2rem',
-          borderRadius: '12px',
-          maxWidth: '600px',
-          width: '90%',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          boxShadow: '0 0 20px rgba(0,0,0,0.5)',
-          transform: isOpen ? 'translateY(0)' : 'translateY(-20px)',
-          transition: 'transform 0.4s ease'
-        }}
-      >
-        <h2 style={{ fontSize: 'clamp(1.4rem, 2vw, 2rem)', marginBottom: '1rem' }}>🟦 Sobre a Saphira</h2>
-        <h3 style={{ color: '#3B82F6', marginBottom: '1rem' }}>Nossa Missão: Trazer Clareza em um Mundo Complexo</h3>
-        <p style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', lineHeight: '1.6' }}>
-          Bem-vindo ao Projeto Saphira. Em uma era de sobrecarga de informações e narrativas confusas, nossa missão é simples e poderosa: fornecer uma análise técnica, neutra e auditável para qualquer conteúdo que você nos apresentar.
-        </p>
-        <h4 style={{ marginTop: '1rem' }}>O que fazemos?</h4>
-        <ul style={{ paddingLeft: '1.2rem' }}>
-          <li><strong>Privacidade Absoluta:</strong> Os dados que você analisa são processados e esquecidos. Não armazenamos o conteúdo original.</li>
-          <li><strong>Transparência Radical:</strong> A Saphira sempre mostrará os fatos e os dados brutos que a levaram à conclusão.</li>
-          <li><strong>Verificabilidade Incontestável:</strong> Cada análise é feita para ser justa e baseada em evidências lógicas.</li>
-        </ul>
-        <h4 style={{ marginTop: '1rem' }}>Como usar?</h4>
-        <p style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', lineHeight: '1.6' }}>
-          Basta colar ou enviar um texto para análise. A Saphira irá processá-lo e revelar insights objetivos, ajudando você a ver além do ruído.
-        </p>
-        <p>Este projeto está em constante evolução. Sua curiosidade e feedback nos movem para frente.</p>
-        <button
-          style={{
-            marginTop: '1.5rem',
-            padding: '0.5rem 1rem',
-            backgroundColor: '#3B82F6',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            transition: 'background-color 0.3s'
-          }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3B82F6')}
-          onClick={onClose}
-        >
-          Fechar
-        </button>
+    <div style={styles.overlay} onClick={onClose}>
+      <div style={styles.content} onClick={(e) => e.stopPropagation()}>
+        <div style={styles.header}>
+          <h3>Sobre a Saphira</h3>
+          <button style={styles.closeButton} onClick={onClose}>×</button>
+        </div>
+        <div style={styles.body} dangerouslySetInnerHTML={{ __html: aboutContent }} />
       </div>
     </div>
   );
+};
+
+// Estilos para o modal
+const styles: { [key: string]: React.CSSProperties } = {
+  overlay: {
+    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+    background: 'rgba(0,0,0,0.7)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    backdropFilter: 'blur(5px)',
+  },
+  content: {
+    background: '#fff',
+    padding: '2rem',
+    borderRadius: '8px',
+    maxWidth: '650px',
+    width: '90%',
+    color: '#333',
+    boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottom: '1px solid #eee',
+    paddingBottom: '1rem',
+  },
+  closeButton: {
+    background: 'none',
+    border: 'none',
+    fontSize: '2rem',
+    cursor: 'pointer',
+    color: '#aaa',
+  },
+  body: {
+    marginTop: '1.5rem',
+  }
 };
 
 export default TechnicalModal;
