@@ -1,83 +1,121 @@
-
 import React from 'react';
 
 interface StatusBadgeProps {
   icon: string;
   label: string;
   value: string;
-  tooltip?: string; // Adicionamos uma prop opcional para o tooltip
+  tooltip?: string;
 }
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ icon, label, value, tooltip }) => {
   return (
-    <div className="status-badge-wrapper">
-      <div className="status-badge">
+    <motion.div 
+      className="status-badge"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      title={tooltip}
+    >
+      <div className="badge-content">
         <span className="badge-icon">{icon}</span>
-        <div className="badge-content">
+        <div className="badge-info">
           <span className="badge-label">{label}</span>
           <span className="badge-value">{value}</span>
         </div>
       </div>
-      {/* O tooltip só aparece se a prop for fornecida */}
-      {tooltip && <div className="tooltip">{tooltip}</div>}
-      
-      {/* Estilos foram movidos para dentro do componente para simplicidade */}
-      <style>{`
-        .status-badge-wrapper {
-          position: relative; /* Essencial para o posicionamento do tooltip */
-          display: inline-block;
+
+      <style jsx>{`
+        .status-badge {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
+          padding: 1rem;
+          text-align: center;
+          transition: all 0.3s ease;
         }
 
-        .status-badge {
+        .status-badge:hover {
+          background: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
+        }
+
+        .badge-content {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 0.75rem;
-          background: #f8fafc;
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
         }
 
-        .badge-icon { font-size: 1.25rem; }
-        .badge-label { display: block; font-size: 0.75rem; color: #64748b; }
-        .badge-value { display: block; font-weight: 600; color: #1e293b; }
+        .badge-icon {
+          font-size: 1.5rem;
+        }
 
-        /* Estilo e lógica do Tooltip */
-        .tooltip {
-          visibility: hidden;
-          width: 220px;
-          background-color: #334155;
+        .badge-info {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .badge-label {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.8);
+          margin-bottom: 0.25rem;
+        }
+
+        .badge-value {
+          font-size: 1.1rem;
+          font-weight: bold;
           color: #fff;
-          text-align: center;
-          border-radius: 6px;
-          padding: 8px;
-          position: absolute;
-          z-index: 1;
-          bottom: 125%; /* Posiciona acima do badge */
-          left: 50%;
-          margin-left: -110px; /* Metade da largura para centralizar */
-          opacity: 0;
-          transition: opacity 0.3s;
-          font-size: 0.8rem;
         }
 
-        .tooltip::after { /* A "setinha" do tooltip */
-          content: "";
-          position: absolute;
-          top: 100%;
-          left: 50%;
-          margin-left: -5px;
-          border-width: 5px;
-          border-style: solid;
-          border-color: #334155 transparent transparent transparent;
+        @media (max-width: 768px) {
+          .status-badge {
+            padding: 0.75rem;
+          }
+
+          .badge-content {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+
+          .badge-info {
+            align-items: center;
+            text-align: center;
+          }
+
+          .badge-icon {
+            font-size: 1.8rem;
+          }
+
+          .badge-label {
+            font-size: 0.8rem;
+          }
+
+          .badge-value {
+            font-size: 1rem;
+          }
         }
 
-        .status-badge-wrapper:hover .tooltip {
-          visibility: visible;
-          opacity: 1;
+        @media (max-width: 480px) {
+          .status-badge {
+            padding: 0.6rem;
+          }
+
+          .badge-icon {
+            font-size: 1.5rem;
+          }
+
+          .badge-label {
+            font-size: 0.75rem;
+          }
+
+          .badge-value {
+            font-size: 0.9rem;
+          }
         }
       `}</style>
-    </div>
+    </motion.div>
   );
 };
 

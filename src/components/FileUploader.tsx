@@ -74,7 +74,9 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
     <div className="file-uploader">
       <div className="upload-section">
         <label htmlFor="file-upload" className="upload-label">
-          ☁️ Selecionar Arquivo (.txt, .pdf, .docx)
+          <span className="upload-text">
+            ☁️ Selecionar Arquivo (.txt, .pdf, .docx)
+          </span>
         </label>
         <input
           id="file-upload"
@@ -99,7 +101,7 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
         <div className="file-preview">
           <div className="file-header">
             <div className="file-info">
-              <strong>📄 Arquivo:</strong> {fileName}
+              <strong>📄 Arquivo:</strong> <span className="file-name">{fileName}</span>
               <span className="file-size">({fileContent.length} caracteres)</span>
             </div>
             <button 
@@ -119,10 +121,131 @@ function FileUploader({ onFileContentChange }: FileUploaderProps) {
               }
             </pre>
           </div>
-
-
         </div>
       )}
+
+      <style jsx>{`
+        .file-uploader {
+          width: 100%;
+          padding: 1rem;
+          box-sizing: border-box;
+        }
+
+        .upload-section {
+          margin-bottom: 1rem;
+        }
+
+        .upload-label {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 0.75rem;
+          background-color: #f0f0f0;
+          border: 1px dashed #ccc;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-bottom: 0.5rem;
+          text-align: center; /* Centralize o texto */
+        }
+
+        .upload-text {
+          display: inline; /* Garante que o texto fique na mesma linha */
+        }
+
+        .file-input {
+          display: none;
+        }
+
+        .upload-info {
+          text-align: center;
+        }
+
+        .upload-note {
+          font-size: 0.875rem;
+          color: #777;
+        }
+
+        .upload-status {
+          text-align: center;
+          margin-bottom: 1rem;
+        }
+
+        .file-preview {
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 1rem;
+        }
+
+        .file-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+
+        .file-info {
+          display: flex;
+          align-items: center;
+        }
+
+        .file-name {
+          margin-left: 0.5rem;
+          font-weight: bold;
+        }
+
+        .file-size {
+          margin-left: 0.5rem;
+          font-size: 0.875rem;
+          color: #777;
+        }
+
+        .remove-button {
+          background-color: #f44336;
+          color: white;
+          border: none;
+          padding: 0.5rem 0.75rem;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        .content-preview {
+          white-space: pre-wrap;
+          word-break: break-word;
+          font-size: 0.875rem;
+          max-height: 200px;
+          overflow-y: auto;
+          padding: 0.5rem;
+          background-color: #f9f9f9;
+          border: 1px solid #eee;
+          border-radius: 4px;
+        }
+
+        @media (max-width: 600px) {
+          .upload-label {
+            padding: 0.5rem;
+            flex-direction: column; /* Empilha os elementos verticalmente */
+          }
+
+          .upload-text {
+            margin-top: 0.25rem; /* Adiciona espaço entre o ícone e o texto */
+          }
+
+          .file-info {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .file-name {
+            margin-left: 0;
+            margin-top: 0.25rem;
+          }
+
+          .file-size {
+            margin-left: 0;
+            margin-top: 0.25rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }
