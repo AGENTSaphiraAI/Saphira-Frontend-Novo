@@ -225,11 +225,12 @@
   min-height: 400px;
 }
 
-/* Otimização para iPhone SE (375px) e dispositivos similares */
-@media (max-width: 480px) {
+/* Mobile optimizations */
+@media (max-width: 768px) {
   .analysis-dashboard {
-    padding: 0.75rem;
-    margin-top: 1rem;
+    padding: 1rem 0.75rem;
+    margin-top: 1.5rem;
+    border-radius: 12px;
   }
 
   .dashboard-header {
@@ -241,60 +242,192 @@
   }
 
   .header-info h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .header-info p {
-    font-size: 0.9rem;
+    font-size: 1.3rem;
     margin-bottom: 0.5rem;
   }
 
+  .header-info p {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+
   .verification-code {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
   }
 
   .dashboard-export-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
   }
 
-  .export-pdf-button {
-    font-size: 12px;
-    padding: 0.6rem 0.4rem;
-    min-height: 42px;
+  .export-button {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    min-height: 44px;
     border-radius: 8px;
   }
 
-  .export-pdf-button span {
-    font-size: 12px;
-  }
-
   .dashboard-tabs {
-    flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
   }
 
   .tab-button {
-    min-width: unset;
-    padding: 0.75rem 1rem;
-    min-height: 60px;
+    min-width: 160px;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
   }
 
   .tab-label {
     font-size: 0.9rem;
+    font-weight: 600;
   }
 
   .tab-description {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    opacity: 0.85;
   }
 
   .dashboard-content {
-    padding: 1rem;
-    border-radius: 8px;
+    padding: 1.25rem 0.75rem;
+    border-radius: 10px;
+    min-height: 300px;
+  }
+
+  .status-header {
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .status-badge {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .badge-content {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .badge-icon {
+    font-size: 1.4rem;
+  }
+
+  .badge-label {
+    font-size: 0.8rem;
+  }
+
+  .badge-value {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 480px) {
+  .analysis-dashboard {
+    padding: 0.75rem 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .dashboard-header {
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .header-info h2 {
+    font-size: 1.2rem;
+  }
+
+  .header-info p {
+    font-size: 0.9rem;
+  }
+
+  .verification-code {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .dashboard-export-buttons {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .export-button {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.8rem;
+    min-height: 42px;
+  }
+
+  .dashboard-tabs {
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tab-button {
+    min-width: unset;
+    padding: 0.7rem 0.75rem;
+    min-height: auto;
+  }
+
+  .tab-label {
+    font-size: 0.85rem;
+  }
+
+  .tab-description {
+    font-size: 0.7rem;
+  }
+
+  .dashboard-content {
+    padding: 1rem 0.5rem;
+    min-height: 250px;
+  }
+
+  .status-header {
+    gap: 0.6rem;
+    padding: 0.6rem;
+  }
+
+  .badge-icon {
+    font-size: 1.2rem;
+  }
+
+  .badge-label {
+    font-size: 0.75rem;
+  }
+
+  .badge-value {
+    font-size: 0.9rem;
+  }
+}
+
+/* iPhone SE specific */
+@media (max-width: 375px) {
+  .analysis-dashboard {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .dashboard-content {
+    padding: 0.75rem 0.25rem;
+    font-size: 0.85rem;
+  }
+
+  .export-button {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.4rem;
+    min-height: 40px;
+  }
+
+  .tab-button {
+    padding: 0.6rem;
   }
 }
 

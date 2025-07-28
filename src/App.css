@@ -1459,11 +1459,17 @@ body {
 
 @media (max-width: 768px) {
   .saphira-container {
-    padding: 1rem;
+    padding: 1rem 0.75rem;
   }
 
   .saphira-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .saphira-subtitle {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .saphira-buttons {
@@ -1471,45 +1477,444 @@ body {
     gap: 0.75rem;
   }
 
+  .saphira-button {
+    padding: 0.9rem 1rem;
+    font-size: 0.9rem;
+    min-height: 48px;
+  }
+
   .analysis-dashboard {
-    padding: 1rem;
+    padding: 1rem 0.75rem;
+    margin-top: 1.5rem;
   }
 
   .dashboard-header {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
   }
 
   .header-info {
     text-align: center;
   }
 
+  .header-info h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-info p {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+
   .dashboard-export-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+    gap: 0.6rem;
   }
   
   .export-button {
-    padding: 0.8rem;
-    font-size: 0.9rem;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    min-height: 44px;
   }
 
   .status-header {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .status-badge {
+    padding: 0.75rem;
+  }
+
+  .badge-content {
     gap: 0.5rem;
+  }
+
+  .badge-icon {
+    font-size: 1.3rem;
+  }
+
+  .badge-label {
+    font-size: 0.8rem;
+  }
+
+  .badge-value {
+    font-size: 1rem;
+  }
+
+  /* Dashboard Tabs Mobile */
+  .dashboard-tabs {
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+  }
+
+  .dashboard-tabs::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .dashboard-tabs::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  .dashboard-tabs::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+  }
+
+  .tab-button {
+    min-width: 160px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .tab-label {
+    font-size: 0.9rem;
+  }
+
+  .tab-description {
+    font-size: 0.75rem;
+  }
+
+  .dashboard-content {
+    padding: 1.25rem 0.75rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 }
 
 @media (max-width: 480px) {
+  .saphira-container {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .saphira-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .saphira-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+
   .saphira-buttons {
     grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .saphira-button {
+    padding: 0.8rem;
+    font-size: 0.85rem;
+    min-height: 46px;
+  }
+
+  /* Analysis mode selector mobile */
+  .analysis-mode-selector {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .analysis-mode-selector label {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .mode-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    min-width: auto;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Input and textarea mobile */
+  .saphira-textarea,
+  .saphira-input {
+    padding: 0.75rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: 10px;
+  }
+
+  .saphira-textarea {
+    min-height: 120px;
+  }
+
+  /* Status bar mobile */
+  .saphira-status-bar {
+    gap: 0.6rem;
+    margin: 0.75rem 0;
+  }
+
+  .saphira-status {
+    padding: 0.75rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+
+  /* Results cards mobile */
+  .saphira-response-card,
+  .saphira-technical-card {
+    padding: 1rem 0.75rem;
+    margin: 0.75rem 0;
+    border-radius: 12px;
+  }
+
+  .saphira-response-card h3,
+  .saphira-technical-card summary {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .saphira-response-card p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .analysis-dashboard {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .dashboard-header {
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .header-info h2 {
+    font-size: 1.25rem;
+  }
+
+  .header-info p {
+    font-size: 0.9rem;
   }
 
   .dashboard-export-buttons {
     grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .export-button {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.8rem;
+    min-height: 42px;
+  }
+
+  .status-header {
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .status-badge {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .badge-icon {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-tabs {
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tab-button {
+    min-width: unset;
+    padding: 0.7rem 0.75rem;
+    text-align: left;
+  }
+
+  .tab-label {
+    font-size: 0.85rem;
+  }
+
+  .tab-description {
+    font-size: 0.7rem;
+  }
+
+  .dashboard-content {
+    padding: 1rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Upload section */
+  .file-uploader {
+    padding: 1rem 0.75rem;
+    border-radius: 12px;
+  }
+
+  .upload-label {
+    padding: 0.8rem 1.25rem;
+    font-size: 0.9rem;
+    display: block;
+    text-align: center;
+    width: auto;
+  }
+
+  .upload-hint {
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    opacity: 0.8;
+  }
+
+  .file-preview {
+    padding: 0.75rem;
+    border-radius: 8px;
+  }
+
+  .file-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .file-info {
+    gap: 0.5rem;
+  }
+
+  .content-preview {
+    max-height: 150px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+
+  .remove-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  /* Modal improvements */
+  .audit-modal {
+    width: 95vw;
+    max-width: none;
+    margin: 0.5rem;
+    padding: 1rem;
+    max-height: 90vh;
+    border-radius: 12px;
+  }
+
+  .audit-modal-header {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .audit-modal-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .close-button {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+  }
+
+  .audit-modal-content {
+    padding: 0.75rem;
+    max-height: calc(90vh - 140px);
+    overflow-y: auto;
+  }
+
+  .audit-controls {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+  }
+
+  .export-logs-button {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .logs-count {
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .audit-entry {
+    padding: 1rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+  }
+
+  .audit-entry-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .entry-timestamp {
+    font-size: 0.85rem;
+  }
+
+  .verification-code code {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+    word-break: break-all;
+  }
+
+  .audit-entry-content {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .original-content,
+  .response-content,
+  .expert-analysis-content {
+    padding: 0.75rem;
+  }
+
+  .content-preview {
+    font-size: 0.8rem;
+    max-height: 120px;
+    line-height: 1.4;
+  }
+}
+
+/* iPhone SE specific (375px) */
+@media (max-width: 375px) {
+  .saphira-container {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .saphira-title {
+    font-size: 1.6rem;
+  }
+
+  .saphira-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .analysis-dashboard {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .dashboard-content {
+    padding: 0.75rem 0.25rem;
+    font-size: 0.85rem;
+  }
+
+  .export-button {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.4rem;
+    min-height: 40px;
   }
 }
 
