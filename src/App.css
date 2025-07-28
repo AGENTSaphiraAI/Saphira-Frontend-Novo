@@ -245,6 +245,29 @@ body {
   100% { opacity: 1; }
 }
 
+/* Error message styling */
+.saphira-results .error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  color: #dc2626;
+  backdrop-filter: blur(10px);
+}
+
+.saphira-results .error-message h3 {
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.saphira-results .error-message code {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
 /* Status bar */
 .saphira-status-bar {
   display: flex;

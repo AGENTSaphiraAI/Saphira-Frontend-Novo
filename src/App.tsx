@@ -33,7 +33,7 @@ export default function App() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Constantes otimizadas
-  const BACKEND_BASE_URL = "https://b70cbe73-5ac1-4669-ac5d-3129d59fb7a8-00-3ccdko9zwgzm3.riker.replit.dev";
+  const BACKEND_BASE_URL = "https://saphira-engine-backend.guilhermeguimaraes.replit.dev";
   const KEEP_ALIVE_INTERVAL = 300000; // 5 minutos  
   const REQUEST_TIMEOUT = 8000; // 8 segundos
 
@@ -245,14 +245,28 @@ export default function App() {
 
     } catch (error: unknown) {
       console.error("[CAIXA-PRETA] 🔴 ERRO CRÍTICO CAPTURADO!");
+      console.error("URL tentada:", `${BACKEND_BASE_URL}/api/analyze`);
+      
       if (error instanceof Error) {
         console.error(`[CAIXA-PRETA] - Mensagem: ${error.message}`);
+        console.error(`[CAIXA-PRETA] - Nome: ${error.name}`);
       } else {
         console.error("[CAIXA-PRETA] - Erro de tipo desconhecido:", error);
       }
       
       setResult({
-        humanized_text: `Falha na Análise: ${(error instanceof Error) ? error.message : 'Ocorreu um erro desconhecido.'}`,
+        humanized_text: `❌ **Erro de Conexão**
+
+**Detalhes do Problema:**
+- **URL Backend:** ${BACKEND_BASE_URL}
+- **Erro:** ${(error instanceof Error) ? error.message : 'Erro desconhecido'}
+
+**Possíveis Soluções:**
+1. Verifique se o backend está online
+2. Teste a conexão usando o botão "🔗 Testar Conexão"
+3. Aguarde alguns segundos e tente novamente
+
+*Se o problema persistir, verifique os logs do console (F12)*`,
         verificationCode: undefined
       });
 
@@ -335,6 +349,18 @@ export default function App() {
       alert("Falha ao gerar o relatório DOCX. Verifique o console.");
     }
   }, [result]);
+
+  // Teste automático de conexão na inicialização
+  useEffect(() => {
+    const testInitialConnection = async () => {
+      console.log("🔄 Testando conectividade inicial...");
+      await handleTestConnection();
+    };
+    
+    // Executa teste após 2 segundos do carregamento
+    const timer = setTimeout(testInitialConnection, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Teste de conexão otimizado
   const handleTestConnection = useCallback(async () => {
