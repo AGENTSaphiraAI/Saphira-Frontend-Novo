@@ -9,27 +9,39 @@ import './AnalysisDashboard.css';
 
 interface AnalysisDashboardProps {
   response: {
-    displayData: {
+    displayData?: {
       humanized_text?: string;
       verification_code?: string;
     };
     rawData?: any;
+    // Fallback para estruturas antigas
+    humanized_text?: string;
+    technicalData?: any;
+    verificationCode?: string;
   };
   handleExportResponseJSON?: () => void;
   handleExportDocx?: () => void;
 }
 
-const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleExportResponseJSON, handleExportDocx }) => {
+const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ 
+  response, 
+  handleExportResponseJSON, 
+  handleExportDocx 
+}) => {
   const [isExporting, setIsExporting] = useState(false);
   
   const handleExportPdf = async () => {
     setIsExporting(true);
     try {
-      // Passando o objeto 'response' inteiro para a função de exportação
+      // Determinar a estrutura dos dados
+      const humanizedText = response.displayData?.humanized_text || response.humanized_text;
+      const technicalData = response.rawData || response.technicalData;
+      const verificationCode = response.displayData?.verification_code || response.verificationCode;
+
       await exportSaphiraReportToPdf({ 
-        humanized_text: response.displayData?.humanized_text,
-        technical_data: response.rawData,
-        verificationCode: response.displayData?.verification_code,
+        humanized_text: humanizedText,
+        technical_data: technicalData,
+        verificationCode: verificationCode,
       });
     } catch (error) {
       console.error('Erro ao exportar PDF:', error);
@@ -39,14 +51,31 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
     }
   };
 
-  // --- LÓGICA DE MAPEAMENTO 100% CORRIGIDA COM A "VERDADE ABSOLUTA" ---
-  const rawData = response.rawData || {};
+  // Lógica de mapeamento robusta que funciona com diferentes estruturas
+  const rawData = response.rawData || response.technicalData || {};
   const displayData = response.displayData || {};
+  
+  // Fallbacks para diferentes estruturas de dados
+  const humanizedText = displayData.humanized_text || response.humanized_text || 'Resposta não disponível';
+  const verificationCode = displayData.verification_code || response.verificationCode;
 
-  const voiceMode = rawData.voice_calibration?.voice_mode || 'N/A';
-  const overallRisk = rawData.forensic_analysis?.overall_manipulation_risk || 'N/A';
-  const confidence = rawData.confidence_level?.score ? `${(rawData.confidence_level.score * 100).toFixed(0)}%` : '0%';
-  // --- FIM DA LÓGICA DE MAPEAMENTO ---
+  // Mapeamento seguro dos dados técnicos
+  const voiceMode = rawData.voice_calibration?.voice_mode || 
+                   rawData.voiceCalibration?.voiceMode || 
+                   'N/A';
+                   
+  const overallRisk = rawData.forensic_analysis?.overall_manipulation_risk || 
+                     rawData.forensicAnalysis?.overallManipulationRisk ||
+                     rawData.overall_risk ||
+                     'N/A';
+                     
+  const confidence = rawData.confidence_level?.score 
+    ? `${(rawData.confidence_level.score * 100).toFixed(0)}%`
+    : rawData.confidenceLevel?.score 
+    ? `${(rawData.confidenceLevel.score * 100).toFixed(0)}%`
+    : rawData.confidence 
+    ? `${rawData.confidence}%`
+    : '0%';
 
   return (
     <motion.div 
@@ -59,16 +88,20 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
         <div className="header-info">
           <h2>📊 Dashboard de Análise Saphira</h2>
           <p>Análise completa com visualizações interativas</p>
-          {displayData.verification_code && (
-            <span className="verification-code">🔍 Código: {displayData.verification_code}</span>
+          {verificationCode && (
+            <span className="verification-code">🔍 Código: {verificationCode}</span>
           )}
         </div>
         <div className="dashboard-export-buttons">
           {handleExportResponseJSON && (
-            <button className="export-button json" onClick={handleExportResponseJSON}> <Download size={18} /> JSON </button>
+            <button className="export-button json" onClick={handleExportResponseJSON}>
+              <Download size={18} /> JSON
+            </button>
           )}
           {handleExportDocx && (
-             <button className="export-button doc" onClick={handleExportDocx}> <Download size={18} /> DOC </button>
+            <button className="export-button doc" onClick={handleExportDocx}>
+              <Download size={18} /> DOC
+            </button>
           )}
           <button className="export-button pdf" onClick={handleExportPdf} disabled={isExporting}>
             <Download size={18} /> {isExporting ? 'Exportando...' : 'PDF'}
@@ -99,8 +132,8 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ response, handleE
       
       <div className="dashboard-content">
         <ReportTab 
-          interpretedResponse={displayData.humanized_text || 'Resposta não disponível'}
-          verificationCode={displayData.verification_code}
+          interpretedResponse={humanizedText}
+          verificationCode={verificationCode}
         />
       </div>
     </motion.div>
