@@ -1,0 +1,64 @@
+ o frontend está selado e funcional. Chegou a hora de documentá-lo de forma profissional para o mundo.
+Sua Missão:
+Substitua o conteúdo completo do arquivo README.md na raiz do projeto. O novo conteúdo deve ser técnico, claro e preciso. Use o template estruturado abaixo e, com base no seu conhecimento de todos os arquivos do projeto, preencha as seções indicadas.
+Template do Novo README.md:
+Generated markdown
+# Saphira Interface v2.0 - Plataforma de Análise Inteligente
+
+**Interface de usuário oficial do Ecossistema Saphira: Análise Inteligente, Técnica e Auditável.**
+
+---
+
+### Visão Geral
+
+A Saphira Interface v2.0 é uma aplicação web moderna e responsiva construída com **React 18 & TypeScript**, projetada para análise avançada de textos e documentos. Como frontend desacoplado, consome exclusivamente a API do **Saphira-Engine-Backend**, transformando análises complexas em visualizações claras e acionáveis.
+
+### Principais Características
+
+*   **Análise Multimodal:** Suporte nativo para Texto, PDF, e DOC/DOCX.
+*   **Interface Moderna:** Design profissional com feedback visual claro.
+*   **100% Responsivo:** Otimizado para mobile, tablet e desktop.
+*   **Sistema de Auditoria:** Rastreabilidade completa com códigos de verificação únicos.
+*   **Performance Otimizada:** Build otimizado com Vite para máxima velocidade.
+
+### Funcionalidades Implementadas
+
+**1. Sistema de Análise**
+*   Dois Modos de Análise: "Análise Geral" para textos padrão e "Análise Jurídica" para documentos legais.
+*   Análise de Texto e Upload de Arquivos.
+*   Campo para Pergunta Específica para direcionar a análise.
+
+**2. Dashboard de Resultados**
+*   **Painel de Status:** Exibição em tempo real de "Modo de Voz", "Risco Geral" e "Confiança".
+*   **Relatório Principal:** Resposta humanizada da Saphira renderizada em Markdown.
+*   **Sistema de Exportação:** Funcionalidades para exportar a análise para os formatos JSON e DOC.
+
+### Stack Tecnológica
+
+*Com base no arquivo `package.json`, liste aqui as principais bibliotecas e frameworks que o projeto utiliza (ex: React, TypeScript, Vite, Recharts, etc.).*
+
+### Arquitetura de Comunicação
+
+Esta aplicação é totalmente desacoplada e consome a API REST do `Saphira-Engine-Backend`.
+
+*   **Endpoint Principal:** `POST /api/analyze`
+*   **Health Check:** `GET /health`
+*   **Exportação:** `POST /api/export/docx`
+
+### Instalação e Execução
+
+**Pré-requisitos:** Node.js 16+, npm 8+
+
+```bash
+# 1. Clone o repositório
+git clone [URL_DO_REPOSITORIO]
+
+# 2. Instale as dependências
+npm install
+
+# 3. Execute o servidor de desenvolvimento
+npm run dev
+```
+
+---
+*Desenvolvido com foco em integridade, performance e uma experiência de usuário de nível profissional.*
