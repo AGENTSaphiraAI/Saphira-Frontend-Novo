@@ -88,9 +88,6 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({
         <div className="header-info">
           <h2>📊 Dashboard de Análise Saphira</h2>
           <p>Análise completa com visualizações interativas</p>
-          {verificationCode && (
-            <span className="verification-code">🔍 Código: {verificationCode}</span>
-          )}
         </div>
         <div className="dashboard-export-buttons">
           {handleExportResponseJSON && (
