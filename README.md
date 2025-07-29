@@ -171,4 +171,4 @@ VITE_API_URL=https://api.saphira.com  # URL do backend em produção
 
 **Desenvolvido com foco em integridade, performance e uma experiência de usuário de nível profissional.**
 
-*Ecossistema Saphira © 2024 - Análise Inteligente para o Futuro*
+*Ecossistema Saphira © 2025 - Análise Inteligente para o Futuro*
