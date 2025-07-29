@@ -1,0 +1,74 @@
+Substitua o conteúdo completo do arquivo de estilos src/App.css pela versão final e corrigida abaixo. Este código resolve os problemas do botão de upload, do hash em dispositivos móveis e remove qualquer redundância.
+Generated css
+/* Paleta de Cores Global e Reset (Existente, sem alteração) */
+:root {
+  --saphira-blue-deep: #0B74E5;
+  /* ... (resto da sua paleta) ... */
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ... (resto dos seus estilos base) ... */
+
+/* Estilos da Aplicação */
+
+.saphira-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  /* ... */
+}
+
+/* --- ÁREA DE UPLOAD (INTERVENÇÃO) --- */
+.file-uploader {
+  display: flex; /* Centraliza o conteúdo */
+  flex-direction: column;
+  align-items: center; /* Alinha o botão no centro */
+  justify-content: center;
+  border: 2px dashed var(--saphira-blue-light);
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  margin-bottom: 1rem;
+}
+
+.upload-label {
+  /* Estilos do botão de upload que já temos */
+}
+
+/* --- BOTÕES REDUNDANTES --- */
+/* Esta regra ESCONDE o botão de exportar JSON redundante */
+.saphira-export-section {
+  display: none;
+}
+
+
+/* --- CORREÇÃO DO CÓDIGO HASH E OUTROS ELEMENTOS NO MOBILE --- */
+
+/* Todos os estilos de @media (max-width: 768px) e (max-width: 480px)
+   que já criamos e o agente implementou vão aqui. O bloco abaixo é o
+   essencial para garantir que o código hash se comporte. */
+
+@media (max-width: 768px) {
+  /* ... (outros estilos mobile que já temos) ... */
+
+  .verification-code {
+    font-size: 0.75rem;
+    word-break: break-all; /* <<< A CORREÇÃO MÁGICA */
+    text-align: center;   /* Para garantir que fique centralizado */
+    line-height: 1.4;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch; /* Alinha os botões de exportar para ocupar o espaço */
+    text-align: center;
+  }
+
+  .status-header {
+    flex-direction: column; /* Coloca os badges um sobre o outro */
+    align-items: stretch; /* Faz com que ocupem a largura total */
+    gap: 0.5rem;
+  }
+}
+
+/* Adicione todos os outros estilos que você já tem no seu App.css aqui,
+   mas esta intervenção garante que o que discutimos será corrigido. */
