@@ -1,0 +1,16 @@
+Olá, agente. O sistema está funcionalmente perfeito. Nossa missão agora é realizar o polimento final da interface para garantir uma experiência de usuário excepcional em todos os dispositivos. As alterações são puramente estéticas (CSS).
+Por favor, execute as seguintes tarefas de refinamento:
+1. Limpeza do Cabeçalho do Dashboard:
+Problema: O cabeçalho do AnalysisDashboard atualmente contém o "Código de Verificação" completo, o que é visualmente redundante, pois ele já é exibido no rodapé do relatório.
+Ação: Remova completamente a exibição do Código de Verificação (e o fundo cinza associado) de dentro do cabeçalho do Dashboard (a área onde ficam os botões "JSON", "DOC", "PDF"). Mantenha os botões de exportação como estão.
+2. Refinamento Visual do Rodapé do Relatório:
+Problema: O "Código de Verificação" no rodapé do relatório principal (Análise Interpretada da Saphira) está com um fundo cinza que tem baixo contraste e não se harmoniza com o design.
+Ação: Mude a estilização do contêiner do Código de Verificação. Remova o fundo cinza e aplique uma borda sutil ou simplesmente mude a cor do texto para um tom de cinza escuro ou azul, garantindo que ele seja legível, mas discreto. A intenção é que pareça um "selo de autenticidade", não um bloco de destaque.
+3. Otimização Geral da Responsividade (Mobile e Telas Menores):
+Problema: Em dispositivos móveis e telas menores, alguns elementos do aplicativo não se "enquadram" perfeitamente, causando rolagem horizontal ou quebras de layout indesejadas.
+Ação: Realize uma auditoria completa de responsividade em toda a aplicação. Sua tarefa é encontrar e corrigir os problemas de layout. Use media queries em seu CSS para garantir que:
+Container Principal: Em telas pequenas, ele use uma porcentagem maior da largura da tela, com padding reduzido.
+Botões de Ação: Se um grupo de botões (Analisar, Limpar, etc.) estiver em uma única linha e quebrar o layout, use flex-wrap: wrap; para permitir que eles se ajustem para a linha de baixo de forma elegante.
+Dashboard: Todos os elementos dentro do AnalysisDashboard (badges, a área de relatório, etc.) devem se redimensionar ou se reorganizar para um layout de coluna única, se necessário, para evitar transbordamento.
+Instrução Final de Segurança:
+Lembre-se: esta é uma missão puramente visual. NÃO altere a lógica de componentes .tsx (a não ser que seja para remover a linha JSX do código de verificação redundante no cabeçalho). O foco total é em aprimorar os arquivos .css ou os estilos (<style>) existentes. O build deve passar sem nenhum erro.
