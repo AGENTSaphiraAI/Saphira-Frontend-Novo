@@ -132,13 +132,35 @@
 }
 
 .verification-code {
-  display: inline-block;
-  background: linear-gradient(45deg, #0b74e5, #1d4ed8);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: #ffd54f;
+  font-weight: bold;
+  letter-spacing: 1px;
+  word-break: break-all;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .verification-code {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 480px) {
+  .verification-code {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+    letter-spacing: 0.3px;
+    line-height: 1.1;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
 }
 
 .export-pdf-button {
@@ -251,11 +273,6 @@
     margin-bottom: 0.75rem;
   }
 
-  .verification-code {
-    font-size: 0.8rem;
-    padding: 0.3rem 0.6rem;
-  }
-
   .dashboard-export-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -348,11 +365,6 @@
 
   .header-info p {
     font-size: 0.9rem;
-  }
-
-  .verification-code {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
   }
 
   .dashboard-export-buttons {
